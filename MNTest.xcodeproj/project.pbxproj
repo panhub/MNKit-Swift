@@ -464,7 +464,6 @@
 				3BDB6F0F289928E40023D5E3 /* MNRefresh */,
 				3BDB6F18289928E40023D5E3 /* MNActivityIndicatorView */,
 				3BDB6F1B289928E40023D5E3 /* Networking */,
-				3BDB6F26289928E40023D5E3 /* MNCollectionViewLayout */,
 				3BDB6F2A289928E40023D5E3 /* MNTransitionAnimator */,
 				3BDB6F35289928E40023D5E3 /* controller */,
 				3BDB6F40289928E40023D5E3 /* HTTPRequest */,
@@ -622,6 +621,7 @@
 		3BDB6F9C28992DFA0023D5E3 /* units */ = {
 			isa = PBXGroup;
 			children = (
+				3BDB6F26289928E40023D5E3 /* MNCollectionViewLayout */,
 				3BDB6F9D28992DFA0023D5E3 /* MNSecureView */,
 				3BDB6FA128992DFA0023D5E3 /* MNAdsorbHeader.swift */,
 				3BDB6FA228992DFA0023D5E3 /* MNScanner.swift */,

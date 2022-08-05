@@ -30,7 +30,8 @@ class MNNavigationController: UINavigationController {
         // 隐藏系统导航栏
         navigationBar.isHidden = true
         // 设置转场代理
-        MNTransitionDelegate().using(to: self)
+        delegate = self
+        transitionDelegate = MNTransitionDelegate()
     }
     
     override func didMove(toParent parent: UIViewController?) {

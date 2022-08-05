@@ -48,18 +48,39 @@ extension String {
 
 // MARK: - 计算尺寸
 extension String {
-    // 计算尺寸
+    
+    /// 计算文本尺寸
+    /// - Parameter font: 字体
+    /// - Returns: 尺寸
     func size(font: UIFont) -> CGSize {
-        return String.size(self, font: font)
+        return (self as NSString).size(withAttributes: [.font:font])
     }
-    static func size(_ string: String?, font: UIFont) -> CGSize {
-        guard let text = string else { return .zero }
-        guard text.count > 0 else { return CGSize(width: 0.0, height: font.pointSize) }
-        return (text as NSString).size(withAttributes: [.font:font])
+    
+    /// 计算文本尺寸
+    /// - Parameters:
+    ///   - font: 字体
+    ///   - bounding: 尺寸范围
+    /// - Returns: 文本尺寸
+    func size(font: UIFont, bounding: CGSize) -> CGSize {
+        return (self as NSString).boundingRect(with:bounding , options: [.usesFontLeading, .usesLineFragmentOrigin], attributes: [.font: font], context: nil).size
     }
-    static func size(_ string: String?, font: UIFont, bounding: CGSize) -> CGSize {
-        guard let text = string, bounding != .zero else { return .zero }
-        return (text as NSString).boundingRect(with:bounding , options: [.usesFontLeading, .usesLineFragmentOrigin], attributes: [.font: font], context: nil).size
+    
+    /// 计算文本尺寸
+    /// - Parameters:
+    ///   - font: 字体
+    ///   - width: 最大宽度
+    /// - Returns: 文本尺寸
+    func size(font: UIFont, width: CGFloat) -> CGSize {
+        return size(font: font, bounding: CGSize(width: width, height: CGFloat.greatestFiniteMagnitude))
+    }
+    
+    /// 计算文本尺寸
+    /// - Parameters:
+    ///   - font: 字体
+    ///   - height: 最大高度
+    /// - Returns: 文本尺寸
+    func size(font: UIFont, height: CGFloat) -> CGSize {
+        return size(font: font, bounding: CGSize(width: CGFloat.greatestFiniteMagnitude, height: height))
     }
 }
 

@@ -86,15 +86,3 @@ extension UIViewController {
     // 定制出栈动画
     @objc var leaveTransitionAnimator: MNTransitionAnimator? { nil }
 }
-
-extension UINavigationController {
-    private struct TransitionKey {
-        static var transitionDelegate = "com.mn.navigation.transition.delegate.key"
-    }
-    
-    /**保存标签栏*/
-    var transitionDelegate: MNTransitionDelegate? {
-        get { return objc_getAssociatedObject(self, &TransitionKey.transitionDelegate) as? MNTransitionDelegate }
-        set { objc_setAssociatedObject(self, &TransitionKey.transitionDelegate, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
-    }
-}
