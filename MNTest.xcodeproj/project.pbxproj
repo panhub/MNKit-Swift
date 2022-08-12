@@ -195,6 +195,8 @@
 		3BDB707F28992DFA0023D5E3 /* MNPathUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB701328992DFA0023D5E3 /* MNPathUtilities.swift */; };
 		3BDB708028992DFA0023D5E3 /* String+MNEncrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB701428992DFA0023D5E3 /* String+MNEncrypt.swift */; };
 		3BDB708128992DFA0023D5E3 /* Data+MNImageFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB701528992DFA0023D5E3 /* Data+MNImageFormat.swift */; };
+		3BDEA3A828A6C90000538C48 /* UITableView+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDEA3A728A6C90000538C48 /* UITableView+MNExtension.swift */; };
+		3BDEA3AA28A6C94400538C48 /* UICollectionView+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDEA3A928A6C94400538C48 /* UICollectionView+MNExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -388,6 +390,8 @@
 		3BDB701328992DFA0023D5E3 /* MNPathUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNPathUtilities.swift; sourceTree = "<group>"; };
 		3BDB701428992DFA0023D5E3 /* String+MNEncrypt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+MNEncrypt.swift"; sourceTree = "<group>"; };
 		3BDB701528992DFA0023D5E3 /* Data+MNImageFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+MNImageFormat.swift"; sourceTree = "<group>"; };
+		3BDEA3A728A6C90000538C48 /* UITableView+MNExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+MNExtension.swift"; sourceTree = "<group>"; };
+		3BDEA3A928A6C94400538C48 /* UICollectionView+MNExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+MNExtension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -815,6 +819,8 @@
 				3BDB700328992DFA0023D5E3 /* UINavigationController+MNExtension.swift */,
 				3BDB700428992DFA0023D5E3 /* UIBezierPath+MNExtension.swift */,
 				3BDB700528992DFA0023D5E3 /* UIWindow+MNExtension.swift */,
+				3BDEA3A728A6C90000538C48 /* UITableView+MNExtension.swift */,
+				3BDEA3A928A6C94400538C48 /* UICollectionView+MNExtension.swift */,
 			);
 			path = UIHelper;
 			sourceTree = "<group>";
@@ -1000,6 +1006,7 @@
 				3BDB6F95289928E40023D5E3 /* MNTabBar.swift in Sources */,
 				3BDB701628992DFA0023D5E3 /* MNSecureLabel.swift in Sources */,
 				3BDB707828992DFA0023D5E3 /* CALayer+MNExtension.swift in Sources */,
+				3BDEA3A828A6C90000538C48 /* UITableView+MNExtension.swift in Sources */,
 				3BDB6F84289928E40023D5E3 /* MNWebResponder.swift in Sources */,
 				3BDB705D28992DFA0023D5E3 /* MNAssetExportSession.swift in Sources */,
 				3BDB706428992DFA0023D5E3 /* String+MNSubscript.swift in Sources */,
@@ -1047,6 +1054,7 @@
 				3BDB704128992DFA0023D5E3 /* MNPHError.swift in Sources */,
 				3BDB6F82289928E40023D5E3 /* MNNavigationController.swift in Sources */,
 				3BDB6F85289928E40023D5E3 /* MNListViewController.swift in Sources */,
+				3BDEA3AA28A6C94400538C48 /* UICollectionView+MNExtension.swift in Sources */,
 				3BDB703128992DFA0023D5E3 /* UIScrollView+MNSubpageAssociated.swift in Sources */,
 				3BDB707028992DFA0023D5E3 /* UIDevice+MNExtension.swift in Sources */,
 				3BDB704C28992DFA0023D5E3 /* MNAssetIndexLabel.swift in Sources */,

@@ -10,7 +10,7 @@ import Foundation
 /**询问下载位置回调*/
 public typealias HTTPRequestLocationHandler = HTTPSessionLocationHandler
 
-public class HTTPDownloadRequest: HTTPRequest {
+@objc public class HTTPDownloadRequest: HTTPRequest {
     /**
      断点下载使用;
      不是下载数据本身, 而是已经下载好的数据相关信息;
@@ -30,7 +30,7 @@ public class HTTPDownloadRequest: HTTPRequest {
         allowsCancelCallback = false
     }
     
-    convenience init(url: String) {
+    @objc convenience init(url: String) {
         self.init()
         self.url = url
     }

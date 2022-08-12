@@ -113,7 +113,8 @@ public extension Bundle {
         if path == nil, name.contains("@") == false {
             var scale: Int = 3
             while scale > 0 {
-                if let result = self.path(forResource: "\(name)@\(scale)x", ofType: ext, inDirectory: subpath) {
+                let s: String = scale > 1 ? "@\(scale)x" : ""
+                if let result = self.path(forResource: name + s, ofType: ext, inDirectory: subpath) {
                     path = result
                     break
                 }

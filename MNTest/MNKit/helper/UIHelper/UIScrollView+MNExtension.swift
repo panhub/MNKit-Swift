@@ -8,15 +8,6 @@
 import UIKit
 import Foundation
 
-public extension UIScrollView {
-    /**调整滚动视图的行为*/
-    func neverAdjustmentBehavior() {
-        if #available(iOS 11.0, *) {
-            contentInsetAdjustmentBehavior = .never;
-        }
-    }
-}
-
 // MARK: - 滑动至边缘
 public extension UIScrollView {
     

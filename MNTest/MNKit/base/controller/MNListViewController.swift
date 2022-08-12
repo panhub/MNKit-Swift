@@ -37,7 +37,7 @@ import UIKit
     }
     /**瀑布流*/
     @objc lazy var collectionView: UICollectionView = {
-        let collectionView = customizedCollectionView()// UICollectionView.collection(frame: contentView.bounds, layout: collectionViewLayout)
+        let collectionView = collectionListView
         collectionView.delegate = self
         collectionView.dataSource = self
         insertRefreshHeader(to: collectionView)
@@ -46,7 +46,7 @@ import UIKit
     }()
     /**表*/
     @objc lazy var tableView: UITableView = {
-        let tableView = customizedTableView()//UITableView.table(frame: contentView.bounds, style: tableStyle)
+        let tableView = tableListView
         tableView.delegate = self
         tableView.dataSource = self
         insertRefreshHeader(to: tableView)
@@ -116,16 +116,39 @@ import UIKit
         super.finish(request: request)
     }
     
-    /// 适配项目
-    /// - Returns: 定制表格控件
-    func customizedTableView() -> UITableView {
-        return UITableView(frame: contentView.bounds, tableStyle: tableStyle)
+    /// 定制表格
+    @objc var tableListView: UITableView {
+        let tableView = UITableView(frame: contentView.bounds, style: tableStyle)
+        tableView.showsVerticalScrollIndicator = false
+        tableView.showsHorizontalScrollIndicator = false
+        tableView.backgroundColor = .white
+        tableView.keyboardDismissMode = .onDrag
+        tableView.separatorStyle = .singleLine
+        tableView.tableHeaderView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 0.0, height: CGFloat.leastNormalMagnitude))
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 0.0, height: CGFloat.leastNormalMagnitude))
+        tableView.estimatedRowHeight = 0.0
+        tableView.estimatedSectionHeaderHeight = 0.0
+        tableView.estimatedSectionFooterHeight = 0.0
+        tableView.layoutMargins = .zero
+        tableView.separatorInset = .zero
+        if #available(iOS 11.0, *) {
+            tableView.contentInsetAdjustmentBehavior = .never;
+        }
+        if #available(iOS 15.0, *) {
+            tableView.sectionHeaderTopPadding = 0.0
+        }
+        return tableView
     }
     
-    /// 适配项目
-    /// - Returns: 定制表格控件
-    func customizedCollectionView() -> UICollectionView {
-        return UICollectionView(frame: contentView.bounds, layout: collectionViewLayout)
+    /// 定制集合视图
+    @objc var collectionListView: UICollectionView {
+        let collectionView = UICollectionView(frame: contentView.bounds, collectionViewLayout: collectionViewLayout)
+        collectionView.backgroundColor = UIColor.white
+        collectionView.keyboardDismissMode = .onDrag
+        if #available(iOS 11.0, *) {
+            collectionView.contentInsetAdjustmentBehavior = .never;
+        }
+        return collectionView
     }
 }
 

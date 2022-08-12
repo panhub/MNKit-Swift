@@ -10,7 +10,7 @@ import Foundation
 /**询问上传数据回调*/
 public typealias HTTPRequestBodyHandler = HTTPSessionBodyHandler
 
-public class HTTPUploadRequest: HTTPRequest {
+@objc public class HTTPUploadRequest: HTTPRequest {
     /**上传请求的文件内容边界*/
     @objc public var boundary: String?
     /**询问下载位置回调*/
@@ -20,7 +20,7 @@ public class HTTPUploadRequest: HTTPRequest {
     /**请求产生的Task*/
     @objc public var uploadTask: URLSessionUploadTask? { task as? URLSessionUploadTask }
     
-    convenience init(url: String) {
+    @objc convenience init(url: String) {
         self.init()
         self.url = url
     }

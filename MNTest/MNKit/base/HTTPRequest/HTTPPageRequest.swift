@@ -7,41 +7,41 @@
 
 import Foundation
 
-public class HTTPPageRequest: HTTPDataRequest {
+@objc public class HTTPPageRequest: HTTPDataRequest {
     /**数据源*/
-    public var dataArray: [Any] = [Any]()
+    @objc public var dataArray: [Any] = [Any]()
     /**是否还有更多数据*/
-    public var hasMore: Bool = false
+    @objc public var hasMore: Bool = false
     /**页数*/
-    public var page: Int = 1
+    @objc public var page: Int = 1
     /**是否允许分页*/
-    public var isPagingEnabled: Bool = false
+    @objc public var isPagingEnabled: Bool = false
     /**是否空数据*/
-    public var isEmpty: Bool { dataArray.count <= 0 }
+    @objc public var isEmpty: Bool { dataArray.count <= 0 }
     
     /**处理POST数据体*/
-    public func handBody() {}
+    @objc public func handBody() {}
     
     /**处理请求参数*/
-    public func handQuery() {}
+    @objc public func handQuery() {}
     
     /**处理请求头*/
-    public func handHeaderField() {}
+    @objc public func handHeaderField() {}
     
     /**即将刷新数据*/
-    public func prepareReload() {
+    @objc public func prepareReload() {
         if isPagingEnabled {
             page = 1
         }
     }
     
     /**清理缓存*/
-    public func cleanCache() {
+    @objc public func cleanCache() {
         dataArray.removeAll()
     }
     
     /**处理成功*/
-    public override func succeed(responseObject: Any) {
+    @objc public override func succeed(responseObject: Any) {
         if isPagingEnabled {
             if page == 1 {
                 cleanCache()

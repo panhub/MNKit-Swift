@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class HTTPDataRequest: HTTPRequest {
+@objc public class HTTPDataRequest: HTTPRequest {
     /**数据来源*/
     @objc public enum DataSource: Int {
         case network // 网络数据

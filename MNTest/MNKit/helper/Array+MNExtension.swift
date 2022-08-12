@@ -19,15 +19,6 @@ extension Array {
             guard stop == false else { break }
         }
     }
-    
-//    mutating func remove(_ element: Element) {
-//        guard count > 0 else { return }
-//        while true {
-//            if let index = firstIndex(where: element) {
-//                
-//            }
-//        }
-//    }
 }
 
 /// 删除数组内重复元素
@@ -41,5 +32,21 @@ extension Array where Element: Equatable {
         let result: [Element] = removeSameElement()
         removeAll()
         append(contentsOf: result)
+    }
+}
+
+/// 删除数组内重复元素
+extension Array where Element: NSObject {
+    
+    func makeObjectsPerform(_ aSelector: Selector, with anArgument: Any? = nil) {
+        if let arg = anArgument {
+            for element in self {
+                let _ = element.perform(aSelector, with: arg)
+            }
+        } else {
+            for element in self {
+                let _ = element.perform(aSelector)
+            }
+        }
     }
 }
