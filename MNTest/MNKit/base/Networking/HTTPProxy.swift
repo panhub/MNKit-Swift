@@ -16,7 +16,7 @@ public class HTTPProxy: NSObject {
     /**结束队列*/
     public weak var queue: DispatchQueue?
     /**序列化*/
-    public var parser: HTTPResponseParser?
+    public var parser: HTTPParser?
     /**上传进度*/
     public var uploadProgress: Progress = Progress(parent: nil, userInfo: nil)
     /**下载进度*/
@@ -105,7 +105,7 @@ public extension HTTPProxy {
         self.data = nil
         HTTPProxy.SerializationQueue.async {
             var result: Any?
-            let parser = self.parser ?? HTTPResponseParser.parser
+            let parser = self.parser ?? HTTPParser.parser
             do {
                 result = try parser.parse(response: task.response, data: data, error: error)
             } catch {
@@ -167,7 +167,7 @@ public extension HTTPProxy {
         }
         
         // 检查文件
-        let parser = self.parser ?? HTTPResponseParser.parser
+        let parser = self.parser ?? HTTPParser.parser
         if parser.downloadOptions.contains(.removeExistsFile) {
             // 文件存在则删除
             if FileManager.default.fileExists(atPath: fileURL.path) {

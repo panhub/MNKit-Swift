@@ -95,10 +95,10 @@ public extension HTTPSession {
 
 // MARK: - dataTask
 public extension HTTPSession {
-    func dataTask(with url: String, method: HTTPMethod, serializer: HTTPRequestSerializer? = nil, parser:HTTPResponseParser? = nil, progress: HTTPSessionProgressHandler? = nil, completion: @escaping HTTPSessionCompletionHandler) -> URLSessionDataTask? {
+    func dataTask(with url: String, method: HTTPMethod, serializer: HTTPSerializer? = nil, parser:HTTPParser? = nil, progress: HTTPSessionProgressHandler? = nil, completion: @escaping HTTPSessionCompletionHandler) -> URLSessionDataTask? {
         let request: URLRequest?
         do {
-            request = try (serializer ?? HTTPRequestSerializer.serializer).request(url, method)
+            request = try (serializer ?? HTTPSerializer.serializer).request(url, method)
         } catch {
             let httpError: HTTPError = error.httpError ?? .custom(code: (error as NSError).code, msg: error.localizedDescription)
             (queue ?? DispatchQueue.main).async {
@@ -118,7 +118,7 @@ public extension HTTPSession {
 
 // MARK: - downloadTask
 public extension HTTPSession {
-    func downloadTask(with url: String, serializer: HTTPRequestSerializer? = nil, parser:HTTPResponseParser? = nil, location: @escaping HTTPSessionLocationHandler, progress: HTTPSessionProgressHandler? = nil, completion: @escaping HTTPSessionCompletionHandler) -> URLSessionDownloadTask? {
+    func downloadTask(with url: String, serializer: HTTPSerializer? = nil, parser:HTTPParser? = nil, location: @escaping HTTPSessionLocationHandler, progress: HTTPSessionProgressHandler? = nil, completion: @escaping HTTPSessionCompletionHandler) -> URLSessionDownloadTask? {
         // 判断是否需要下载文件
         if let _ = parser, parser!.downloadOptions.contains(.removeExistsFile) == false {
             let fileURL = location(nil, nil)
@@ -132,7 +132,7 @@ public extension HTTPSession {
         // 初始化下载请求
         let request: URLRequest?
         do {
-            request = try (serializer ?? HTTPRequestSerializer.serializer).request(url, .get)
+            request = try (serializer ?? HTTPSerializer.serializer).request(url, .get)
         } catch {
             let httpError: HTTPError = error.httpError ?? .custom(code: (error as NSError).code, msg: error.localizedDescription)
             (queue ?? DispatchQueue.main).async {
@@ -149,7 +149,7 @@ public extension HTTPSession {
         return downloadTask
     }
     
-    func downloadTask(with resumeData: Data, parser: HTTPResponseParser? = nil, location: @escaping HTTPSessionLocationHandler, progress: HTTPSessionProgressHandler? = nil, completion: @escaping HTTPSessionCompletionHandler) -> URLSessionDownloadTask? {
+    func downloadTask(with resumeData: Data, parser: HTTPParser? = nil, location: @escaping HTTPSessionLocationHandler, progress: HTTPSessionProgressHandler? = nil, completion: @escaping HTTPSessionCompletionHandler) -> URLSessionDownloadTask? {
         var downloadTask: URLSessionDownloadTask?
         HTTPSession.Queue.sync {
             downloadTask = self.session.downloadTask(withResumeData: resumeData)
@@ -162,11 +162,11 @@ public extension HTTPSession {
 
 // MARK: - uploadTask
 public extension HTTPSession {
-    func uploadTask(with url: String, serializer: HTTPRequestSerializer? = nil, parser:HTTPResponseParser? = nil, body: HTTPSessionBodyHandler, progress: HTTPSessionProgressHandler? = nil, completion: @escaping HTTPSessionCompletionHandler) -> URLSessionUploadTask? {
+    func uploadTask(with url: String, serializer: HTTPSerializer? = nil, parser:HTTPParser? = nil, body: HTTPSessionBodyHandler, progress: HTTPSessionProgressHandler? = nil, completion: @escaping HTTPSessionCompletionHandler) -> URLSessionUploadTask? {
         // 创建请求
         let request: URLRequest?
         do {
-            request = try (serializer ?? HTTPRequestSerializer.serializer).request(url, .post)
+            request = try (serializer ?? HTTPSerializer.serializer).request(url, .post)
         } catch {
             let httpError: HTTPError = error.httpError ?? .custom(code: (error as NSError).code, msg: error.localizedDescription)
             (queue ?? DispatchQueue.main).async {
@@ -204,7 +204,7 @@ public extension HTTPSession {
 
 // MARK: - 保存代理
 fileprivate extension HTTPSession {
-    func setProxy(task: URLSessionTask, parser: HTTPResponseParser? = nil, location: HTTPSessionLocationHandler? = nil, upload: HTTPSessionProgressHandler? = nil, download: HTTPSessionProgressHandler? = nil, completion: HTTPSessionCompletionHandler? = nil) -> Void {
+    func setProxy(task: URLSessionTask, parser: HTTPParser? = nil, location: HTTPSessionLocationHandler? = nil, upload: HTTPSessionProgressHandler? = nil, download: HTTPSessionProgressHandler? = nil, completion: HTTPSessionCompletionHandler? = nil) -> Void {
         let proxy = HTTPProxy(task: task)
         proxy.queue = queue
         proxy.parser = parser

@@ -20,7 +20,7 @@ public class HTTPDownloadRequest: HTTPRequest {
     /**询问下载位置回调 可能会回调两次 下载前检查文件是否存在*/
     public var locationHandler: HTTPRequestLocationHandler?
     /**下载选项*/
-    public var downloadOptions: HTTPResponseParser.DownloadOptions = [.createIntermediateDirectories, .removeExistsFile]
+    public var downloadOptions: HTTPParser.DownloadOptions = [.createIntermediateDirectories, .removeExistsFile]
     /**请求产生的Task*/
     @objc public var downloadTask: URLSessionDownloadTask? { task as? URLSessionDownloadTask }
     

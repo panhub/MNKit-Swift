@@ -56,6 +56,8 @@ fileprivate func MNQueryPairExtract(_ item: [String: Any]) -> [MNQueryPair]? {
             pair.value = (value as! NSNumber).stringValue
         } else if #available(iOS 14.0, *), value is Float16 {
             pair.value = "\(value)"
+        } else if let data = try?JSONSerialization.data(withJSONObject: value), let string = String(data: data, encoding: .utf8) {
+            pair.value = string
         }
         pairs.append(pair)
     }

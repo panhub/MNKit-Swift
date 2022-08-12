@@ -219,8 +219,8 @@ private extension HTTPManager {
 
 // MARK: - 序列化
 private extension HTTPManager {
-    func serializer(_ request: HTTPRequest) -> HTTPRequestSerializer {
-        let serializer = HTTPRequestSerializer()
+    func serializer(_ request: HTTPRequest) -> HTTPSerializer {
+        let serializer = HTTPSerializer()
         serializer.query = request.query
         serializer.authField = request.authField
         serializer.headerFields = request.headerFields
@@ -233,8 +233,8 @@ private extension HTTPManager {
         return serializer
     }
     
-    func parser(_ request: HTTPRequest) -> HTTPResponseParser {
-        let parser = HTTPResponseParser()
+    func parser(_ request: HTTPRequest) -> HTTPParser {
+        let parser = HTTPParser()
         parser.jsonReadingOptions = request.jsonReadingOptions
         parser.acceptableStatusCodes = request.acceptableStatusCodes
         parser.stringEncoding = request.stringReadingEncoding

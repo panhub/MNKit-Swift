@@ -36,8 +36,8 @@
 		3BDB6F64289928E40023D5E3 /* MNRefreshNormalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F17289928E40023D5E3 /* MNRefreshNormalHeader.swift */; };
 		3BDB6F65289928E40023D5E3 /* MNActivityIndicatorView.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3BDB6F19289928E40023D5E3 /* MNActivityIndicatorView.bundle */; };
 		3BDB6F66289928E40023D5E3 /* MNActivityIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F1A289928E40023D5E3 /* MNActivityIndicatorView.swift */; };
-		3BDB6F67289928E40023D5E3 /* HTTPRequestSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F1C289928E40023D5E3 /* HTTPRequestSerializer.swift */; };
-		3BDB6F68289928E40023D5E3 /* HTTPResponseParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F1D289928E40023D5E3 /* HTTPResponseParser.swift */; };
+		3BDB6F67289928E40023D5E3 /* HTTPSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F1C289928E40023D5E3 /* HTTPSerializer.swift */; };
+		3BDB6F68289928E40023D5E3 /* HTTPParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F1D289928E40023D5E3 /* HTTPParser.swift */; };
 		3BDB6F69289928E40023D5E3 /* HTTPSecurityPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F1E289928E40023D5E3 /* HTTPSecurityPolicy.swift */; };
 		3BDB6F6A289928E40023D5E3 /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F1F289928E40023D5E3 /* HTTPMethod.swift */; };
 		3BDB6F6B289928E40023D5E3 /* HTTPProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F20289928E40023D5E3 /* HTTPProxy.swift */; };
@@ -45,7 +45,7 @@
 		3BDB6F6D289928E40023D5E3 /* HTTPQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F22289928E40023D5E3 /* HTTPQuery.swift */; };
 		3BDB6F6E289928E40023D5E3 /* NetworkReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F23289928E40023D5E3 /* NetworkReachability.swift */; };
 		3BDB6F6F289928E40023D5E3 /* HTTPSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F24289928E40023D5E3 /* HTTPSession.swift */; };
-		3BDB6F70289928E40023D5E3 /* MNUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F25289928E40023D5E3 /* MNUserDefaults.swift */; };
+		3BDB6F70289928E40023D5E3 /* UserDefaultsWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F25289928E40023D5E3 /* UserDefaultsWrapper.swift */; };
 		3BDB6F71289928E40023D5E3 /* MNCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F27289928E40023D5E3 /* MNCollectionViewFlowLayout.swift */; };
 		3BDB6F72289928E40023D5E3 /* MNCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F28289928E40023D5E3 /* MNCollectionViewLayout.swift */; };
 		3BDB6F73289928E40023D5E3 /* MNCollectionViewLabelLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F29289928E40023D5E3 /* MNCollectionViewLabelLayout.swift */; };
@@ -229,8 +229,8 @@
 		3BDB6F17289928E40023D5E3 /* MNRefreshNormalHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNRefreshNormalHeader.swift; sourceTree = "<group>"; };
 		3BDB6F19289928E40023D5E3 /* MNActivityIndicatorView.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MNActivityIndicatorView.bundle; sourceTree = "<group>"; };
 		3BDB6F1A289928E40023D5E3 /* MNActivityIndicatorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNActivityIndicatorView.swift; sourceTree = "<group>"; };
-		3BDB6F1C289928E40023D5E3 /* HTTPRequestSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPRequestSerializer.swift; sourceTree = "<group>"; };
-		3BDB6F1D289928E40023D5E3 /* HTTPResponseParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPResponseParser.swift; sourceTree = "<group>"; };
+		3BDB6F1C289928E40023D5E3 /* HTTPSerializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPSerializer.swift; sourceTree = "<group>"; };
+		3BDB6F1D289928E40023D5E3 /* HTTPParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPParser.swift; sourceTree = "<group>"; };
 		3BDB6F1E289928E40023D5E3 /* HTTPSecurityPolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPSecurityPolicy.swift; sourceTree = "<group>"; };
 		3BDB6F1F289928E40023D5E3 /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		3BDB6F20289928E40023D5E3 /* HTTPProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPProxy.swift; sourceTree = "<group>"; };
@@ -238,7 +238,7 @@
 		3BDB6F22289928E40023D5E3 /* HTTPQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPQuery.swift; sourceTree = "<group>"; };
 		3BDB6F23289928E40023D5E3 /* NetworkReachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkReachability.swift; sourceTree = "<group>"; };
 		3BDB6F24289928E40023D5E3 /* HTTPSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPSession.swift; sourceTree = "<group>"; };
-		3BDB6F25289928E40023D5E3 /* MNUserDefaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNUserDefaults.swift; sourceTree = "<group>"; };
+		3BDB6F25289928E40023D5E3 /* UserDefaultsWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsWrapper.swift; sourceTree = "<group>"; };
 		3BDB6F27289928E40023D5E3 /* MNCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		3BDB6F28289928E40023D5E3 /* MNCollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNCollectionViewLayout.swift; sourceTree = "<group>"; };
 		3BDB6F29289928E40023D5E3 /* MNCollectionViewLabelLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNCollectionViewLabelLayout.swift; sourceTree = "<group>"; };
@@ -455,7 +455,7 @@
 		3BDB6F00289928E40023D5E3 /* base */ = {
 			isa = PBXGroup;
 			children = (
-				3BDB6F25289928E40023D5E3 /* MNUserDefaults.swift */,
+				3BDB6F25289928E40023D5E3 /* UserDefaultsWrapper.swift */,
 				3BDB6F4B289928E40023D5E3 /* CALayer+MNLayout.swift */,
 				3BDB6F51289928E40023D5E3 /* UIView+MNLayout.swift */,
 				3BDB6F36289928E40023D5E3 /* UIViewController+MNInterface.swift */,
@@ -533,8 +533,8 @@
 		3BDB6F1B289928E40023D5E3 /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				3BDB6F1C289928E40023D5E3 /* HTTPRequestSerializer.swift */,
-				3BDB6F1D289928E40023D5E3 /* HTTPResponseParser.swift */,
+				3BDB6F1C289928E40023D5E3 /* HTTPSerializer.swift */,
+				3BDB6F1D289928E40023D5E3 /* HTTPParser.swift */,
 				3BDB6F1E289928E40023D5E3 /* HTTPSecurityPolicy.swift */,
 				3BDB6F1F289928E40023D5E3 /* HTTPMethod.swift */,
 				3BDB6F20289928E40023D5E3 /* HTTPProxy.swift */,
@@ -982,8 +982,8 @@
 				3BDB703E28992DFA0023D5E3 /* MNAssetHelper.swift in Sources */,
 				3BDB702E28992DFA0023D5E3 /* MNPageController.swift in Sources */,
 				3BDB706328992DFA0023D5E3 /* Array+MNExtension.swift in Sources */,
-				3BDB6F70289928E40023D5E3 /* MNUserDefaults.swift in Sources */,
-				3BDB6F67289928E40023D5E3 /* HTTPRequestSerializer.swift in Sources */,
+				3BDB6F70289928E40023D5E3 /* UserDefaultsWrapper.swift in Sources */,
+				3BDB6F67289928E40023D5E3 /* HTTPSerializer.swift in Sources */,
 				3BDB705328992DFA0023D5E3 /* MNAssetPickerToolBar.swift in Sources */,
 				3BDB706228992DFA0023D5E3 /* CGSize+MNExtension.swift in Sources */,
 				3BDB6F7C289928E40023D5E3 /* MNTransitionHelper.swift in Sources */,
@@ -1076,7 +1076,7 @@
 				3BDB702628992DFA0023D5E3 /* AVCaptureDevice+MNFormat.swift in Sources */,
 				3BDB705428992DFA0023D5E3 /* MNAssetPickerOptions.swift in Sources */,
 				3BDB707528992DFA0023D5E3 /* Double+MNExtension.swift in Sources */,
-				3BDB6F68289928E40023D5E3 /* HTTPResponseParser.swift in Sources */,
+				3BDB6F68289928E40023D5E3 /* HTTPParser.swift in Sources */,
 				3BDB704828992DFA0023D5E3 /* MNAssetBrowser.swift in Sources */,
 				3BDB6F6A289928E40023D5E3 /* HTTPMethod.swift in Sources */,
 				3BDB707328992DFA0023D5E3 /* UIWindow+MNExtension.swift in Sources */,

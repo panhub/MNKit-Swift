@@ -45,7 +45,7 @@ public typealias HTTPRequestProgressHandler = HTTPSessionProgressHandler
     /**JSON格式编码选项*/
     @objc public var jsonReadingOptions: JSONSerialization.ReadingOptions = []
     /**数据解析方式*/
-    @objc public var serializationType: HTTPResponseParser.SerializationType = .json
+    @objc public var serializationType: HTTPParser.SerializationType = .json
     
     /**请求产生的Task*/
     @objc public var task: URLSessionTask?

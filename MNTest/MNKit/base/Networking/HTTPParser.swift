@@ -1,5 +1,5 @@
 //
-//  HTTPResponseParser.swift
+//  HTTPParser.swift
 //  MNFoundation
 //
 //  Created by 冯盼 on 2021/7/27.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class HTTPResponseParser {
+public class HTTPParser {
     /**数据解析类型*/
     @objc public enum SerializationType: Int {
         case none
@@ -39,7 +39,7 @@ public class HTTPResponseParser {
     /**数据解析方式*/
     public var serializationType: SerializationType = .json
     /**快速获取实例*/
-    public static let parser: HTTPResponseParser = HTTPResponseParser()
+    public static let parser: HTTPParser = HTTPParser()
     /**下载选项*/
     public var downloadOptions: DownloadOptions = [.createIntermediateDirectories, .removeExistsFile]
     /**接受的响应数据类型*/
@@ -140,7 +140,7 @@ public class HTTPResponseParser {
 }
 
 // MARK: - 数据解析
-private extension HTTPResponseParser {
+private extension HTTPParser {
     
     func json(_ data: Data) throws -> Any {
         

@@ -1,5 +1,5 @@
 //
-//  HTTPRequestSerializer.swift
+//  HTTPSerializer.swift
 //  MNFoundation
 //
 //  Created by 冯盼 on 2021/7/19.
@@ -8,7 +8,7 @@
 import UIKit
 import Foundation
 
-public class HTTPRequestSerializer {
+public class HTTPSerializer {
     /** 是否允许使用蜂窝网络*/
     public var allowsCellularAccess: Bool = true
     /** 超时时长*/
@@ -30,7 +30,7 @@ public class HTTPRequestSerializer {
     /**服务端认证信息*/
     public var authField: [String: String]?
     /**快速获取实例*/
-    public static let serializer: HTTPRequestSerializer = HTTPRequestSerializer()
+    public static let serializer: HTTPSerializer = HTTPSerializer()
     
     public func request(_ url: String, _ method: HTTPMethod) throws -> URLRequest {
         // 检查链接
