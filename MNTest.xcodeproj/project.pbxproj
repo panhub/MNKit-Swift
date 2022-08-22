@@ -9,8 +9,11 @@
 /* Begin PBXBuildFile section */
 		3B5CE56428B35FC400527F55 /* MNTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56328B35FC400527F55 /* MNTableViewCell.swift */; };
 		3B5CE56628B3674A00527F55 /* UITableViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */; };
-		3B5CE56B28B36F5700527F55 /* UITableViewCellObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56A28B36F5700527F55 /* UITableViewCellObserver.swift */; };
-		3B5CE56D28B3837E00527F55 /* UITableViewCellPanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56C28B3837E00527F55 /* UITableViewCellPanDelegate.swift */; };
+		3B5CE56B28B36F5700527F55 /* UITableViewCellContentObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56A28B36F5700527F55 /* UITableViewCellContentObserver.swift */; };
+		3B5CE56D28B3837E00527F55 /* UITableViewCellRecognizerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56C28B3837E00527F55 /* UITableViewCellRecognizerDelegate.swift */; };
+		3BA6550428B3C48300BD54BA /* UITableView+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */; };
+		3BA6550628B3CE9300BD54BA /* UITableViewCellEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550528B3CE9300BD54BA /* UITableViewCellEditingView.swift */; };
+		3BA6550828B3CF3F00BD54BA /* UITableViewEditingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550728B3CF3F00BD54BA /* UITableViewEditingOptions.swift */; };
 		3BC67631289A1CDA00E57BA1 /* MNComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC67630289A1CDA00E57BA1 /* MNComponents.swift */; };
 		3BDB6D6328990C940023D5E3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6228990C940023D5E3 /* AppDelegate.swift */; };
 		3BDB6D6C28990C950023D5E3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6B28990C950023D5E3 /* Assets.xcassets */; };
@@ -206,8 +209,11 @@
 /* Begin PBXFileReference section */
 		3B5CE56328B35FC400527F55 /* MNTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTableViewCell.swift; sourceTree = "<group>"; };
 		3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+MNEditing.swift"; sourceTree = "<group>"; };
-		3B5CE56A28B36F5700527F55 /* UITableViewCellObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellObserver.swift; sourceTree = "<group>"; };
-		3B5CE56C28B3837E00527F55 /* UITableViewCellPanDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellPanDelegate.swift; sourceTree = "<group>"; };
+		3B5CE56A28B36F5700527F55 /* UITableViewCellContentObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellContentObserver.swift; sourceTree = "<group>"; };
+		3B5CE56C28B3837E00527F55 /* UITableViewCellRecognizerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellRecognizerDelegate.swift; sourceTree = "<group>"; };
+		3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+MNEditing.swift"; sourceTree = "<group>"; };
+		3BA6550528B3CE9300BD54BA /* UITableViewCellEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellEditingView.swift; sourceTree = "<group>"; };
+		3BA6550728B3CF3F00BD54BA /* UITableViewEditingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewEditingOptions.swift; sourceTree = "<group>"; };
 		3BC67630289A1CDA00E57BA1 /* MNComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNComponents.swift; sourceTree = "<group>"; };
 		3BDB6D5F28990C940023D5E3 /* MNTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MNTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BDB6D6228990C940023D5E3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -418,8 +424,11 @@
 			children = (
 				3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */,
 				3B5CE56328B35FC400527F55 /* MNTableViewCell.swift */,
-				3B5CE56A28B36F5700527F55 /* UITableViewCellObserver.swift */,
-				3B5CE56C28B3837E00527F55 /* UITableViewCellPanDelegate.swift */,
+				3B5CE56A28B36F5700527F55 /* UITableViewCellContentObserver.swift */,
+				3B5CE56C28B3837E00527F55 /* UITableViewCellRecognizerDelegate.swift */,
+				3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */,
+				3BA6550528B3CE9300BD54BA /* UITableViewCellEditingView.swift */,
+				3BA6550728B3CF3F00BD54BA /* UITableViewEditingOptions.swift */,
 			);
 			path = MNTableViewCell;
 			sourceTree = "<group>";
@@ -945,6 +954,7 @@
 				3BDB702928992DFA0023D5E3 /* MNPageProtocol.swift in Sources */,
 				3BDB706928992DFA0023D5E3 /* UIEdgeInsets+MNExtension.swift in Sources */,
 				3BDB6F5A289928E40023D5E3 /* MNToast.swift in Sources */,
+				3BA6550628B3CE9300BD54BA /* UITableViewCellEditingView.swift in Sources */,
 				3BDB6F75289928E40023D5E3 /* MNTransitionAnimator.swift in Sources */,
 				3BDB705728992DFA0023D5E3 /* MNAssetExporter.swift in Sources */,
 				3BDB6F79289928E40023D5E3 /* MNPortalAnimator.swift in Sources */,
@@ -953,7 +963,7 @@
 				3BDB703D28992DFA0023D5E3 /* PHLivePhoto+MNExportExtension.swift in Sources */,
 				3BDB705828992DFA0023D5E3 /* AVAsset+MNExport.swift in Sources */,
 				3BDB703828992DFA0023D5E3 /* MNAssetPickerController.swift in Sources */,
-				3B5CE56D28B3837E00527F55 /* UITableViewCellPanDelegate.swift in Sources */,
+				3B5CE56D28B3837E00527F55 /* UITableViewCellRecognizerDelegate.swift in Sources */,
 				3BDB6F72289928E40023D5E3 /* MNCollectionViewLayout.swift in Sources */,
 				3BDB6F8B289928E40023D5E3 /* HTTPPageRequest.swift in Sources */,
 				3BDB702828992DFA0023D5E3 /* QRCode.swift in Sources */,
@@ -961,7 +971,7 @@
 				3BDB6F59289928E40023D5E3 /* MNShapeToast.swift in Sources */,
 				3BDB705528992DFA0023D5E3 /* MNFileManager.swift in Sources */,
 				3BDB706628992DFA0023D5E3 /* UIView+MNExtension.swift in Sources */,
-				3B5CE56B28B36F5700527F55 /* UITableViewCellObserver.swift in Sources */,
+				3B5CE56B28B36F5700527F55 /* UITableViewCellContentObserver.swift in Sources */,
 				3BDB6F92289928E40023D5E3 /* CALayer+MNLayout.swift in Sources */,
 				3BDB6F7E289928E40023D5E3 /* UIViewController+MNInterface.swift in Sources */,
 				3BDB706C28992DFA0023D5E3 /* UIImage+MNExtension.swift in Sources */,
@@ -1015,6 +1025,7 @@
 				3BDB6F67289928E40023D5E3 /* HTTPSerializer.swift in Sources */,
 				3BDB705328992DFA0023D5E3 /* MNAssetPickerToolBar.swift in Sources */,
 				3BDB706228992DFA0023D5E3 /* CGSize+MNExtension.swift in Sources */,
+				3BA6550828B3CF3F00BD54BA /* UITableViewEditingOptions.swift in Sources */,
 				3BDB6F7C289928E40023D5E3 /* MNTransitionHelper.swift in Sources */,
 				3BDB705928992DFA0023D5E3 /* AVMutableComposition+MNExport.swift in Sources */,
 				3BDB702D28992DFA0023D5E3 /* MNPageViewController.swift in Sources */,
@@ -1050,6 +1061,7 @@
 				3BDB6F89289928E40023D5E3 /* HTTPUploadRequest.swift in Sources */,
 				3BDB6F76289928E40023D5E3 /* MNErectedAnimator.swift in Sources */,
 				3BDB6F5F289928E40023D5E3 /* MNRefreshAutoFooter.swift in Sources */,
+				3BA6550428B3C48300BD54BA /* UITableView+MNEditing.swift in Sources */,
 				3BDB6F53289928E40023D5E3 /* MNToastResource.swift in Sources */,
 				3BDB6F8C289928E40023D5E3 /* HTTPResult.swift in Sources */,
 				3BDB705C28992DFA0023D5E3 /* AVAssetTrack+MNExport.swift in Sources */,

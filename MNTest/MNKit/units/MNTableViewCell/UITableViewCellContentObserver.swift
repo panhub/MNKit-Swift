@@ -7,42 +7,33 @@
 
 import UIKit
 
-class UITableViewCellObserver: NSObject {
+class UITableViewCellContentObserver: NSObject {
+    
+    var action: Selector?
     
     weak var cell: UITableViewCell?
     
-    var keyPath: String = ""
-    
-    var options: NSKeyValueObservingOptions = .new
-    
-    private var action: Selector?
-    
-    private weak var target: NSObjectProtocol?
+    weak var target: NSObjectProtocol?
     
     override init() {
         super.init()
     }
     
-    convenience init(cell: UITableViewCell, keyPath: String, options: NSKeyValueObservingOptions = .new) {
+    convenience init(cell: UITableViewCell, target: NSObjectProtocol, action: Selector) {
         self.init()
         self.cell = cell
-        self.options = options
-        self.keyPath = keyPath
-        cell.contentView.addObserver(self, forKeyPath: keyPath, options: options, context: nil)
+        self.target = target
+        self.action = action
+        cell.contentView.addObserver(self, forKeyPath: "frame", options: .new, context: nil)
     }
     
     deinit {
         removeObserver()
     }
     
-    func addTarget(_ target: NSObjectProtocol, action: Selector) {
-        self.target = target
-        self.action = action
-    }
-    
     func removeObserver() {
         guard let cell = cell else { return }
-        cell.contentView.removeObserver(self, forKeyPath: keyPath)
+        cell.contentView.removeObserver(self, forKeyPath: "frame")
         self.cell = nil
         self.target = nil
         self.action = nil
