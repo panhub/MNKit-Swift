@@ -56,7 +56,7 @@ public class HTTPSecurityPolicy {
         return (certificates.count > 0 ? certificates : nil)
     }
     
-    public func evaluate(server trust: SecTrust, for domain: String? = nil) -> Bool {
+    public func evaluate(server trust: SecTrust, domain: String? = nil) -> Bool {
         //因为要验证域名, 所以必须不能是MNTrustModeNone或者添加到项目里的证书为0个
         if let _ = domain, isValidateDomainName, isAllowsInvalidCertificate, (mode == .none || (certificates?.count ?? 0) <= 0) { return false }
         // 定义验证策略
@@ -111,15 +111,13 @@ public class HTTPSecurityPolicy {
             if let trustedPublicKeys = MNPublicKeyTrustChainForServerTrust(trust) {
                 for key in trustedPublicKeys {
                     for key2 in publicKeys {
-                        guard MNPublicKeyIsEqualToKey(key, publicKey2: key2) else { continue }
+                        guard MNPublicKeyIsEqualToKey(key, key2) else { continue }
                         return true
                     }
                 }
             }
-        default:
-            return false
+        default: break
         }
-        
         return false
     }
 }
@@ -201,6 +199,6 @@ private func MNPublicKeyTrustChainForServerTrust(_ serverTrust: SecTrust) -> [Se
 }
 
 // 比较公钥
-private func MNPublicKeyIsEqualToKey(_ publicKey1: SecKey, publicKey2: SecKey) -> Bool {
+private func MNPublicKeyIsEqualToKey(_ publicKey1: SecKey, _ publicKey2: SecKey) -> Bool {
     return publicKey1 == publicKey2
 }

@@ -290,7 +290,7 @@ extension HTTPSession: URLSessionTaskDelegate {
         var credential: URLCredential?
         var disposition = URLSession.AuthChallengeDisposition.performDefaultHandling
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
-            if self.securityPolicy.evaluate(server: challenge.protectionSpace.serverTrust!, for: challenge.protectionSpace.host) {
+            if securityPolicy.evaluate(server: challenge.protectionSpace.serverTrust!, domain: challenge.protectionSpace.host) {
                 disposition = .useCredential
                 credential = URLCredential(trust: challenge.protectionSpace.serverTrust!)
             } else {
