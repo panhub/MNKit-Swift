@@ -6,6 +6,7 @@
 //  导航转场代理
 
 import UIKit
+import ObjectiveC.runtime
 
 extension UINavigationController {
     private struct TransitionKey {

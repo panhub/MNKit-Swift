@@ -86,6 +86,7 @@ class MNAssetBrowserCell: UICollectionViewCell {
         playButton.frame = CGRect(x: 0.0, y: 0.0, width: 40.0, height: 40.0)
         playButton.minX = 7.0
         playButton.midY = (toolBar.bounds.height - MN_TAB_SAFE_HEIGHT)/2.0
+        //playButton.configurationUpdateHandler
         playButton.adjustsImageWhenHighlighted = false
         playButton.setBackgroundImage(MNAssetPicker.image(named: "browser_play"), for: .normal)
         playButton.setBackgroundImage(MNAssetPicker.image(named: "browser_pause"), for: .selected)

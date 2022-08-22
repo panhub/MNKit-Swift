@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B5CE56428B35FC400527F55 /* MNTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56328B35FC400527F55 /* MNTableViewCell.swift */; };
+		3B5CE56628B3674A00527F55 /* UITableViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */; };
+		3B5CE56B28B36F5700527F55 /* UITableViewCellObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56A28B36F5700527F55 /* UITableViewCellObserver.swift */; };
+		3B5CE56D28B3837E00527F55 /* UITableViewCellPanDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56C28B3837E00527F55 /* UITableViewCellPanDelegate.swift */; };
 		3BC67631289A1CDA00E57BA1 /* MNComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC67630289A1CDA00E57BA1 /* MNComponents.swift */; };
 		3BDB6D6328990C940023D5E3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6228990C940023D5E3 /* AppDelegate.swift */; };
 		3BDB6D6C28990C950023D5E3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6B28990C950023D5E3 /* Assets.xcassets */; };
@@ -200,6 +204,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3B5CE56328B35FC400527F55 /* MNTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTableViewCell.swift; sourceTree = "<group>"; };
+		3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+MNEditing.swift"; sourceTree = "<group>"; };
+		3B5CE56A28B36F5700527F55 /* UITableViewCellObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellObserver.swift; sourceTree = "<group>"; };
+		3B5CE56C28B3837E00527F55 /* UITableViewCellPanDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellPanDelegate.swift; sourceTree = "<group>"; };
 		3BC67630289A1CDA00E57BA1 /* MNComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNComponents.swift; sourceTree = "<group>"; };
 		3BDB6D5F28990C940023D5E3 /* MNTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MNTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BDB6D6228990C940023D5E3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -405,6 +413,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3B5CE56728B36CFC00527F55 /* MNTableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */,
+				3B5CE56328B35FC400527F55 /* MNTableViewCell.swift */,
+				3B5CE56A28B36F5700527F55 /* UITableViewCellObserver.swift */,
+				3B5CE56C28B3837E00527F55 /* UITableViewCellPanDelegate.swift */,
+			);
+			path = MNTableViewCell;
+			sourceTree = "<group>";
+		};
 		3BDB6D5628990C940023D5E3 = {
 			isa = PBXGroup;
 			children = (
@@ -625,6 +644,7 @@
 		3BDB6F9C28992DFA0023D5E3 /* units */ = {
 			isa = PBXGroup;
 			children = (
+				3B5CE56728B36CFC00527F55 /* MNTableViewCell */,
 				3BDB6F26289928E40023D5E3 /* MNCollectionViewLayout */,
 				3BDB6F9D28992DFA0023D5E3 /* MNSecureView */,
 				3BDB6FA128992DFA0023D5E3 /* MNAdsorbHeader.swift */,
@@ -920,6 +940,7 @@
 				3BDB702328992DFA0023D5E3 /* MNCapturePhoto.swift in Sources */,
 				3BDB6F73289928E40023D5E3 /* MNCollectionViewLabelLayout.swift in Sources */,
 				3BDB702B28992DFA0023D5E3 /* MNPageScrollController.swift in Sources */,
+				3B5CE56428B35FC400527F55 /* MNTableViewCell.swift in Sources */,
 				3BDB6F87289928E40023D5E3 /* MNUserContentController.swift in Sources */,
 				3BDB702928992DFA0023D5E3 /* MNPageProtocol.swift in Sources */,
 				3BDB706928992DFA0023D5E3 /* UIEdgeInsets+MNExtension.swift in Sources */,
@@ -932,6 +953,7 @@
 				3BDB703D28992DFA0023D5E3 /* PHLivePhoto+MNExportExtension.swift in Sources */,
 				3BDB705828992DFA0023D5E3 /* AVAsset+MNExport.swift in Sources */,
 				3BDB703828992DFA0023D5E3 /* MNAssetPickerController.swift in Sources */,
+				3B5CE56D28B3837E00527F55 /* UITableViewCellPanDelegate.swift in Sources */,
 				3BDB6F72289928E40023D5E3 /* MNCollectionViewLayout.swift in Sources */,
 				3BDB6F8B289928E40023D5E3 /* HTTPPageRequest.swift in Sources */,
 				3BDB702828992DFA0023D5E3 /* QRCode.swift in Sources */,
@@ -939,6 +961,7 @@
 				3BDB6F59289928E40023D5E3 /* MNShapeToast.swift in Sources */,
 				3BDB705528992DFA0023D5E3 /* MNFileManager.swift in Sources */,
 				3BDB706628992DFA0023D5E3 /* UIView+MNExtension.swift in Sources */,
+				3B5CE56B28B36F5700527F55 /* UITableViewCellObserver.swift in Sources */,
 				3BDB6F92289928E40023D5E3 /* CALayer+MNLayout.swift in Sources */,
 				3BDB6F7E289928E40023D5E3 /* UIViewController+MNInterface.swift in Sources */,
 				3BDB706C28992DFA0023D5E3 /* UIImage+MNExtension.swift in Sources */,
@@ -1073,6 +1096,7 @@
 				3BDB6F91289928E40023D5E3 /* UIApplication+HTTPActivity.swift in Sources */,
 				3BDB706828992DFA0023D5E3 /* UIViewController+MNExtension.swift in Sources */,
 				3BDB6F78289928E40023D5E3 /* MNNormalAnimator.swift in Sources */,
+				3B5CE56628B3674A00527F55 /* UITableViewCell+MNEditing.swift in Sources */,
 				3BDB707428992DFA0023D5E3 /* FileManager+MNExtension.swift in Sources */,
 				3BDB6F5B289928E40023D5E3 /* MNInfoToast.swift in Sources */,
 				3BDB702A28992DFA0023D5E3 /* MNPageSegmentCell.swift in Sources */,
