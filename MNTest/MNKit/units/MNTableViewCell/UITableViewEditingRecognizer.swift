@@ -19,8 +19,13 @@ protocol UITableViewEditingRecognizerHandler: NSObjectProtocol {
 
 class UITableViewEditingRecognizer: UIPanGestureRecognizer {
     
+    /// 事件回调代理
     weak var handler: UITableViewEditingRecognizerHandler?
     
+    /// 实例化拖拽手势
+    /// - Parameters:
+    ///   - target: 响应者
+    ///   - action: 响应方法
     override init(target: Any?, action: Selector?) {
         super.init(target: target, action: action)
         self.delegate = self

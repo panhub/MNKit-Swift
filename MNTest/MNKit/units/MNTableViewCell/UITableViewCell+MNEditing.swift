@@ -41,7 +41,7 @@ extension UIGestureRecognizer {
     }
     
     /// 拖动手势标记
-    static let TableViewCellEditingLabel: String = "com.mn.recognizer.editing.label"
+    fileprivate static let TableViewCellEditingLabel: String = "com.mn.recognizer.editing.label"
     
     /// 记录标记
     var editingLabel: String {

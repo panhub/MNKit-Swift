@@ -12,7 +12,7 @@ import CoreGraphics
 // 定义导航按钮大小
 public let MN_NAV_ITEM_SIZE: CGFloat = 20.0
 // 定义导航按钮左右间距
-public let MN_NAV_ITEM_MARGIN: CGFloat = 18.0
+public let MN_NAV_ITEM_SPACING: CGFloat = 18.0
 
 // 导航条事件代理
 @objc public protocol MNNavigationBarDelegate: NSObjectProtocol {
@@ -54,7 +54,7 @@ public class MNNavigationBar: UIView {
                 (barItem as! UIControl).addTarget(self, action: #selector(leftBarItemTouchUpInside(_:)), for: UIControl.Event.touchUpInside)
             }
         }
-        barItem.minX = MN_NAV_ITEM_MARGIN
+        barItem.minX = MN_NAV_ITEM_SPACING
         var y = (height - UIApplication.StatusBarHeight - barItem.height)/2.0
         y = max(0.0, y)
         y += UIApplication.StatusBarHeight
@@ -76,7 +76,7 @@ public class MNNavigationBar: UIView {
         y = max(0.0, y)
         y += UIApplication.StatusBarHeight
         barItem.minY = y
-        barItem.maxX = width - MN_NAV_ITEM_MARGIN
+        barItem.maxX = width - MN_NAV_ITEM_SPACING
         barItem.autoresizingMask = .flexibleTopMargin
         return barItem
     }()
@@ -89,7 +89,7 @@ public class MNNavigationBar: UIView {
     }()
     // 标题
     @objc lazy var titleLabel: UILabel = {
-        let x = max(leftBarItem.maxX, width - rightBarItem.minX) + MN_NAV_ITEM_MARGIN
+        let x = max(leftBarItem.maxX, width - rightBarItem.minX) + MN_NAV_ITEM_SPACING
         let titleLabel = UILabel(frame: bounds.inset(by: UIEdgeInsets(top: MN_STATUS_BAR_HEIGHT, left: x, bottom: 0.0, right: x)))
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
