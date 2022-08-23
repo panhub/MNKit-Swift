@@ -9,11 +9,12 @@ import UIKit
 
 class ViewController: MNListViewController {
     
-    override func navigationBarShouldDrawBackBarItem() -> Bool { false }
+    //override func navigationBarShouldDrawBackBarItem() -> Bool { false }
     
     override init() {
         super.init()
         statusBarStyle = .lightContent
+        title = "测试编辑"
     }
     
     required init?(coder: NSCoder) {
@@ -64,6 +65,16 @@ extension ViewController: UITableViewEditingDelegate {
     }
     
     func tableView(_ tableView: UITableView, editingActionsForRowAt indexPath: IndexPath) -> [UIView] {
+        
+        let button0 = UIButton(type: .custom)
+        button0.size = CGSize(width: 80.0, height: 55.0)
+        button0.backgroundColor = .purple
+        button0.titleLabel?.font = .systemFont(ofSize: 15.0, weight: .medium)
+        button0.setTitle("置顶", for: .normal)
+        button0.setTitleColor(.white, for: .normal)
+        button0.contentVerticalAlignment = .center
+        button0.contentHorizontalAlignment = .center
+        
         let button = UIButton(type: .custom)
         button.size = CGSize(width: 80.0, height: 55.0)
         button.backgroundColor = .red
@@ -74,20 +85,20 @@ extension ViewController: UITableViewEditingDelegate {
         button.contentHorizontalAlignment = .center
         
         let button2 = UIButton(type: .custom)
-        button2.size = CGSize(width: 100.0, height: 55.0)
+        button2.size = CGSize(width: 80.0, height: 55.0)
         button2.backgroundColor = .blue
         button2.titleLabel?.font = .systemFont(ofSize: 15.0, weight: .medium)
         button2.setTitle("备注", for: .normal)
         button2.setTitleColor(.white, for: .normal)
         button2.contentVerticalAlignment = .center
         button2.contentHorizontalAlignment = .center
-        return [button, button2]
+        return [button0, button, button2]
     }
     
     func tableView(_ tableView: UITableView, commitEditing action: UIView, forRowAt indexPath: IndexPath) -> UIView? {
         let button = UIButton(type: .custom)
         button.size = CGSize(width: 180.0, height: 55.0)
-        button.backgroundColor = .red
+        button.backgroundColor = action.backgroundColor
         button.titleLabel?.font = .systemFont(ofSize: 15.0, weight: .medium)
         button.setTitle("确认删除", for: .normal)
         button.setTitleColor(.white, for: .normal)

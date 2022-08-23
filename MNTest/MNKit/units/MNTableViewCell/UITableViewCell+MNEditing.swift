@@ -11,21 +11,39 @@ import ObjectiveC.runtime
 
 @objc protocol UITableViewEditingDelegate {
     
+    /// 提交表格的编辑方向
+    /// - Parameters:
+    ///   - tableView: 集合视图
+    ///   - indexPath: 索引
+    /// - Returns: 编辑方向
     func tableView(_ tableView: UITableView, rowEditingDirectionAt indexPath: IndexPath) -> UITableViewCell.EditingDirection
     
+    /// 提交编辑视图
+    /// - Parameters:
+    ///   - tableView: 集合视图
+    ///   - indexPath: 索引
+    /// - Returns: 编辑视图
     func tableView(_ tableView: UITableView, editingActionsForRowAt indexPath: IndexPath) -> [UIView]
     
+    /// 提交二次编辑视图
+    /// - Parameters:
+    ///   - tableView: 集合视图
+    ///   - action: 点击的按钮
+    ///   - indexPath: 索引
+    /// - Returns: 二次编辑视图
     func tableView(_ tableView: UITableView, commitEditing action: UIView, forRowAt indexPath: IndexPath) -> UIView?
 }
 
 extension UIGestureRecognizer {
     
-    static let TableViewCellEditingLabel: String = "com.mn.recognizer.editing.label"
-    
     private struct EditingAssociated {
         static var label = "com.mn.recognizer.editing.label"
     }
     
+    /// 拖动手势标记
+    static let TableViewCellEditingLabel: String = "com.mn.recognizer.editing.label"
+    
+    /// 记录标记
     var editingLabel: String {
         get { (objc_getAssociatedObject(self, &EditingAssociated.label) as? String) ?? "" }
         set { objc_setAssociatedObject(self, &EditingAssociated.label, newValue, .OBJC_ASSOCIATION_COPY) }
@@ -34,7 +52,7 @@ extension UIGestureRecognizer {
 
 @objc extension UITableViewCell {
     
-    /// 编辑时的拖拽方向
+    /// 定义编辑拖拽方向
     @objc enum EditingDirection: Int {
         case none, left, right
     }
@@ -44,16 +62,19 @@ extension UIGestureRecognizer {
         static var editing = "com.mn.table.view.cell.allows.editing"
     }
     
+    /// 编辑视图
     private var editingView: UITableViewEditingView? {
         get { objc_getAssociatedObject(self, &EditingAssociated.view) as? UITableViewEditingView }
         set { objc_setAssociatedObject(self, &EditingAssociated.view, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
+    /// 是否处于编辑状态
     @objc var isScrollEditing: Bool {
         guard let editingView = editingView, editingView.frame.width > 0.0 else { return false }
         return true
     }
     
+    /// 是否允许编辑
     @objc var allowsEditing: Bool {
         get { (objc_getAssociatedObject(self, &EditingAssociated.editing) as? Bool) ?? false }
         set {
@@ -74,13 +95,14 @@ extension UIGestureRecognizer {
         }
     }
     
+    /// 处理拖拽手势
+    /// - Parameter recognizer: 手势
     @objc private func handleCellEditing(_ recognizer: UIPanGestureRecognizer) {
-        let translation = recognizer.translation(in: recognizer.view)
-        recognizer.setTranslation(.zero, in: recognizer.view)
         switch recognizer.state {
-        case .began: break
         case .changed:
             guard let editingView = editingView else { break }
+            let translation = recognizer.translation(in: recognizer.view)
+            recognizer.setTranslation(.zero, in: recognizer.view)
             let sum = editingView.sum
             var rect = editingView.frame
             var m: CGFloat = translation.x
