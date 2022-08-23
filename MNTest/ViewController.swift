@@ -46,6 +46,11 @@ extension ViewController {
         }
         return cell!
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) else { return }
+        cell.contentView.frame = CGRect(x: -100.0, y: 0.0, width: cell.width, height: cell.height)
+    }
 }
 
 extension ViewController: UITableViewEditingDelegate {
@@ -77,7 +82,7 @@ extension ViewController: UITableViewEditingDelegate {
     
     func tableView(_ tableView: UITableView, commitEditing action: UIView, forRowAt indexPath: IndexPath) -> UIView? {
         let button = UIButton(type: .custom)
-        button.size = CGSize(width: 120.0, height: 55.0)
+        button.size = CGSize(width: 180.0, height: 55.0)
         button.backgroundColor = .red
         button.titleLabel?.font = .systemFont(ofSize: 15.0, weight: .medium)
         button.setTitle("确认删除", for: .normal)

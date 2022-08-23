@@ -7,16 +7,28 @@
 
 import UIKit
 
+protocol UITableViewEditingObserverHandler: NSObjectProtocol {
+    
+    /// 表格偏移改变
+    /// - Parameters:
+    ///   - tableView: 表格集合控件
+    ///   - change: 偏移变化
+    func tableView(_ tableView: UITableView, contentOffset change: [NSKeyValueChangeKey : Any]?) -> Void
+}
+
 class UITableViewEditingObserver: NSObject {
     
     weak var tableView: UITableView?
+    
+    weak var delegate: UITableViewEditingObserverHandler?
     
     override init() {
         super.init()
     }
     
-    convenience init(tableView: UITableView) {
+    convenience init(tableView: UITableView, delegate: UITableViewEditingObserverHandler?) {
         self.init()
+        self.delegate = delegate
         self.tableView = tableView
         tableView.addObserver(self, forKeyPath: "contentOffset", options: .new, context: nil)
     }
@@ -29,9 +41,8 @@ class UITableViewEditingObserver: NSObject {
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if let tableView = tableView, tableView.isEdit {
-            tableView.isEdit = false
-            tableView.endEditing(animated: (tableView.isDragging || tableView.isDecelerating))
+        if let tableView = tableView {
+            delegate?.tableView(tableView, contentOffset: change)
         }
     }
 }

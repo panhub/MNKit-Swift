@@ -18,6 +18,7 @@ import UIKit
     @objc var cornerRadius: CGFloat = 0.0
     
     /// 内容偏移
+    /// left: 'direction = right'时有效, right: 'direction = left'时有效
     @objc var contentInset: UIEdgeInsets = .zero
     
     /// 背景颜色

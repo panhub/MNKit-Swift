@@ -7,21 +7,34 @@
 
 import UIKit
 
+protocol UITableViewCellEditingHandler: NSObjectProtocol {
+    
+    /// 按钮第一次点击事件 可选择提交二次视图
+    /// - Parameters:
+    ///   - editingView: 编辑视图
+    ///   - index: 按钮索引
+    func editingView(_ editingView: UITableViewCellEditingView, didTouchActionAt index: Int) -> Void
+}
+
 class UITableViewCellEditingView: UIView {
     
-    weak var options: UITableViewEditingOptions!
+    /// 配置信息
+    @objc let options: UITableViewEditingOptions
     
-    var action: Selector?
+    /// 事件代理
+    weak var delegate: UITableViewCellEditingHandler?
     
-    weak var target: NSObjectProtocol?
+    /// 添加的按钮
+    @objc private(set) var actions: [UIView] = [UIView]()
     
-    private var actions: [UIView] = [UIView]()
+    /// 当前按钮的总宽度
+    @objc var sum: CGFloat { actions.reduce(0.0) { $0 + $1.frame.width } }
     
-    var sum: CGFloat { actions.reduce(0.0) { $0 + $1.frame.width } }
-    
+    /// 依据配置信息构造
+    /// - Parameter options: 配置信息
     init(options: UITableViewEditingOptions) {
-        super.init(frame: .zero)
         self.options = options
+        super.init(frame: .zero)
         self.clipsToBounds = true
     }
     
@@ -29,9 +42,10 @@ class UITableViewCellEditingView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// 添加至父视图时 决定自身高度
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
-        if let options = options, let cell = superview as? UITableViewCell {
+        if let cell = superview as? UITableViewCell {
             var rect = cell.bounds
             rect.origin.x = rect.width - options.contentInset.right
             rect.origin.y = options.contentInset.top
@@ -84,6 +98,9 @@ class UITableViewCellEditingView: UIView {
         if let backgroundColor = action.backgroundColor {
             subview.backgroundColor = backgroundColor
         }
+        if action.subviews.count <= 0 {
+            action.isUserInteractionEnabled = true
+        }
         var rect = action.frame
         rect.origin.x = 0.0
         rect.origin.y = (subview.frame.height - rect.height)/2.0
@@ -104,9 +121,6 @@ class UITableViewCellEditingView: UIView {
             rect.size.width = subview.frame.width
             rect.origin.x = superview.frame.width - spacing - rect.width
             self.frame = rect
-            if let cell = subview as? UITableViewCell {
-                cell.contentView.transform = CGAffineTransform(translationX: -rect.width, y: 0.0)
-            }
         } completion: { [weak self] _ in
             guard let self = self else { return }
             self.isUserInteractionEnabled = true
@@ -133,16 +147,11 @@ class UITableViewCellEditingView: UIView {
         }
     }
     
-    func addTargetForTouchUpInside(_ target: NSObjectProtocol, action: Selector) {
-        self.action = action
-        self.target = target
-    }
-    
+    /// 按钮点击事件
+    /// - Parameter sender: 按钮
     @objc private func buttonTouchUpInside(_ sender: UIView) {
         guard sender.tag < actions.count else { return }
-        if let target = target, let action = action {
-            target.perform(action, with: self, with: actions[sender.tag])
-        }
+        delegate?.editingView(self, didTouchActionAt: sender.tag)
     }
     
     /// 删除所有按钮
