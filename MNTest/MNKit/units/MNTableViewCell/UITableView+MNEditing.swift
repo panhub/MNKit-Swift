@@ -19,12 +19,12 @@ import ObjectiveC.runtime
     
     @objc var options: UITableViewEditingOptions {
         if let options = objc_getAssociatedObject(self, &EditingAssociated.options) as? UITableViewEditingOptions { return options }
-        let options = UITableViewEditingOptions()
-        objc_setAssociatedObject(self, &EditingAssociated.options, options, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         if objc_getAssociatedObject(self, &EditingAssociated.observer) == nil {
             let observer = UITableViewEditingObserver(tableView: self, delegate: self)
             objc_setAssociatedObject(self, &EditingAssociated.observer, observer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
+        let options = UITableViewEditingOptions()
+        objc_setAssociatedObject(self, &EditingAssociated.options, options, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return options
     }
     

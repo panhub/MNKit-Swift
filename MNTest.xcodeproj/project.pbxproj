@@ -10,7 +10,7 @@
 		3B5CE56628B3674A00527F55 /* UITableViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */; };
 		3B5CE56B28B36F5700527F55 /* UITableViewEditingObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56A28B36F5700527F55 /* UITableViewEditingObserver.swift */; };
 		3BA6550428B3C48300BD54BA /* UITableView+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */; };
-		3BA6550628B3CE9300BD54BA /* UITableViewCellEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550528B3CE9300BD54BA /* UITableViewCellEditingView.swift */; };
+		3BA6550628B3CE9300BD54BA /* UITableViewEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550528B3CE9300BD54BA /* UITableViewEditingView.swift */; };
 		3BA6550828B3CF3F00BD54BA /* UITableViewEditingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550728B3CF3F00BD54BA /* UITableViewEditingOptions.swift */; };
 		3BA6550A28B422A000BD54BA /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550928B422A000BD54BA /* TableViewCell.swift */; };
 		3BC67631289A1CDA00E57BA1 /* MNComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC67630289A1CDA00E57BA1 /* MNComponents.swift */; };
@@ -210,7 +210,7 @@
 		3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+MNEditing.swift"; sourceTree = "<group>"; };
 		3B5CE56A28B36F5700527F55 /* UITableViewEditingObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewEditingObserver.swift; sourceTree = "<group>"; };
 		3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+MNEditing.swift"; sourceTree = "<group>"; };
-		3BA6550528B3CE9300BD54BA /* UITableViewCellEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewCellEditingView.swift; sourceTree = "<group>"; };
+		3BA6550528B3CE9300BD54BA /* UITableViewEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewEditingView.swift; sourceTree = "<group>"; };
 		3BA6550728B3CF3F00BD54BA /* UITableViewEditingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewEditingOptions.swift; sourceTree = "<group>"; };
 		3BA6550928B422A000BD54BA /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		3BC67630289A1CDA00E57BA1 /* MNComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNComponents.swift; sourceTree = "<group>"; };
@@ -425,7 +425,7 @@
 				3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */,
 				3B5CE56A28B36F5700527F55 /* UITableViewEditingObserver.swift */,
 				3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */,
-				3BA6550528B3CE9300BD54BA /* UITableViewCellEditingView.swift */,
+				3BA6550528B3CE9300BD54BA /* UITableViewEditingView.swift */,
 				3BA6550728B3CF3F00BD54BA /* UITableViewEditingOptions.swift */,
 				3BFA91BD28B4D0EB0013CE6D /* UITableViewEditingRecognizer.swift */,
 			);
@@ -953,7 +953,7 @@
 				3BDB702928992DFA0023D5E3 /* MNPageProtocol.swift in Sources */,
 				3BDB706928992DFA0023D5E3 /* UIEdgeInsets+MNExtension.swift in Sources */,
 				3BDB6F5A289928E40023D5E3 /* MNToast.swift in Sources */,
-				3BA6550628B3CE9300BD54BA /* UITableViewCellEditingView.swift in Sources */,
+				3BA6550628B3CE9300BD54BA /* UITableViewEditingView.swift in Sources */,
 				3BDB6F75289928E40023D5E3 /* MNTransitionAnimator.swift in Sources */,
 				3BDB705728992DFA0023D5E3 /* MNAssetExporter.swift in Sources */,
 				3BDB6F79289928E40023D5E3 /* MNPortalAnimator.swift in Sources */,

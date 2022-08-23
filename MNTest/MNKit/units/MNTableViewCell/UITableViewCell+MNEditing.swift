@@ -11,7 +11,7 @@ import ObjectiveC.runtime
 
 @objc protocol UITableViewEditingDelegate {
     
-    func tableView(_ tableView: UITableView, canEditingRowAt indexPath: IndexPath) -> Bool
+    func tableView(_ tableView: UITableView, rowEditingDirectionAt indexPath: IndexPath) -> UITableViewCell.EditingDirection
     
     func tableView(_ tableView: UITableView, editingActionsForRowAt indexPath: IndexPath) -> [UIView]
     
@@ -34,13 +34,18 @@ extension UIGestureRecognizer {
 
 @objc extension UITableViewCell {
     
+    /// 编辑时的拖拽方向
+    @objc enum EditingDirection: Int {
+        case none, left, right
+    }
+    
     private struct EditingAssociated {
         static var view = "com.mn.table.view.cell.editing.view"
         static var editing = "com.mn.table.view.cell.allows.editing"
     }
     
-    private var editingView: UITableViewCellEditingView? {
-        get { objc_getAssociatedObject(self, &EditingAssociated.view) as? UITableViewCellEditingView }
+    private var editingView: UITableViewEditingView? {
+        get { objc_getAssociatedObject(self, &EditingAssociated.view) as? UITableViewEditingView }
         set { objc_setAssociatedObject(self, &EditingAssociated.view, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
@@ -78,15 +83,21 @@ extension UIGestureRecognizer {
             guard let editingView = editingView else { break }
             let sum = editingView.sum
             var rect = editingView.frame
-            let spacing = tableView?.options.contentInset.right ?? 0.0
-            var m: CGFloat = translation.x/5.0*4.0
-            if rect.width - m > sum {
+            var m: CGFloat = translation.x
+            if rect.width >= sum {
                 // 超过最优距离, 加阻尼, 减缓拖拽效果
                 m = translation.x/4.0
             }
-            rect.size.width -= m
-            rect.size.width = max(0.0, rect.width)
-            rect.origin.x = frame.width - spacing - rect.width
+            m = ceil(m)
+            if editingView.direction == .left {
+                let spacing = tableView?.options.contentInset.right ?? 0.0
+                rect.size.width -= m
+                rect.size.width = max(0.0, rect.width)
+                rect.origin.x = frame.width - rect.width - spacing
+            } else {
+                rect.size.width += m
+                rect.size.width = max(0.0, rect.width)
+            }
             editingView.frame = rect
             editingView.update(width: rect.width)
             setNeedsLayout()
@@ -94,13 +105,12 @@ extension UIGestureRecognizer {
         case .ended:
             guard let editingView = editingView else { break }
             let velocity = recognizer.velocity(in: recognizer.view)
-            print(velocity)
             if editingView.frame.width <= 0.0 {
                 tableView?.isScrollEditing = false
                 editingView.removeAllActions()
             } else if editingView.frame.width >= editingView.sum {
                 updateEditing(true, animated: true)
-            } else if editingView.frame.width >= 50.0, velocity.x < 0.0 {
+            } else if editingView.frame.width >= 50.0 && ((editingView.direction == .left && velocity.x < 0.0) || (editingView.direction == .right && velocity.x > 0.0)) {
                 updateEditing(true, animated: true)
             } else {
                 updateEditing(false, animated: true)
@@ -117,13 +127,15 @@ extension UIGestureRecognizer {
         func update(editing: Bool) {
             guard let editingView = editingView else { return }
             var rect = editingView.frame
-            let spacing = tableView?.options.contentInset.right ?? 0.0
             if editing {
                 rect.size.width = editingView.sum
             } else {
                 rect.size.width = 0.0
             }
-            rect.origin.x = frame.width - spacing - rect.width
+            if editingView.direction == .left {
+                let spacing = tableView?.options.contentInset.right ?? 0.0
+                rect.origin.x = frame.width - spacing - rect.width
+            }
             editingView.frame = rect
             editingView.update(width: rect.width)
             setNeedsLayout()
@@ -158,36 +170,42 @@ extension UIGestureRecognizer {
 // MARK: - UITableViewEditingRecognizerHandler
 extension UITableViewCell: UITableViewEditingRecognizerHandler {
     
-    func shouldBeginEditing(_ recognizer: UITableViewEditingRecognizer) -> Bool {
+    func gestureRecognizerShouldBegin(_ recognizer: UITableViewEditingRecognizer, direction editingDirection: EditingDirection) -> Bool {
         guard let tableView = tableView else { return false }
         guard let indexPath = tableView.indexPath(for: self) else { return false }
         guard let delegate = tableView.delegate as? UITableViewEditingDelegate else { return false }
-        guard delegate.tableView(tableView, canEditingRowAt: indexPath) else { return false }
+        // 编辑状态下可继续拖拽
         if let editingView = editingView, editingView.frame.width > 0.0 { return true }
-        // 获取编辑视图
+        // 支持的编辑方向
+        let direction: UITableViewCell.EditingDirection = delegate.tableView(tableView, rowEditingDirectionAt: indexPath)
+        if direction == .none { return false }
+        // 方向一致
+        guard direction == editingDirection else { return  false }
+        // 获取自定义的编辑视图
         let actions = delegate.tableView(tableView, editingActionsForRowAt: indexPath)
         guard actions.count > 0 else { return false }
         // 结束其它表格编辑状态
         tableView.endEditing(animated: true)
         // 添加编辑视图
-        var editingView: UITableViewCellEditingView! = editingView
+        var editingView: UITableViewEditingView! = editingView
         if editingView == nil {
-            editingView = UITableViewCellEditingView(options: tableView.options)
+            editingView = UITableViewEditingView(options: tableView.options)
             editingView.delegate = self
             insertSubview(editingView, aboveSubview: contentView)
             self.editingView = editingView
         } else {
             editingView.removeAllActions()
         }
+        editingView.update(direction: direction)
         editingView.update(actions: actions)
         return true
     }
 }
 
-// MARK: - UITableViewCellEditingHandler
-extension UITableViewCell: UITableViewCellEditingHandler {
+// MARK: - UITableViewEditingHandler
+extension UITableViewCell: UITableViewEditingHandler {
     
-    func editingView(_ editingView: UITableViewCellEditingView, didTouchActionAt index: Int) {
+    func editingView(_ editingView: UITableViewEditingView, actionTouchUpInsideAt index: Int) {
         guard let tableView = tableView else { return }
         guard let indexPath = tableView.indexPath(for: self) else { return }
         guard let delegate = tableView.delegate as? UITableViewEditingDelegate else { return }
@@ -215,9 +233,12 @@ extension UITableViewCell: UITableViewCellEditingHandler {
     @objc func layoutEditingView() {
         guard let editingView = editingView, editingView.frame.width > 0.0 else { return }
         var rect = bounds
-        rect.origin.x -= editingView.frame.width
+        if editingView.direction == .left {
+            rect.origin.x -= editingView.frame.width
+        } else {
+            rect.origin.x += editingView.frame.width
+        }
         contentView.frame = rect
-        print(contentView.frame)
     }
 }
 

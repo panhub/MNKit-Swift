@@ -1,28 +1,31 @@
 //
-//  UITableViewCellEditingView.swift
+//  UITableViewEditingView.swift
 //  MNTest
 //
 //  Created by 冯盼 on 2022/8/22.
-//
+//  编辑视图
 
 import UIKit
 
-protocol UITableViewCellEditingHandler: NSObjectProtocol {
+protocol UITableViewEditingHandler: NSObjectProtocol {
     
     /// 按钮第一次点击事件 可选择提交二次视图
     /// - Parameters:
     ///   - editingView: 编辑视图
     ///   - index: 按钮索引
-    func editingView(_ editingView: UITableViewCellEditingView, didTouchActionAt index: Int) -> Void
+    func editingView(_ editingView: UITableViewEditingView, actionTouchUpInsideAt index: Int) -> Void
 }
 
-class UITableViewCellEditingView: UIView {
+class UITableViewEditingView: UIView {
     
     /// 配置信息
     @objc let options: UITableViewEditingOptions
     
+    /// 当前的拖拽方向
+    private(set) var direction: UITableViewCell.EditingDirection = .left
+    
     /// 事件代理
-    weak var delegate: UITableViewCellEditingHandler?
+    weak var delegate: UITableViewEditingHandler?
     
     /// 添加的按钮
     @objc private(set) var actions: [UIView] = [UIView]()
@@ -35,7 +38,8 @@ class UITableViewCellEditingView: UIView {
     init(options: UITableViewEditingOptions) {
         self.options = options
         super.init(frame: .zero)
-        self.clipsToBounds = true
+        clipsToBounds = true
+        layer.cornerRadius = options.cornerRadius
     }
     
     required init?(coder: NSCoder) {
@@ -45,14 +49,55 @@ class UITableViewCellEditingView: UIView {
     /// 添加至父视图时 决定自身高度
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
-        if let cell = superview as? UITableViewCell {
-            var rect = cell.bounds
-            rect.origin.x = rect.width - options.contentInset.right
-            rect.origin.y = options.contentInset.top
+        if let superview = superview {
+            var rect = superview.bounds
+            if direction == .left {
+                rect.origin.x = rect.width - options.contentInset.right
+            } else {
+                rect.origin.x = options.contentInset.left
+            }
             rect.size.width = 0.0
+            rect.origin.y = options.contentInset.top
             rect.size.height = max(0.0, rect.height - options.contentInset.top - options.contentInset.bottom)
+            autoresizingMask = []
             frame = rect
-            layer.cornerRadius = options.cornerRadius
+            autoresizingMask = [.flexibleHeight]
+        }
+    }
+    
+    /// 更新编辑方向
+    /// - Parameter direction: 指定方向
+    func update(direction: UITableViewCell.EditingDirection) {
+        guard direction != .none, self.direction != direction else { return }
+        self.direction = direction
+        // 更新子视图
+        for subview in subviews {
+            guard subview.subviews.count > 0 else { continue }
+            let action = subview.subviews.first!
+            action.autoresizingMask = []
+            var rect = action.frame
+            var autoresizingMask: UIView.AutoresizingMask = []
+            if direction == .left {
+                rect.origin.x = 0.0
+                autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
+            } else {
+                rect.origin.x = subview.frame.width - rect.width
+                autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin]
+            }
+            action.frame = rect
+            action.autoresizingMask = autoresizingMask
+        }
+        // 更新位置
+        if let superview = superview {
+            var rect = frame
+            if direction == .left {
+                rect.origin.x = superview.frame.width - rect.width - options.contentInset.right
+            } else {
+                rect.origin.x = options.contentInset.left
+            }
+            autoresizingMask = []
+            frame = rect
+            autoresizingMask = [.flexibleHeight]
         }
     }
     
@@ -67,11 +112,16 @@ class UITableViewCellEditingView: UIView {
             control.tag = index
             control.clipsToBounds = true
             control.backgroundColor = action.backgroundColor
+            control.autoresizingMask = [.flexibleHeight]
             control.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
             action.autoresizingMask = []
             action.isUserInteractionEnabled = false
             action.center = CGPoint(x: control.bounds.midX, y: control.bounds.midY)
-            action.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
+            if direction == .left {
+                action.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
+            } else {
+                action.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin]
+            }
             control.addSubview(action)
             addSubview(control)
         }
@@ -110,8 +160,7 @@ class UITableViewCellEditingView: UIView {
         bringSubviewToFront(subview)
         isUserInteractionEnabled = false
         UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
-            guard let self = self, let superview = self.superview else { return }
-            let spacing = self.options.contentInset.right
+            guard let self = self else { return }
             var rect = subview.frame
             rect.origin = .zero
             rect.size.width = action.frame.width
@@ -119,12 +168,19 @@ class UITableViewCellEditingView: UIView {
             action.center = CGPoint(x: subview.bounds.midX, y: subview.bounds.midY)
             rect = self.frame
             rect.size.width = subview.frame.width
-            rect.origin.x = superview.frame.width - spacing - rect.width
+            if self.direction == .left , let superview = self.superview {
+                let spacing = self.options.contentInset.right
+                rect.origin.x = superview.frame.width - rect.width - spacing
+            }
             self.frame = rect
         } completion: { [weak self] _ in
             guard let self = self else { return }
             self.isUserInteractionEnabled = true
-            action.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
+            if self.direction == .left {
+                action.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
+            } else {
+                action.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin]
+            }
             for other in others {
                 other.removeFromSuperview()
             }
@@ -141,7 +197,7 @@ class UITableViewCellEditingView: UIView {
             let subview = subviews[index]
             var rect = subview.frame
             rect.origin.x = x
-            rect.size.width = ceil(width*scale)
+            rect.size.width = min(ceil(width*scale), width - x)
             subview.frame = rect
             x += rect.width
         }
@@ -151,7 +207,7 @@ class UITableViewCellEditingView: UIView {
     /// - Parameter sender: 按钮
     @objc private func buttonTouchUpInside(_ sender: UIView) {
         guard sender.tag < actions.count else { return }
-        delegate?.editingView(self, didTouchActionAt: sender.tag)
+        delegate?.editingView(self, actionTouchUpInsideAt: sender.tag)
     }
     
     /// 删除所有按钮
@@ -169,5 +225,4 @@ class UITableViewCellEditingView: UIView {
         // Drawing code
     }
     */
-
 }

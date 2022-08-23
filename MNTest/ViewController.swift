@@ -55,6 +55,10 @@ extension ViewController {
 
 extension ViewController: UITableViewEditingDelegate {
     
+    func tableView(_ tableView: UITableView, rowEditingDirectionAt indexPath: IndexPath) -> UITableViewCell.EditingDirection {
+        indexPath.row%2 == 0 ? .left : .right
+    }
+    
     func tableView(_ tableView: UITableView, canEditingRowAt indexPath: IndexPath) -> Bool {
         return true
     }
