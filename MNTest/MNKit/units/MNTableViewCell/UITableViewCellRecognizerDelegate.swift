@@ -11,17 +11,14 @@ class UITableViewCellRecognizerDelegate: NSObject, UIGestureRecognizerDelegate {
     
     var action: Selector?
     
-    weak var cell: UITableViewCell?
-    
     weak var target: NSObjectProtocol?
     
     override init() {
         super.init()
     }
     
-    convenience init(cell: UITableViewCell, target: NSObjectProtocol, action: Selector) {
+    convenience init(target: NSObjectProtocol, action: Selector) {
         self.init()
-        self.cell = cell
         self.target = target
         self.action = action
     }
@@ -34,8 +31,10 @@ class UITableViewCellRecognizerDelegate: NSObject, UIGestureRecognizerDelegate {
         guard abs(translation.y) <= abs(translation.x) else { return false }
         // 判断是否在编辑状态
         guard let target = target, let action = action else { return false }
-        guard let obj = target.perform(action) else { return false }
-        guard let flag = obj.takeRetainedValue() as? Bool else { return false }
-        return flag
+        guard let _ = target.perform(action) else { return false }
+        //print(obj)
+//        var obj = target.perform(action)
+//        guard let flag = Unmanaged<AnyObject>.fromOpaque(obj).takeUnretainedValue() as? Bool else { return false }
+        return true
     }
 }

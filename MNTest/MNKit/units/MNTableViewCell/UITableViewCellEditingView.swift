@@ -19,7 +19,7 @@ class UITableViewCellEditingView: UIView {
     
     var sum: CGFloat { actions.reduce(0.0) { $0 + $1.frame.width } }
     
-    init(options: UITableViewEditingOptions!) {
+    init(options: UITableViewEditingOptions) {
         super.init(frame: .zero)
         self.options = options
         self.clipsToBounds = true
@@ -76,42 +76,44 @@ class UITableViewCellEditingView: UIView {
         actions.append(action)
         let others: [UIView] = subviews.filter { $0.tag != index }
         let subview = subviews[index]
+        subview.tag = 0
         (subview as? UIControl)?.removeTarget(nil, action: nil, for: .touchUpInside)
-        for s in subview.subviews.reversed() {
-            s.removeFromSuperview()
+        for sub in subview.subviews.reversed() {
+            sub.removeFromSuperview()
         }
         if let backgroundColor = action.backgroundColor {
             subview.backgroundColor = backgroundColor
         }
-        let center = subview.center
-        var rect = subview.frame
-        rect.size.width = min(max(rect.width, action.frame.width), frame.width)
-        subview.frame = rect
-        subview.center = center
-        subview.tag = 0
+        var rect = action.frame
+        rect.origin.x = 0.0
+        rect.origin.y = (subview.frame.height - rect.height)/2.0
         action.autoresizingMask = []
-        action.center = CGPoint(x: subview.bounds.midX, y: subview.bounds.midY)
+        action.frame = rect
         subview.addSubview(action)
         bringSubviewToFront(subview)
-        if others.count > 0 {
-            isUserInteractionEnabled = false
-            action.autoresizingMask = [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin, .flexibleBottomMargin]
-            UIView.animate(withDuration: 0.2, delay: 0.0, options: [.beginFromCurrentState, .layoutSubviews, .curveEaseInOut]) { [weak self] in
-                guard let self = self else { return }
-                var rect = subview.frame
-                rect.origin = .zero
-                rect.size.width = self.frame.width
-                self.frame = rect
-            } completion: { [weak self] _ in
-                guard let self = self else { return }
-                self.isUserInteractionEnabled = true
-                action.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
-                for other in others {
-                    other.removeFromSuperview()
-                }
+        isUserInteractionEnabled = false
+        UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            guard let self = self, let superview = self.superview else { return }
+            let spacing = self.options.contentInset.right
+            var rect = subview.frame
+            rect.origin = .zero
+            rect.size.width = action.frame.width
+            subview.frame = rect
+            action.center = CGPoint(x: subview.bounds.midX, y: subview.bounds.midY)
+            rect = self.frame
+            rect.size.width = subview.frame.width
+            rect.origin.x = superview.frame.width - spacing - rect.width
+            self.frame = rect
+            if let cell = subview as? UITableViewCell {
+                cell.contentView.transform = CGAffineTransform(translationX: -rect.width, y: 0.0)
             }
-        } else {
+        } completion: { [weak self] _ in
+            guard let self = self else { return }
+            self.isUserInteractionEnabled = true
             action.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
+            for other in others {
+                other.removeFromSuperview()
+            }
         }
     }
     
@@ -125,7 +127,7 @@ class UITableViewCellEditingView: UIView {
             let subview = subviews[index]
             var rect = subview.frame
             rect.origin.x = x
-            rect.size.width = min(ceil(width*scale), action.frame.width)
+            rect.size.width = ceil(width*scale)
             subview.frame = rect
             x += rect.width
         }
