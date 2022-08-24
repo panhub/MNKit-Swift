@@ -17,7 +17,8 @@ import ObjectiveC.runtime
         static var observer = "com.mn.table.view.editing.observer"
     }
     
-    @objc var options: UITableViewEditingOptions {
+    /// 编辑视图的配置
+    @objc var editingOptions: UITableViewEditingOptions {
         if let options = objc_getAssociatedObject(self, &EditingAssociated.options) as? UITableViewEditingOptions { return options }
         if objc_getAssociatedObject(self, &EditingAssociated.observer) == nil {
             let observer = UITableViewEditingObserver(tableView: self, delegate: self)
@@ -28,16 +29,18 @@ import ObjectiveC.runtime
         return options
     }
     
-    @objc var isScrollEditing: Bool {
+    /// 是否有表格处于编辑状态
+    @objc var isHaulEditing: Bool {
         get { objc_getAssociatedObject(self, &EditingAssociated.editing) as? Bool ?? false }
         set { objc_setAssociatedObject(self, &EditingAssociated.editing, newValue, .OBJC_ASSOCIATION_ASSIGN) }
     }
     
+    /// 结束编辑
+    /// - Parameter animated: 是否动态显示过程
     @objc func endEditing(animated: Bool) {
         for cell in visibleCells {
-            if cell.isScrollEditing {
-                cell.updateEditing(false, animated: animated)
-            }
+            guard cell.isHaulEditing else { continue }
+            cell.updateEditing(false, animated: animated)
         }
     }
 }
@@ -46,8 +49,8 @@ import ObjectiveC.runtime
 extension UITableView: UITableViewEditingObserverHandler {
     
     func tableView(_ tableView: UITableView, contentOffset change: [NSKeyValueChangeKey : Any]?) {
-        guard isScrollEditing else { return }
-        isScrollEditing = false
+        guard isHaulEditing else { return }
+        isHaulEditing = false
         endEditing(animated: (tableView.isDragging || tableView.isDecelerating))
     }
 }

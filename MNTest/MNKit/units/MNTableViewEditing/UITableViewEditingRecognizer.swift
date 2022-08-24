@@ -39,7 +39,7 @@ extension UITableViewEditingRecognizer: UIGestureRecognizerDelegate {
         guard let recognizer = gestureRecognizer as? UIPanGestureRecognizer else { return false }
         // 判断方向
         let translation = recognizer.translation(in: recognizer.view)
-        guard abs(translation.y) <= abs(translation.x) else { return false }
+        guard abs(translation.y) < abs(translation.x) else { return false }
         let velocity = recognizer.velocity(in: recognizer.view)
         // 判断是否可编辑
         guard let handler = handler else { return false }

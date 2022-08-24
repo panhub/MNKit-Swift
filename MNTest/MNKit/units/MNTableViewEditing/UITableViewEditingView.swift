@@ -3,7 +3,7 @@
 //  MNTest
 //
 //  Created by 冯盼 on 2022/8/22.
-//  编辑视图
+//  表格编辑视图
 
 import UIKit
 
@@ -39,6 +39,7 @@ class UITableViewEditingView: UIView {
         self.options = options
         super.init(frame: .zero)
         clipsToBounds = true
+        backgroundColor = options.backgroundColor
         layer.cornerRadius = options.cornerRadius
     }
     

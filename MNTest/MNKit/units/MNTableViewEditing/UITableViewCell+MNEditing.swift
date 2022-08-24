@@ -69,7 +69,7 @@ extension UIGestureRecognizer {
     }
     
     /// 是否处于编辑状态
-    @objc var isScrollEditing: Bool {
+    @objc var isHaulEditing: Bool {
         guard let editingView = editingView, editingView.frame.width > 0.0 else { return false }
         return true
     }
@@ -112,7 +112,7 @@ extension UIGestureRecognizer {
             }
             m = ceil(m)
             if editingView.direction == .left {
-                let spacing = tableView?.options.contentInset.right ?? 0.0
+                let spacing = tableView?.editingOptions.contentInset.right ?? 0.0
                 rect.size.width -= m
                 rect.size.width = max(0.0, rect.width)
                 rect.origin.x = frame.width - rect.width - spacing
@@ -128,7 +128,7 @@ extension UIGestureRecognizer {
             guard let editingView = editingView else { break }
             let velocity = recognizer.velocity(in: recognizer.view)
             if editingView.frame.width <= 0.0 {
-                tableView?.isScrollEditing = false
+                tableView?.isHaulEditing = false
                 editingView.removeAllActions()
             } else if editingView.frame.width >= editingView.sum {
                 updateEditing(true, animated: true)
@@ -155,8 +155,8 @@ extension UIGestureRecognizer {
                 rect.size.width = 0.0
             }
             if editingView.direction == .left {
-                let spacing = tableView?.options.contentInset.right ?? 0.0
-                rect.origin.x = frame.width - spacing - rect.width
+                let spacing = tableView?.editingOptions.contentInset.right ?? 0.0
+                rect.origin.x = frame.width - rect.width - spacing
             }
             editingView.frame = rect
             editingView.update(width: rect.width)
@@ -167,8 +167,8 @@ extension UIGestureRecognizer {
         if animated {
             let completionHandler: (Bool)->Void = { [weak self] _ in
                 guard let self = self else { return }
-                self.tableView?.isScrollEditing = editing
                 if editing == false { self.editingView?.removeAllActions() }
+                self.tableView?.isHaulEditing = editing
                 self.didEndUpdateEditing(editing, animated: animated)
             }
             if editing {
@@ -183,7 +183,7 @@ extension UIGestureRecognizer {
         } else {
             update(editing: editing)
             if editing == false { editingView?.removeAllActions() }
-            tableView?.isScrollEditing = false
+            tableView?.isHaulEditing = false
             didEndUpdateEditing(editing, animated: animated)
         }
     }
@@ -211,7 +211,7 @@ extension UITableViewCell: UITableViewEditingRecognizerHandler {
         // 添加编辑视图
         var editingView: UITableViewEditingView! = editingView
         if editingView == nil {
-            editingView = UITableViewEditingView(options: tableView.options)
+            editingView = UITableViewEditingView(options: tableView.editingOptions)
             editingView.delegate = self
             insertSubview(editingView, aboveSubview: contentView)
             self.editingView = editingView

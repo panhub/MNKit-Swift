@@ -421,7 +421,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3B5CE56728B36CFC00527F55 /* MNTableViewCell */ = {
+		3B5CE56728B36CFC00527F55 /* MNTableViewEditing */ = {
 			isa = PBXGroup;
 			children = (
 				3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */,
@@ -431,7 +431,7 @@
 				3BA6550728B3CF3F00BD54BA /* UITableViewEditingOptions.swift */,
 				3BFA91BD28B4D0EB0013CE6D /* UITableViewEditingRecognizer.swift */,
 			);
-			path = MNTableViewCell;
+			path = MNTableViewEditing;
 			sourceTree = "<group>";
 		};
 		3BDB6D5628990C940023D5E3 = {
@@ -656,7 +656,7 @@
 		3BDB6F9C28992DFA0023D5E3 /* units */ = {
 			isa = PBXGroup;
 			children = (
-				3B5CE56728B36CFC00527F55 /* MNTableViewCell */,
+				3B5CE56728B36CFC00527F55 /* MNTableViewEditing */,
 				3BDB6F26289928E40023D5E3 /* MNCollectionViewLayout */,
 				3BDB6F9D28992DFA0023D5E3 /* MNSecureView */,
 				3BDB6FA128992DFA0023D5E3 /* MNAdsorbHeader.swift */,

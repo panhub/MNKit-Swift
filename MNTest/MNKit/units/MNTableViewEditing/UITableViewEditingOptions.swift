@@ -3,7 +3,7 @@
 //  MNTest
 //
 //  Created by 冯盼 on 2022/8/22.
-//  编辑的配置信息
+//  表格编辑配置信息
 
 import UIKit
 
@@ -17,5 +17,5 @@ import UIKit
     @objc var contentInset: UIEdgeInsets = .zero
     
     /// 背景颜色
-    @objc var backgroundColor: UIColor = .clear
+    @objc var backgroundColor: UIColor? = .clear
 }

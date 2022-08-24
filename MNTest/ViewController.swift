@@ -28,8 +28,8 @@ class ViewController: MNListViewController {
         tableView.rowHeight = 75.0
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .singleLine
-        tableView.options.contentInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
-        tableView.options.cornerRadius = 8.0
+        tableView.editingOptions.contentInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
+        tableView.editingOptions.cornerRadius = 8.0
     }
 }
 

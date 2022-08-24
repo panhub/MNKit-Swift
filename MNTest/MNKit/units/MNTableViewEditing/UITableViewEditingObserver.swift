@@ -3,7 +3,7 @@
 //  MNTest
 //
 //  Created by 冯盼 on 2022/8/22.
-//  针对UITableViewCell编辑的监听
+//  针对UITableView偏移改变的监听以取消编辑状态
 
 import UIKit
 
@@ -18,8 +18,10 @@ protocol UITableViewEditingObserverHandler: NSObjectProtocol {
 
 class UITableViewEditingObserver: NSObject {
     
+    /// 监听的视图集合
     weak var tableView: UITableView?
     
+    /// 事件通知代理
     weak var delegate: UITableViewEditingObserverHandler?
     
     override init() {
