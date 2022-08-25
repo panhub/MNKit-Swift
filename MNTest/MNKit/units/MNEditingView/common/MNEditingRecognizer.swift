@@ -1,5 +1,5 @@
 //
-//  UITableViewEditingRecognizer.swift
+//  MNEditingRecognizer.swift
 //  MNTest
 //
 //  Created by 冯盼 on 2022/8/23.
@@ -7,20 +7,20 @@
 
 import UIKit
 
-protocol UITableViewEditingRecognizerHandler: NSObjectProtocol {
+protocol MNEditingRecognizerHandler: NSObjectProtocol {
     
     /// 询问是否可响应手势
     /// - Parameters:
     ///   - recognizer: 拖拽手势
     ///   - editingDirection: 拖拽方向
     /// - Returns: 是否可响应
-    func gestureRecognizerShouldBegin(_ recognizer: UITableViewEditingRecognizer, direction editingDirection: UITableViewCell.EditingDirection) -> Bool
+    func gestureRecognizerShouldBegin(_ recognizer: MNEditingRecognizer, direction editingDirection: MNEditingDirection) -> Bool
 }
 
-class UITableViewEditingRecognizer: UIPanGestureRecognizer {
+class MNEditingRecognizer: UIPanGestureRecognizer {
     
     /// 事件回调代理
-    weak var handler: UITableViewEditingRecognizerHandler?
+    weak var handler: MNEditingRecognizerHandler?
     
     /// 实例化拖拽手势
     /// - Parameters:
@@ -33,7 +33,7 @@ class UITableViewEditingRecognizer: UIPanGestureRecognizer {
 }
 
 // MARK: - UIGestureRecognizerDelegate
-extension UITableViewEditingRecognizer: UIGestureRecognizerDelegate {
+extension MNEditingRecognizer: UIGestureRecognizerDelegate {
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let recognizer = gestureRecognizer as? UIPanGestureRecognizer else { return false }

@@ -1,5 +1,5 @@
 //
-//  UITableViewEditingView.swift
+//  MNEditingView.swift
 //  MNTest
 //
 //  Created by 冯盼 on 2022/8/22.
@@ -7,25 +7,30 @@
 
 import UIKit
 
-protocol UITableViewEditingHandler: NSObjectProtocol {
+protocol MNEditingViewDelegate: NSObjectProtocol {
     
     /// 按钮第一次点击事件 可选择提交二次视图
     /// - Parameters:
     ///   - editingView: 编辑视图
     ///   - index: 按钮索引
-    func editingView(_ editingView: UITableViewEditingView, actionTouchUpInsideAt index: Int) -> Void
+    func editingView(_ editingView: MNEditingView, actionTouchUpInsideAt index: Int) -> Void
 }
 
-class UITableViewEditingView: UIView {
+/// 定义编辑拖拽方向
+@objc enum MNEditingDirection: Int {
+    case none, left, right
+}
+
+class MNEditingView: UIView {
     
     /// 配置信息
-    @objc let options: UITableViewEditingOptions
+    @objc let options: MNEditingOptions
     
     /// 当前的拖拽方向
-    private(set) var direction: UITableViewCell.EditingDirection = .left
+    private(set) var direction: MNEditingDirection = .left
     
     /// 事件代理
-    weak var delegate: UITableViewEditingHandler?
+    weak var delegate: MNEditingViewDelegate?
     
     /// 添加的按钮
     @objc private(set) var actions: [UIView] = [UIView]()
@@ -35,7 +40,7 @@ class UITableViewEditingView: UIView {
     
     /// 依据配置信息构造
     /// - Parameter options: 配置信息
-    init(options: UITableViewEditingOptions) {
+    init(options: MNEditingOptions) {
         self.options = options
         super.init(frame: .zero)
         clipsToBounds = true
@@ -68,9 +73,21 @@ class UITableViewEditingView: UIView {
     
     /// 更新编辑方向
     /// - Parameter direction: 指定方向
-    func update(direction: UITableViewCell.EditingDirection) {
+    func update(direction: MNEditingDirection) {
         guard direction != .none, self.direction != direction else { return }
         self.direction = direction
+        // 更新位置
+        if let superview = superview {
+            var rect = frame
+            if direction == .left {
+                rect.origin.x = superview.frame.width - rect.width - options.contentInset.right
+            } else {
+                rect.origin.x = options.contentInset.left
+            }
+            autoresizingMask = []
+            frame = rect
+            autoresizingMask = [.flexibleHeight]
+        }
         // 更新子视图
         for subview in subviews {
             guard subview.subviews.count > 0 else { continue }
@@ -87,18 +104,6 @@ class UITableViewEditingView: UIView {
             }
             action.frame = rect
             action.autoresizingMask = autoresizingMask
-        }
-        // 更新位置
-        if let superview = superview {
-            var rect = frame
-            if direction == .left {
-                rect.origin.x = superview.frame.width - rect.width - options.contentInset.right
-            } else {
-                rect.origin.x = options.contentInset.left
-            }
-            autoresizingMask = []
-            frame = rect
-            autoresizingMask = [.flexibleHeight]
         }
     }
     

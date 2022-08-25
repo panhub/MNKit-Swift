@@ -18,13 +18,13 @@ import ObjectiveC.runtime
     }
     
     /// 编辑视图的配置
-    @objc var editingOptions: UITableViewEditingOptions {
-        if let options = objc_getAssociatedObject(self, &EditingAssociated.options) as? UITableViewEditingOptions { return options }
+    @objc var editingOptions: MNEditingOptions {
+        if let options = objc_getAssociatedObject(self, &EditingAssociated.options) as? MNEditingOptions { return options }
         if objc_getAssociatedObject(self, &EditingAssociated.observer) == nil {
-            let observer = UITableViewEditingObserver(tableView: self, delegate: self)
+            let observer = MNEditingObserver(scrollView: self, delegate: self)
             objc_setAssociatedObject(self, &EditingAssociated.observer, observer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
-        let options = UITableViewEditingOptions()
+        let options = MNEditingOptions()
         objc_setAssociatedObject(self, &EditingAssociated.options, options, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         return options
     }
@@ -45,12 +45,12 @@ import ObjectiveC.runtime
     }
 }
 
-// MARK: - UITableViewEditingObserverHandler
-extension UITableView: UITableViewEditingObserverHandler {
+// MARK: - MNEditingObserverHandler
+extension UITableView: MNEditingObserverHandler {
     
-    func tableView(_ tableView: UITableView, contentOffset change: [NSKeyValueChangeKey : Any]?) {
+    func scrollView(_ scrollView: UIScrollView, contentOffset change: [NSKeyValueChangeKey : Any]?) {
         guard isHaulEditing else { return }
         isHaulEditing = false
-        endEditing(animated: (tableView.isDragging || tableView.isDecelerating))
+        endEditing(animated: (scrollView.isDragging || scrollView.isDecelerating))
     }
 }

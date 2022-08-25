@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B3E02A528B7E9310062AB8A /* UICollectionView+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02A428B7E9310062AB8A /* UICollectionView+MNEditing.swift */; };
+		3B3E02A728B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02A628B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift */; };
 		3B5CE56628B3674A00527F55 /* UITableViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */; };
-		3B5CE56B28B36F5700527F55 /* UITableViewEditingObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56A28B36F5700527F55 /* UITableViewEditingObserver.swift */; };
+		3B5CE56B28B36F5700527F55 /* MNEditingObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56A28B36F5700527F55 /* MNEditingObserver.swift */; };
 		3BA6550428B3C48300BD54BA /* UITableView+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */; };
-		3BA6550628B3CE9300BD54BA /* UITableViewEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550528B3CE9300BD54BA /* UITableViewEditingView.swift */; };
-		3BA6550828B3CF3F00BD54BA /* UITableViewEditingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550728B3CF3F00BD54BA /* UITableViewEditingOptions.swift */; };
+		3BA6550628B3CE9300BD54BA /* MNEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550528B3CE9300BD54BA /* MNEditingView.swift */; };
+		3BA6550828B3CF3F00BD54BA /* MNEditingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */; };
 		3BA6550A28B422A000BD54BA /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550928B422A000BD54BA /* TableViewCell.swift */; };
 		3BC67631289A1CDA00E57BA1 /* MNComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC67630289A1CDA00E57BA1 /* MNComponents.swift */; };
 		3BDB6D6328990C940023D5E3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6228990C940023D5E3 /* AppDelegate.swift */; };
@@ -203,16 +205,18 @@
 		3BDB708128992DFA0023D5E3 /* Data+MNImageFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB701528992DFA0023D5E3 /* Data+MNImageFormat.swift */; };
 		3BDEA3A828A6C90000538C48 /* UITableView+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDEA3A728A6C90000538C48 /* UITableView+MNExtension.swift */; };
 		3BDEA3AA28A6C94400538C48 /* UICollectionView+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDEA3A928A6C94400538C48 /* UICollectionView+MNExtension.swift */; };
-		3BFA91BE28B4D0EB0013CE6D /* UITableViewEditingRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BFA91BD28B4D0EB0013CE6D /* UITableViewEditingRecognizer.swift */; };
+		3BFA91BE28B4D0EB0013CE6D /* MNEditingRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BFA91BD28B4D0EB0013CE6D /* MNEditingRecognizer.swift */; };
 		3BFEA9E028B548040079FA2D /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BFEA9DF28B548040079FA2D /* FirstViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3B3E02A428B7E9310062AB8A /* UICollectionView+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+MNEditing.swift"; sourceTree = "<group>"; };
+		3B3E02A628B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewCell+MNEditing.swift"; sourceTree = "<group>"; };
 		3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+MNEditing.swift"; sourceTree = "<group>"; };
-		3B5CE56A28B36F5700527F55 /* UITableViewEditingObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewEditingObserver.swift; sourceTree = "<group>"; };
+		3B5CE56A28B36F5700527F55 /* MNEditingObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingObserver.swift; sourceTree = "<group>"; };
 		3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+MNEditing.swift"; sourceTree = "<group>"; };
-		3BA6550528B3CE9300BD54BA /* UITableViewEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewEditingView.swift; sourceTree = "<group>"; };
-		3BA6550728B3CF3F00BD54BA /* UITableViewEditingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewEditingOptions.swift; sourceTree = "<group>"; };
+		3BA6550528B3CE9300BD54BA /* MNEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingView.swift; sourceTree = "<group>"; };
+		3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingOptions.swift; sourceTree = "<group>"; };
 		3BA6550928B422A000BD54BA /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		3BC67630289A1CDA00E57BA1 /* MNComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNComponents.swift; sourceTree = "<group>"; };
 		3BDB6D5F28990C940023D5E3 /* MNTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MNTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -406,7 +410,7 @@
 		3BDB701528992DFA0023D5E3 /* Data+MNImageFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+MNImageFormat.swift"; sourceTree = "<group>"; };
 		3BDEA3A728A6C90000538C48 /* UITableView+MNExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+MNExtension.swift"; sourceTree = "<group>"; };
 		3BDEA3A928A6C94400538C48 /* UICollectionView+MNExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+MNExtension.swift"; sourceTree = "<group>"; };
-		3BFA91BD28B4D0EB0013CE6D /* UITableViewEditingRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewEditingRecognizer.swift; sourceTree = "<group>"; };
+		3BFA91BD28B4D0EB0013CE6D /* MNEditingRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingRecognizer.swift; sourceTree = "<group>"; };
 		3BFEA9DF28B548040079FA2D /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -421,17 +425,43 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		3B5CE56728B36CFC00527F55 /* MNTableViewEditing */ = {
+		3B3E02A828B7EAD40062AB8A /* tableView */ = {
 			isa = PBXGroup;
 			children = (
-				3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */,
-				3B5CE56A28B36F5700527F55 /* UITableViewEditingObserver.swift */,
 				3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */,
-				3BA6550528B3CE9300BD54BA /* UITableViewEditingView.swift */,
-				3BA6550728B3CF3F00BD54BA /* UITableViewEditingOptions.swift */,
-				3BFA91BD28B4D0EB0013CE6D /* UITableViewEditingRecognizer.swift */,
+				3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */,
 			);
-			path = MNTableViewEditing;
+			path = tableView;
+			sourceTree = "<group>";
+		};
+		3B3E02A928B7EAE10062AB8A /* collectionView */ = {
+			isa = PBXGroup;
+			children = (
+				3B3E02A428B7E9310062AB8A /* UICollectionView+MNEditing.swift */,
+				3B3E02A628B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift */,
+			);
+			path = collectionView;
+			sourceTree = "<group>";
+		};
+		3B3E02AA28B7EB040062AB8A /* common */ = {
+			isa = PBXGroup;
+			children = (
+				3BFA91BD28B4D0EB0013CE6D /* MNEditingRecognizer.swift */,
+				3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */,
+				3B5CE56A28B36F5700527F55 /* MNEditingObserver.swift */,
+				3BA6550528B3CE9300BD54BA /* MNEditingView.swift */,
+			);
+			path = common;
+			sourceTree = "<group>";
+		};
+		3B5CE56728B36CFC00527F55 /* MNEditingView */ = {
+			isa = PBXGroup;
+			children = (
+				3B3E02AA28B7EB040062AB8A /* common */,
+				3B3E02A928B7EAE10062AB8A /* collectionView */,
+				3B3E02A828B7EAD40062AB8A /* tableView */,
+			);
+			path = MNEditingView;
 			sourceTree = "<group>";
 		};
 		3BDB6D5628990C940023D5E3 = {
@@ -656,7 +686,7 @@
 		3BDB6F9C28992DFA0023D5E3 /* units */ = {
 			isa = PBXGroup;
 			children = (
-				3B5CE56728B36CFC00527F55 /* MNTableViewEditing */,
+				3B5CE56728B36CFC00527F55 /* MNEditingView */,
 				3BDB6F26289928E40023D5E3 /* MNCollectionViewLayout */,
 				3BDB6F9D28992DFA0023D5E3 /* MNSecureView */,
 				3BDB6FA128992DFA0023D5E3 /* MNAdsorbHeader.swift */,
@@ -956,7 +986,7 @@
 				3BDB702928992DFA0023D5E3 /* MNPageProtocol.swift in Sources */,
 				3BDB706928992DFA0023D5E3 /* UIEdgeInsets+MNExtension.swift in Sources */,
 				3BDB6F5A289928E40023D5E3 /* MNToast.swift in Sources */,
-				3BA6550628B3CE9300BD54BA /* UITableViewEditingView.swift in Sources */,
+				3BA6550628B3CE9300BD54BA /* MNEditingView.swift in Sources */,
 				3BDB6F75289928E40023D5E3 /* MNTransitionAnimator.swift in Sources */,
 				3BDB705728992DFA0023D5E3 /* MNAssetExporter.swift in Sources */,
 				3BDB6F79289928E40023D5E3 /* MNPortalAnimator.swift in Sources */,
@@ -972,7 +1002,7 @@
 				3BDB6F59289928E40023D5E3 /* MNShapeToast.swift in Sources */,
 				3BDB705528992DFA0023D5E3 /* MNFileManager.swift in Sources */,
 				3BDB706628992DFA0023D5E3 /* UIView+MNExtension.swift in Sources */,
-				3B5CE56B28B36F5700527F55 /* UITableViewEditingObserver.swift in Sources */,
+				3B5CE56B28B36F5700527F55 /* MNEditingObserver.swift in Sources */,
 				3BDB6F92289928E40023D5E3 /* CALayer+MNLayout.swift in Sources */,
 				3BDB6F7E289928E40023D5E3 /* UIViewController+MNInterface.swift in Sources */,
 				3BDB706C28992DFA0023D5E3 /* UIImage+MNExtension.swift in Sources */,
@@ -1026,7 +1056,7 @@
 				3BDB6F67289928E40023D5E3 /* HTTPSerializer.swift in Sources */,
 				3BDB705328992DFA0023D5E3 /* MNAssetPickerToolBar.swift in Sources */,
 				3BDB706228992DFA0023D5E3 /* CGSize+MNExtension.swift in Sources */,
-				3BA6550828B3CF3F00BD54BA /* UITableViewEditingOptions.swift in Sources */,
+				3BA6550828B3CF3F00BD54BA /* MNEditingOptions.swift in Sources */,
 				3BDB6F7C289928E40023D5E3 /* MNTransitionHelper.swift in Sources */,
 				3BDB705928992DFA0023D5E3 /* AVMutableComposition+MNExport.swift in Sources */,
 				3BDB702D28992DFA0023D5E3 /* MNPageViewController.swift in Sources */,
@@ -1046,7 +1076,7 @@
 				3BDB705D28992DFA0023D5E3 /* MNAssetExportSession.swift in Sources */,
 				3BDB706428992DFA0023D5E3 /* String+MNSubscript.swift in Sources */,
 				3BDB6F5E289928E40023D5E3 /* MNMsgToast.swift in Sources */,
-				3BFA91BE28B4D0EB0013CE6D /* UITableViewEditingRecognizer.swift in Sources */,
+				3BFA91BE28B4D0EB0013CE6D /* MNEditingRecognizer.swift in Sources */,
 				3BDB708028992DFA0023D5E3 /* String+MNEncrypt.swift in Sources */,
 				3BDB6F6B289928E40023D5E3 /* HTTPProxy.swift in Sources */,
 				3BDB701928992DFA0023D5E3 /* MNAdsorbHeader.swift in Sources */,
@@ -1059,6 +1089,7 @@
 				3BDB6F7F289928E40023D5E3 /* MNWebViewController.swift in Sources */,
 				3BDB703A28992DFA0023D5E3 /* PHAsset+MNExportExtension.swift in Sources */,
 				3BDB706B28992DFA0023D5E3 /* UIApplication+MNExtension.swift in Sources */,
+				3B3E02A528B7E9310062AB8A /* UICollectionView+MNEditing.swift in Sources */,
 				3BDB705E28992DFA0023D5E3 /* MNMotionManager.swift in Sources */,
 				3BDB6F89289928E40023D5E3 /* HTTPUploadRequest.swift in Sources */,
 				3BDB6F76289928E40023D5E3 /* MNErectedAnimator.swift in Sources */,
@@ -1096,6 +1127,7 @@
 				3BDB703128992DFA0023D5E3 /* UIScrollView+MNSubpageAssociated.swift in Sources */,
 				3BDB707028992DFA0023D5E3 /* UIDevice+MNExtension.swift in Sources */,
 				3BDB704C28992DFA0023D5E3 /* MNAssetIndexLabel.swift in Sources */,
+				3B3E02A728B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift in Sources */,
 				3BDB706528992DFA0023D5E3 /* UIColor+MNExtension.swift in Sources */,
 				3BDB704D28992DFA0023D5E3 /* MNAssetProgressView.swift in Sources */,
 				3BDB705F28992DFA0023D5E3 /* CGFloat+MNExtension.swift in Sources */,

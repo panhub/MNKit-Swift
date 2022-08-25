@@ -16,7 +16,7 @@ import ObjectiveC.runtime
     ///   - tableView: 集合视图
     ///   - indexPath: 索引
     /// - Returns: 编辑方向
-    func tableView(_ tableView: UITableView, rowEditingDirectionAt indexPath: IndexPath) -> UITableViewCell.EditingDirection
+    func tableView(_ tableView: UITableView, rowEditingDirectionAt indexPath: IndexPath) -> MNEditingDirection
     
     /// 提交编辑视图
     /// - Parameters:
@@ -34,37 +34,23 @@ import ObjectiveC.runtime
     func tableView(_ tableView: UITableView, commitEditing action: UIView, forRowAt indexPath: IndexPath) -> UIView?
 }
 
-extension UIGestureRecognizer {
-    
-    private struct EditingAssociated {
-        static var label = "com.mn.recognizer.editing.label"
-    }
-    
-    /// 拖动手势标记
-    fileprivate static let TableViewCellEditingLabel: String = "com.mn.recognizer.editing.label"
-    
-    /// 记录标记
-    var editingLabel: String {
-        get { (objc_getAssociatedObject(self, &EditingAssociated.label) as? String) ?? "" }
-        set { objc_setAssociatedObject(self, &EditingAssociated.label, newValue, .OBJC_ASSOCIATION_COPY) }
-    }
-}
-
 @objc extension UITableViewCell {
     
-    /// 定义编辑拖拽方向
-    @objc enum EditingDirection: Int {
-        case none, left, right
-    }
-    
     private struct EditingAssociated {
+        static var x = "com.mn.table.view.cell.content.view.x"
         static var view = "com.mn.table.view.cell.editing.view"
         static var editing = "com.mn.table.view.cell.allows.editing"
     }
     
+    /// 编辑开始时的x
+    private var contentViewOriginX: CGFloat {
+        get { objc_getAssociatedObject(self, &EditingAssociated.x) as? CGFloat ?? 0.0 }
+        set { objc_setAssociatedObject(self, &EditingAssociated.x, newValue, .OBJC_ASSOCIATION_ASSIGN) }
+    }
+    
     /// 编辑视图
-    private var editingView: UITableViewEditingView? {
-        get { objc_getAssociatedObject(self, &EditingAssociated.view) as? UITableViewEditingView }
+    private var editingView: MNEditingView? {
+        get { objc_getAssociatedObject(self, &EditingAssociated.view) as? MNEditingView }
         set { objc_setAssociatedObject(self, &EditingAssociated.view, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
     
@@ -78,16 +64,15 @@ extension UIGestureRecognizer {
     @objc var allowsEditing: Bool {
         get { (objc_getAssociatedObject(self, &EditingAssociated.editing) as? Bool) ?? false }
         set {
-            if allowsEditing == newValue { return }
+            guard allowsEditing != newValue else { return }
             objc_setAssociatedObject(self, &EditingAssociated.editing, newValue, .OBJC_ASSOCIATION_ASSIGN)
             if newValue {
-                let pan = UITableViewEditingRecognizer(target: self, action: #selector(handleCellEditing(_:)))
+                let pan = MNEditingRecognizer(target: self, action: #selector(handleCellEditing(_:)))
                 pan.handler = self
-                pan.editingLabel = UIGestureRecognizer.TableViewCellEditingLabel
                 contentView.addGestureRecognizer(pan)
             } else {
                 guard let gestureRecognizers = contentView.gestureRecognizers else { return }
-                for recognizer in gestureRecognizers.filter ({ $0.editingLabel == UIGestureRecognizer.TableViewCellEditingLabel }) {
+                for recognizer in gestureRecognizers.filter ({ $0 is MNEditingRecognizer }) {
                     recognizer.removeTarget(nil, action: nil)
                     contentView.removeGestureRecognizer(recognizer)
                 }
@@ -126,13 +111,16 @@ extension UIGestureRecognizer {
             layoutIfNeeded()
         case .ended:
             guard let editingView = editingView else { break }
+            let sum = editingView.sum
             let velocity = recognizer.velocity(in: recognizer.view)
             if editingView.frame.width <= 0.0 {
                 tableView?.isHaulEditing = false
                 editingView.removeAllActions()
-            } else if editingView.frame.width >= editingView.sum {
+            } else if editingView.frame.width == sum {
+                tableView?.isHaulEditing = true
+            } else if editingView.frame.width > sum {
                 updateEditing(true, animated: true)
-            } else if editingView.frame.width >= 50.0 && ((editingView.direction == .left && velocity.x < 0.0) || (editingView.direction == .right && velocity.x > 0.0)) {
+            } else if editingView.frame.width >= 45.0 && ((editingView.direction == .left && velocity.x < 0.0) || (editingView.direction == .right && velocity.x > 0.0)) {
                 updateEditing(true, animated: true)
             } else {
                 updateEditing(false, animated: true)
@@ -189,17 +177,17 @@ extension UIGestureRecognizer {
     }
 }
 
-// MARK: - UITableViewEditingRecognizerHandler
-extension UITableViewCell: UITableViewEditingRecognizerHandler {
+// MARK: - MNEditingRecognizerHandler
+extension UITableViewCell: MNEditingRecognizerHandler {
     
-    func gestureRecognizerShouldBegin(_ recognizer: UITableViewEditingRecognizer, direction editingDirection: EditingDirection) -> Bool {
+    func gestureRecognizerShouldBegin(_ recognizer: MNEditingRecognizer, direction editingDirection: MNEditingDirection) -> Bool {
         guard let tableView = tableView else { return false }
         guard let indexPath = tableView.indexPath(for: self) else { return false }
         guard let delegate = tableView.delegate as? UITableViewEditingDelegate else { return false }
         // 编辑状态下可继续拖拽
         if let editingView = editingView, editingView.frame.width > 0.0 { return true }
         // 支持的编辑方向
-        let direction: UITableViewCell.EditingDirection = delegate.tableView(tableView, rowEditingDirectionAt: indexPath)
+        let direction: MNEditingDirection = delegate.tableView(tableView, rowEditingDirectionAt: indexPath)
         if direction == .none { return false }
         // 方向一致
         guard direction == editingDirection else { return  false }
@@ -209,25 +197,26 @@ extension UITableViewCell: UITableViewEditingRecognizerHandler {
         // 结束其它表格编辑状态
         tableView.endEditing(animated: true)
         // 添加编辑视图
-        var editingView: UITableViewEditingView! = editingView
-        if editingView == nil {
-            editingView = UITableViewEditingView(options: tableView.editingOptions)
-            editingView.delegate = self
-            insertSubview(editingView, aboveSubview: contentView)
-            self.editingView = editingView
+        var view: MNEditingView! = editingView
+        if view == nil {
+            view = MNEditingView(options: tableView.editingOptions)
+            view.delegate = self
+            insertSubview(view, aboveSubview: contentView)
+            view = editingView
+            contentViewOriginX = contentView.frame.minX
         } else {
-            editingView.removeAllActions()
+            view.removeAllActions()
         }
-        editingView.update(direction: direction)
-        editingView.update(actions: actions)
+        view.update(direction: direction)
+        view.update(actions: actions)
         return true
     }
 }
 
-// MARK: - UITableViewEditingHandler
-extension UITableViewCell: UITableViewEditingHandler {
+// MARK: - MNEditingViewDelegate
+extension UITableViewCell: MNEditingViewDelegate {
     
-    func editingView(_ editingView: UITableViewEditingView, actionTouchUpInsideAt index: Int) {
+    func editingView(_ editingView: MNEditingView, actionTouchUpInsideAt index: Int) {
         guard let tableView = tableView else { return }
         guard let indexPath = tableView.indexPath(for: self) else { return }
         guard let delegate = tableView.delegate as? UITableViewEditingDelegate else { return }
@@ -254,7 +243,8 @@ extension UITableViewCell: UITableViewEditingHandler {
     /// 约束编辑视图
     @objc func layoutEditingView() {
         guard let editingView = editingView, editingView.frame.width > 0.0 else { return }
-        var rect = bounds
+        var rect = contentView.frame
+        rect.origin.x = contentViewOriginX
         if editingView.direction == .left {
             rect.origin.x -= editingView.frame.width
         } else {
