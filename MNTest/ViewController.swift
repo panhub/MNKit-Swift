@@ -77,7 +77,7 @@ extension ViewController {
 
 extension ViewController: UICollectionViewEditingDelegate {
     
-    func collectionView(_ collectionView: UICollectionView, editingActionsForRowAt indexPath: IndexPath) -> [UIView] {
+    func collectionView(_ collectionView: UICollectionView, editingActionsForItemAt indexPath: IndexPath) -> [UIView] {
         let button0 = UIButton(type: .custom)
         button0.size = CGSize(width: 80.0, height: 55.0)
         button0.backgroundColor = .purple
@@ -107,7 +107,7 @@ extension ViewController: UICollectionViewEditingDelegate {
         return [button0, button, button2]
     }
     
-    func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forRowAt indexPath: IndexPath) -> UIView? {
+    func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forItemAt indexPath: IndexPath) -> UIView? {
         let button = UIButton(type: .custom)
         button.size = CGSize(width: 180.0, height: 55.0)
         button.backgroundColor = action.backgroundColor
@@ -119,7 +119,7 @@ extension ViewController: UICollectionViewEditingDelegate {
         return button
     }
     
-    func collectionView(_ collectionView: UICollectionView, rowEditingDirectionAt indexPath: IndexPath) -> MNEditingDirection {
+    func collectionView(_ collectionView: UICollectionView, itemEditingDirectionAt indexPath: IndexPath) -> MNEditingDirection {
         indexPath.row%2 == 0 ? .left : .right
     }
 }

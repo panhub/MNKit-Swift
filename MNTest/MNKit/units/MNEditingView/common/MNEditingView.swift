@@ -30,13 +30,13 @@ class MNEditingView: UIView {
     @objc let options: MNEditingOptions
     
     /// 当前的拖拽方向
-    private(set) var direction: MNEditingDirection = .left
+    @objc private(set) var direction: MNEditingDirection = .left
     
     /// 事件代理
     weak var delegate: MNEditingViewDelegate?
     
-    /// 添加的按钮
-    //private var actions: [UIView] = [UIView]()
+    /// 是否在动画
+    @objc var isAnimating: Bool = false
     
     /// 当前按钮的总宽度
     @objc var sum: CGFloat = 0.0
@@ -140,7 +140,7 @@ class MNEditingView: UIView {
                 addSubview(control)
             }
             control.frame = CGRect(x: 0.0, y: 0.0, width: action.frame.width, height: frame.height)
-            control.backgroundColor = action.backgroundColor
+            control.backgroundColor = action.backgroundColor ?? .clear
             control.autoresizingMask = [.flexibleHeight]
             action.autoresizingMask = []
             action.center = CGPoint(x: control.bounds.midX, y: control.bounds.midY)
@@ -181,11 +181,9 @@ class MNEditingView: UIView {
         guard let subview = subviews.filter ({ $0.tag == index }).first else { return }
         sum = action.frame.width
         (subview as? UIControl)?.isEnabled = false
+        subview.backgroundColor = action.backgroundColor ?? .clear
         for sub in subview.subviews.reversed() {
             sub.removeFromSuperview()
-        }
-        if let backgroundColor = action.backgroundColor {
-            subview.backgroundColor = backgroundColor
         }
         var rect = action.frame
         rect.origin.x = 0.0
@@ -194,7 +192,7 @@ class MNEditingView: UIView {
         action.frame = rect
         subview.addSubview(action)
         bringSubviewToFront(subview)
-        isUserInteractionEnabled = false
+        isAnimating = true
         UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
             guard let self = self else { return }
             var rect = subview.frame
@@ -211,7 +209,7 @@ class MNEditingView: UIView {
             self.frame = rect
         } completion: { [weak self] _ in
             guard let self = self else { return }
-            self.isUserInteractionEnabled = true
+            self.isAnimating = false
             if self.direction == .left {
                 action.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
             } else {
@@ -229,6 +227,7 @@ class MNEditingView: UIView {
     /// 按钮点击事件
     /// - Parameter sender: 按钮
     @objc private func buttonTouchUpInside(_ sender: UIView) {
+        guard isAnimating == false else { return }
         guard let action = sender.subviews.first else { return }
         delegate?.editingView(self, actionTouchUpInside: action, index: sender.tag)
     }

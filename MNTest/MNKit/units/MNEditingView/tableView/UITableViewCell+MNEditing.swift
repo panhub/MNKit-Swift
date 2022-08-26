@@ -32,6 +32,14 @@ import ObjectiveC.runtime
     ///   - indexPath: 索引
     /// - Returns: 二次编辑视图
     @objc optional func tableView(_ tableView: UITableView, commitEditing action: UIView, forRowAt indexPath: IndexPath) -> UIView?
+    
+    /// 拖拽结束需要开启编辑状态时告知
+    /// - Parameters:
+    ///   - tableView: 集合视图
+    ///   - indexPath: 表格索引
+    ///   - change: 编辑视图即将要发生的尺寸变化 [oldKey:现在的编辑视图尺寸, newKey:需要调整到的编辑视图尺寸]
+    /// - Returns: 是否可以改变
+    @objc optional func tableView(_ tableView: UITableView, rowShouldSpringBeginEditingAt indexPath: IndexPath, change: [NSKeyValueChangeKey : CGSize]) -> Bool
 }
 
 @objc extension UITableViewCell {
@@ -93,17 +101,16 @@ import ObjectiveC.runtime
             var m: CGFloat = translation.x
             if rect.width >= sum {
                 // 超过最优距离, 加阻尼, 减缓拖拽效果
-                m = translation.x/4.0
+                m = m/3.0*2.0
             }
-            m = ceil(m)
             if editingView.direction == .left {
                 let spacing = tableView?.editingOptions.contentInset.right ?? 0.0
                 rect.size.width -= m
-                rect.size.width = max(0.0, rect.width)
+                rect.size.width = max(0.0, floor(rect.width))
                 rect.origin.x = frame.width - rect.width - spacing
             } else {
                 rect.size.width += m
-                rect.size.width = max(0.0, rect.width)
+                rect.size.width = max(0.0, floor(rect.width))
             }
             editingView.frame = rect
             editingView.update(width: rect.width)
@@ -117,11 +124,15 @@ import ObjectiveC.runtime
                 tableView?.isHaulEditing = false
             } else if editingView.frame.width == sum {
                 tableView?.isHaulEditing = true
-            } else if editingView.frame.width > sum {
-                updateEditing(true, animated: true)
-            } else if editingView.frame.width >= 45.0 && ((editingView.direction == .left && velocity.x < 0.0) || (editingView.direction == .right && velocity.x > 0.0)) {
-                updateEditing(true, animated: true)
+            } else if editingView.frame.width > sum || (editingView.frame.width >= 45.0 && ((editingView.direction == .left && velocity.x < 0.0) || (editingView.direction == .right && velocity.x > 0.0))) {
+                // 开启编辑
+                if let tableView = tableView, let indexPath = tableView.indexPath(for: self), let delegate = tableView.dataSource as? UITableViewEditingDelegate, (delegate.tableView?(tableView, rowShouldSpringBeginEditingAt: indexPath, change: [.oldKey:editingView.frame.size, .newKey:CGSize(width: sum, height: editingView.frame.height)]) ?? true) == false {
+                    updateEditing(false, animated: true)
+                } else {
+                    updateEditing(true, animated: true)
+                }
             } else {
+                // 结束编辑
                 updateEditing(false, animated: true)
             }
         default: break
@@ -133,37 +144,24 @@ import ObjectiveC.runtime
     ///   - editing: 是否开启编辑
     ///   - animated: 是否显示动画过程
     @objc func updateEditing(_ editing: Bool, animated: Bool) {
-        func update(editing: Bool) {
-            guard let editingView = editingView else { return }
-            var rect = editingView.frame
-            if editing {
-                rect.size.width = editingView.sum
-            } else {
-                rect.size.width = 0.0
-            }
-            if editingView.direction == .left {
-                let spacing = tableView?.editingOptions.contentInset.right ?? 0.0
-                rect.origin.x = frame.width - rect.width - spacing
-            }
-            editingView.frame = rect
-            editingView.update(width: rect.width)
-            setNeedsLayout()
-            layoutIfNeeded()
-        }
         willBeginUpdateEditing(editing, animated: animated)
         if animated {
             let completionHandler: (Bool)->Void = { [weak self] _ in
                 guard let self = self else { return }
+                self.editingView?.isAnimating = false
                 self.tableView?.isHaulEditing = editing
                 self.didEndUpdateEditing(editing, animated: animated)
             }
+            editingView?.isAnimating = true
             if editing {
-                UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: {
-                    update(editing: true)
+                UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+                    guard let self = self else { return }
+                    self.update(editing: true)
                 }, completion: completionHandler)
             } else {
-                UIView.animate(withDuration: 0.25, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: {
-                    update(editing: false)
+                UIView.animate(withDuration: 0.25, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+                    guard let self = self else { return }
+                    self.update(editing: false)
                 }, completion: completionHandler)
             }
         } else {
@@ -172,27 +170,49 @@ import ObjectiveC.runtime
             didEndUpdateEditing(editing, animated: animated)
         }
     }
+    
+    private func update(editing: Bool) {
+        guard let editingView = editingView else { return }
+        var rect = editingView.frame
+        if editing {
+            rect.size.width = editingView.sum
+        } else {
+            rect.size.width = 0.0
+        }
+        if editingView.direction == .left {
+            let spacing = tableView?.editingOptions.contentInset.right ?? 0.0
+            rect.origin.x = frame.width - rect.width - spacing
+        }
+        editingView.frame = rect
+        editingView.update(width: rect.width)
+        setNeedsLayout()
+        layoutIfNeeded()
+    }
 }
 
 // MARK: - MNEditingRecognizerHandler
 extension UITableViewCell: MNEditingRecognizerHandler {
     
-    func gestureRecognizerShouldBegin(_ recognizer: MNEditingRecognizer, direction editingDirection: MNEditingDirection) -> Bool {
+    func gestureRecognizerShouldBegin(_ recognizer: MNEditingRecognizer, direction haulDirection: MNEditingDirection) -> Bool {
         guard let tableView = tableView else { return false }
         guard let indexPath = tableView.indexPath(for: self) else { return false }
-        guard let delegate = tableView.delegate as? UITableViewEditingDelegate else { return false }
+        guard let delegate = tableView.dataSource as? UITableViewEditingDelegate else { return false }
         // 编辑状态下可继续拖拽
-        if let editingView = editingView, editingView.frame.width > 0.0 { return true }
+        if let editingView = editingView {
+            if editingView.isAnimating { return false }
+            if editingView.frame.width > 0.0 { return true }
+        }
         // 支持的编辑方向
         let direction: MNEditingDirection = delegate.tableView(tableView, rowEditingDirectionAt: indexPath)
-        if direction == .none { return false }
         // 方向一致
-        guard direction == editingDirection else { return  false }
+        guard direction == haulDirection else { return false }
         // 获取自定义的编辑视图
         let actions = delegate.tableView(tableView, editingActionsForRowAt: indexPath)
         guard actions.count > 0 else { return false }
         // 结束其它表格编辑状态
-        tableView.endEditing(animated: true)
+        if tableView.isHaulEditing {
+            tableView.endEditing(animated: true)
+        }
         // 添加编辑视图
         var view: MNEditingView! = editingView
         if view == nil {
@@ -214,7 +234,7 @@ extension UITableViewCell: MNEditingViewDelegate {
     func editingView(_ editingView: MNEditingView, actionTouchUpInside action: UIView, index: Int) {
         guard let tableView = tableView else { return }
         guard let indexPath = tableView.indexPath(for: self) else { return }
-        guard let delegate = tableView.delegate as? UITableViewEditingDelegate else { return }
+        guard let delegate = tableView.dataSource as? UITableViewEditingDelegate else { return }
         guard let newAction = delegate.tableView?(tableView, commitEditing: action, forRowAt: indexPath) else { return }
         editingView.replacing(index: index, action: newAction)
     }

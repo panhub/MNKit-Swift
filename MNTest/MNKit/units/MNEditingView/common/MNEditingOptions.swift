@@ -19,6 +19,6 @@ import UIKit
     /// 背景颜色
     @objc var backgroundColor: UIColor? = .clear
     
-    /// 允许内部按钮响应事件
+    /// 使用内部按钮响应事件 二次提交则由编辑视图自行处理响应
     @objc var adjustUserInteraction: Bool = true
 }
