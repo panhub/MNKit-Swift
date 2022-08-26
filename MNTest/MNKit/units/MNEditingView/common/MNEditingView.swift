@@ -12,14 +12,17 @@ protocol MNEditingViewDelegate: NSObjectProtocol {
     /// 按钮第一次点击事件 可选择提交二次视图
     /// - Parameters:
     ///   - editingView: 编辑视图
+    ///   - action: 按钮
     ///   - index: 按钮索引
-    func editingView(_ editingView: MNEditingView, actionTouchUpInsideAt index: Int) -> Void
+    func editingView(_ editingView: MNEditingView, actionTouchUpInside action: UIView, index: Int) -> Void
 }
 
 /// 定义编辑拖拽方向
 @objc enum MNEditingDirection: Int {
     case none, left, right
 }
+
+class MNEditingAction: UIControl {}
 
 class MNEditingView: UIView {
     
@@ -33,10 +36,10 @@ class MNEditingView: UIView {
     weak var delegate: MNEditingViewDelegate?
     
     /// 添加的按钮
-    @objc private(set) var actions: [UIView] = [UIView]()
+    //private var actions: [UIView] = [UIView]()
     
     /// 当前按钮的总宽度
-    @objc var sum: CGFloat { actions.reduce(0.0) { $0 + $1.frame.width } }
+    @objc var sum: CGFloat = 0.0
     
     /// 依据配置信息构造
     /// - Parameter options: 配置信息
@@ -89,7 +92,7 @@ class MNEditingView: UIView {
             autoresizingMask = [.flexibleHeight]
         }
         // 更新子视图
-        for subview in subviews {
+        for subview in subviews.filter ({ $0.isHidden == false }) {
             guard subview.subviews.count > 0 else { continue }
             let action = subview.subviews.first!
             action.autoresizingMask = []
@@ -110,29 +113,64 @@ class MNEditingView: UIView {
     /// 更新编辑视图(往编辑视图上添加子视图)
     /// - Parameter subviews: 子视图集合
     func update(actions: [UIView]) {
-        removeAllActions()
-        self.actions.append(contentsOf: actions)
+        // 先隐藏旧视图
+        for subview in subviews {
+            subview.isHidden = true
+            for sub in subview.subviews.reversed() {
+                sub.removeFromSuperview()
+            }
+        }
+        // 更新宽度
+        sum = actions.reduce(0, { $0 + $1.frame.width })
         // 添加子视图
+        let subviews: [UIView] = subviews
         for (index, action) in actions.enumerated() {
-            let control = UIControl(frame: CGRect(x: 0.0, y: 0.0, width: action.frame.width, height: frame.height))
-            control.tag = index
-            control.clipsToBounds = true
+            var control: MNEditingAction
+            if index < subviews.count {
+                control = subviews[index] as! MNEditingAction
+                control.isHidden = false
+                control.isEnabled = true
+                control.autoresizingMask = []
+                bringSubviewToFront(control)
+            } else {
+                control = MNEditingAction()
+                control.tag = index
+                control.clipsToBounds = true
+                control.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
+                addSubview(control)
+            }
+            control.frame = CGRect(x: 0.0, y: 0.0, width: action.frame.width, height: frame.height)
             control.backgroundColor = action.backgroundColor
             control.autoresizingMask = [.flexibleHeight]
-            control.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
             action.autoresizingMask = []
-            action.isUserInteractionEnabled = false
             action.center = CGPoint(x: control.bounds.midX, y: control.bounds.midY)
+            if options.adjustUserInteraction {
+                action.isUserInteractionEnabled = false
+            }
             if direction == .left {
                 action.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin]
             } else {
                 action.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin]
             }
             control.addSubview(action)
-            addSubview(control)
         }
         // 更新宽度
         update(width: frame.width)
+    }
+    
+    /// 更新编辑视图的宽度
+    /// - Parameter width: 指定宽度
+    func update(width: CGFloat) {
+        var x: CGFloat = 0.0
+        for subview in subviews.filter ({ $0.isHidden == false }) {
+            guard let action = subview.subviews.first else { continue }
+            let scale = action.frame.width/sum
+            var rect = subview.frame
+            rect.origin.x = x
+            rect.size.width = min(ceil(width*scale), width - x)
+            subview.frame = rect
+            x += rect.width
+        }
     }
     
     /// 提交二次点击视图
@@ -140,22 +178,14 @@ class MNEditingView: UIView {
     ///   - index: 子视图索引
     ///   - action: 替换的子视图
     func replacing(index: Int, action: UIView) {
-        let count = subviews.count
-        guard index < count else { return }
-        actions.removeAll()
-        actions.append(action)
-        let others: [UIView] = subviews.filter { $0.tag != index }
-        let subview = subviews[index]
-        subview.tag = 0
-        (subview as? UIControl)?.removeTarget(nil, action: nil, for: .touchUpInside)
+        guard let subview = subviews.filter ({ $0.tag == index }).first else { return }
+        sum = action.frame.width
+        (subview as? UIControl)?.isEnabled = false
         for sub in subview.subviews.reversed() {
             sub.removeFromSuperview()
         }
         if let backgroundColor = action.backgroundColor {
             subview.backgroundColor = backgroundColor
-        }
-        if action.subviews.count <= 0 {
-            action.isUserInteractionEnabled = true
         }
         var rect = action.frame
         rect.origin.x = 0.0
@@ -187,43 +217,22 @@ class MNEditingView: UIView {
             } else {
                 action.autoresizingMask = [.flexibleLeftMargin, .flexibleTopMargin, .flexibleBottomMargin]
             }
-            for other in others {
-                other.removeFromSuperview()
+            for other in self.subviews.filter ({ ($0.isHidden == false && $0.tag != index) }) {
+                other.isHidden = true
+                for sub in other.subviews.reversed() {
+                    sub.removeFromSuperview()
+                }
             }
-        }
-    }
-    
-    /// 更新编辑视图的宽度
-    /// - Parameter width: 指定宽度
-    func update(width: CGFloat) {
-        var x: CGFloat = 0.0
-        let max: CGFloat = sum
-        for (index, action) in actions.enumerated() {
-            let scale = action.frame.width/max
-            let subview = subviews[index]
-            var rect = subview.frame
-            rect.origin.x = x
-            rect.size.width = min(ceil(width*scale), width - x)
-            subview.frame = rect
-            x += rect.width
         }
     }
     
     /// 按钮点击事件
     /// - Parameter sender: 按钮
     @objc private func buttonTouchUpInside(_ sender: UIView) {
-        guard sender.tag < actions.count else { return }
-        delegate?.editingView(self, actionTouchUpInsideAt: sender.tag)
+        guard let action = sender.subviews.first else { return }
+        delegate?.editingView(self, actionTouchUpInside: action, index: sender.tag)
     }
     
-    /// 删除所有按钮
-    func removeAllActions() {
-        actions.removeAll()
-        for subview in subviews.reversed() {
-            subview.removeFromSuperview()
-        }
-    }
-
     /*
     // Only override draw() if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.

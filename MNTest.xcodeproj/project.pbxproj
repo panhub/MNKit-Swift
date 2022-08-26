@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		3B3E02A528B7E9310062AB8A /* UICollectionView+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02A428B7E9310062AB8A /* UICollectionView+MNEditing.swift */; };
 		3B3E02A728B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02A628B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift */; };
+		3B3E02AC28B7F76B0062AB8A /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02AB28B7F76B0062AB8A /* CollectionViewCell.swift */; };
 		3B5CE56628B3674A00527F55 /* UITableViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */; };
 		3B5CE56B28B36F5700527F55 /* MNEditingObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56A28B36F5700527F55 /* MNEditingObserver.swift */; };
 		3BA6550428B3C48300BD54BA /* UITableView+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */; };
@@ -212,6 +213,7 @@
 /* Begin PBXFileReference section */
 		3B3E02A428B7E9310062AB8A /* UICollectionView+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+MNEditing.swift"; sourceTree = "<group>"; };
 		3B3E02A628B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewCell+MNEditing.swift"; sourceTree = "<group>"; };
+		3B3E02AB28B7F76B0062AB8A /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+MNEditing.swift"; sourceTree = "<group>"; };
 		3B5CE56A28B36F5700527F55 /* MNEditingObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingObserver.swift; sourceTree = "<group>"; };
 		3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+MNEditing.swift"; sourceTree = "<group>"; };
@@ -486,6 +488,7 @@
 				3BDB6D6228990C940023D5E3 /* AppDelegate.swift */,
 				3BDB6F9A28992DA60023D5E3 /* ViewController.swift */,
 				3BA6550928B422A000BD54BA /* TableViewCell.swift */,
+				3B3E02AB28B7F76B0062AB8A /* CollectionViewCell.swift */,
 				3BFEA9DF28B548040079FA2D /* FirstViewController.swift */,
 				3BDB6D7628990E410023D5E3 /* MNKit */,
 				3BDB6D6B28990C950023D5E3 /* Assets.xcassets */,
@@ -1104,6 +1107,7 @@
 				3BDB707C28992DFA0023D5E3 /* CGRect+MNExtension.swift in Sources */,
 				3BDB702028992DFA0023D5E3 /* MNActionSheet.swift in Sources */,
 				3BFEA9E028B548040079FA2D /* FirstViewController.swift in Sources */,
+				3B3E02AC28B7F76B0062AB8A /* CollectionViewCell.swift in Sources */,
 				3BDB702428992DFA0023D5E3 /* MNDeviceMotior.swift in Sources */,
 				3BDB6F69289928E40023D5E3 /* HTTPSecurityPolicy.swift in Sources */,
 				3BDB701D28992DFA0023D5E3 /* MNFileHandle.swift in Sources */,
@@ -1325,7 +1329,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mine.test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mine.swift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -1354,7 +1358,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mine.test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mine.swift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

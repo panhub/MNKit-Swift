@@ -31,7 +31,7 @@ import ObjectiveC.runtime
     ///   - action: 点击的按钮
     ///   - indexPath: 索引
     /// - Returns: 二次编辑视图
-    func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forRowAt indexPath: IndexPath) -> UIView?
+    @objc optional func collectionView(_ collectionView: UICollectionView, commitEditing action: UIView, forRowAt indexPath: IndexPath) -> UIView?
 }
 
 extension UICollectionViewCell {
@@ -120,7 +120,6 @@ extension UICollectionViewCell {
             let velocity = recognizer.velocity(in: recognizer.view)
             if editingView.frame.width <= 0.0 {
                 collectionView?.isHaulEditing = false
-                editingView.removeAllActions()
             } else if editingView.frame.width == sum {
                 collectionView?.isHaulEditing = true
             } else if editingView.frame.width > sum {
@@ -160,7 +159,6 @@ extension UICollectionViewCell {
         if animated {
             let completionHandler: (Bool)->Void = { [weak self] _ in
                 guard let self = self else { return }
-                if editing == false { self.editingView?.removeAllActions() }
                 self.collectionView?.isHaulEditing = editing
                 self.didEndUpdateEditing(editing, animated: animated)
             }
@@ -175,7 +173,6 @@ extension UICollectionViewCell {
             }
         } else {
             update(editing: editing)
-            if editing == false { editingView?.removeAllActions() }
             collectionView?.isHaulEditing = false
             didEndUpdateEditing(editing, animated: animated)
         }
@@ -209,8 +206,6 @@ extension UICollectionViewCell: MNEditingRecognizerHandler {
             insertSubview(view, aboveSubview: contentView)
             editingView = view
             contentViewOriginX = contentView.frame.minX
-        } else {
-            view.removeAllActions()
         }
         view.update(direction: direction)
         view.update(actions: actions)
@@ -221,12 +216,12 @@ extension UICollectionViewCell: MNEditingRecognizerHandler {
 // MARK: - MNEditingViewDelegate
 extension UICollectionViewCell: MNEditingViewDelegate {
     
-    func editingView(_ editingView: MNEditingView, actionTouchUpInsideAt index: Int) {
+    func editingView(_ editingView: MNEditingView, actionTouchUpInside action: UIView, index: Int) {
         guard let collectionView = collectionView else { return }
         guard let indexPath = collectionView.indexPath(for: self) else { return }
         guard let delegate = collectionView.delegate as? UICollectionViewEditingDelegate else { return }
-        guard let action = delegate.collectionView(collectionView, commitEditing: editingView.actions[index], forRowAt: indexPath) else { return }
-        editingView.replacing(index: index, action: action)
+        guard let newAction = delegate.collectionView?(collectionView, commitEditing: action, forRowAt: indexPath) else { return }
+        editingView.replacing(index: index, action: newAction)
     }
 }
 
@@ -270,7 +265,7 @@ extension UICollectionViewCell: MNEditingViewDelegate {
     @objc var collectionView: UICollectionView! {
         var responder = next
         while let res = responder {
-            if res is UITableView { return res as? UICollectionView }
+            if res is UICollectionView { return res as? UICollectionView }
             responder = res.next
         }
         return nil

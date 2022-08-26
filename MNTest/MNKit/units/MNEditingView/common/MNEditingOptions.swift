@@ -18,4 +18,7 @@ import UIKit
     
     /// 背景颜色
     @objc var backgroundColor: UIColor? = .clear
+    
+    /// 允许内部按钮响应事件
+    @objc var adjustUserInteraction: Bool = true
 }

@@ -31,7 +31,7 @@ import ObjectiveC.runtime
     ///   - action: 点击的按钮
     ///   - indexPath: 索引
     /// - Returns: 二次编辑视图
-    func tableView(_ tableView: UITableView, commitEditing action: UIView, forRowAt indexPath: IndexPath) -> UIView?
+    @objc optional func tableView(_ tableView: UITableView, commitEditing action: UIView, forRowAt indexPath: IndexPath) -> UIView?
 }
 
 @objc extension UITableViewCell {
@@ -115,7 +115,6 @@ import ObjectiveC.runtime
             let velocity = recognizer.velocity(in: recognizer.view)
             if editingView.frame.width <= 0.0 {
                 tableView?.isHaulEditing = false
-                editingView.removeAllActions()
             } else if editingView.frame.width == sum {
                 tableView?.isHaulEditing = true
             } else if editingView.frame.width > sum {
@@ -155,7 +154,6 @@ import ObjectiveC.runtime
         if animated {
             let completionHandler: (Bool)->Void = { [weak self] _ in
                 guard let self = self else { return }
-                if editing == false { self.editingView?.removeAllActions() }
                 self.tableView?.isHaulEditing = editing
                 self.didEndUpdateEditing(editing, animated: animated)
             }
@@ -170,7 +168,6 @@ import ObjectiveC.runtime
             }
         } else {
             update(editing: editing)
-            if editing == false { editingView?.removeAllActions() }
             tableView?.isHaulEditing = false
             didEndUpdateEditing(editing, animated: animated)
         }
@@ -202,10 +199,8 @@ extension UITableViewCell: MNEditingRecognizerHandler {
             view = MNEditingView(options: tableView.editingOptions)
             view.delegate = self
             insertSubview(view, aboveSubview: contentView)
-            view = editingView
+            editingView = view
             contentViewOriginX = contentView.frame.minX
-        } else {
-            view.removeAllActions()
         }
         view.update(direction: direction)
         view.update(actions: actions)
@@ -216,12 +211,12 @@ extension UITableViewCell: MNEditingRecognizerHandler {
 // MARK: - MNEditingViewDelegate
 extension UITableViewCell: MNEditingViewDelegate {
     
-    func editingView(_ editingView: MNEditingView, actionTouchUpInsideAt index: Int) {
+    func editingView(_ editingView: MNEditingView, actionTouchUpInside action: UIView, index: Int) {
         guard let tableView = tableView else { return }
         guard let indexPath = tableView.indexPath(for: self) else { return }
         guard let delegate = tableView.delegate as? UITableViewEditingDelegate else { return }
-        guard let action = delegate.tableView(tableView, commitEditing: editingView.actions[index], forRowAt: indexPath) else { return }
-        editingView.replacing(index: index, action: action)
+        guard let newAction = delegate.tableView?(tableView, commitEditing: action, forRowAt: indexPath) else { return }
+        editingView.replacing(index: index, action: newAction)
     }
 }
 
