@@ -143,21 +143,32 @@ extension UICollectionViewCell {
         default: break
         }
     }
+}
+
+// MARK: - Update Editing
+extension UICollectionViewCell {
+    
+    /// 结束编辑状态
+    /// - Parameter animated: 是否动态显示过程
+    @objc func endEditing(animated: Bool) {
+        guard isHaulEditing else { return }
+        updateEditing(false, animated: animated)
+    }
     
     /// 更新编辑状态
     /// - Parameters:
     ///   - editing: 是否开启编辑
     ///   - animated: 是否显示动画过程
-    @objc func updateEditing(_ editing: Bool, animated: Bool) {
+    private func updateEditing(_ editing: Bool, animated: Bool) {
+        collectionView?.isHaulEditing = editing
         willBeginUpdateEditing(editing, animated: animated)
         if animated {
+            editingView?.isAnimating = true
             let completionHandler: (Bool)->Void = { [weak self] _ in
                 guard let self = self else { return }
                 self.editingView?.isAnimating = false
-                self.collectionView?.isHaulEditing = editing
                 self.didEndUpdateEditing(editing, animated: animated)
             }
-            editingView?.isAnimating = true
             if editing {
                 UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                     guard let self = self else { return }
@@ -171,11 +182,12 @@ extension UICollectionViewCell {
             }
         } else {
             update(editing: editing)
-            collectionView?.isHaulEditing = false
             didEndUpdateEditing(editing, animated: animated)
         }
     }
     
+    /// 更新编辑状态
+    /// - Parameter editing: 是否编辑
     private func update(editing: Bool) {
         guard let editingView = editingView else { return }
         var rect = editingView.frame
@@ -198,7 +210,7 @@ extension UICollectionViewCell {
 // MARK: - MNEditingRecognizerHandler
 extension UICollectionViewCell: MNEditingRecognizerHandler {
     
-    func gestureRecognizerShouldBegin(_ recognizer: MNEditingRecognizer, direction haulDirection: MNEditingDirection) -> Bool {
+    func shouldBeginEditing(_ recognizer: MNEditingRecognizer, direction haulDirection: MNEditingDirection) -> Bool {
         guard let collectionView = collectionView else { return false }
         guard let indexPath = collectionView.indexPath(for: self) else { return false }
         guard let delegate = collectionView.dataSource as? UICollectionViewEditingDelegate else { return false }
@@ -215,9 +227,7 @@ extension UICollectionViewCell: MNEditingRecognizerHandler {
         let actions = delegate.collectionView(collectionView, editingActionsForItemAt: indexPath)
         guard actions.count > 0 else { return false }
         // 结束其它表格编辑状态
-        if collectionView.isHaulEditing {
-            collectionView.endEditing(animated: true)
-        }
+        collectionView.endEditing(animated: true)
         // 添加编辑视图
         var view: MNEditingView! = editingView
         if view == nil {

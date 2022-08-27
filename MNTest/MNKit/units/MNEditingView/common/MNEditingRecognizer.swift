@@ -14,7 +14,7 @@ protocol MNEditingRecognizerHandler: NSObjectProtocol {
     ///   - recognizer: 拖拽手势
     ///   - haulDirection: 拖拽方向
     /// - Returns: 是否可响应
-    func gestureRecognizerShouldBegin(_ recognizer: MNEditingRecognizer, direction haulDirection: MNEditingDirection) -> Bool
+    func shouldBeginEditing(_ recognizer: MNEditingRecognizer, direction haulDirection: MNEditingDirection) -> Bool
 }
 
 class MNEditingRecognizer: UIPanGestureRecognizer {
@@ -43,6 +43,6 @@ extension MNEditingRecognizer: UIGestureRecognizerDelegate {
         let velocity = recognizer.velocity(in: recognizer.view)
         guard abs(velocity.x) > 0.0 else { return false }
         // 外部判断是否开始编辑
-        return handler?.gestureRecognizerShouldBegin(self, direction: velocity.x <= 0.0 ? .left : .right) ?? false
+        return handler?.shouldBeginEditing(self, direction: velocity.x <= 0.0 ? .left : .right) ?? false
     }
 }

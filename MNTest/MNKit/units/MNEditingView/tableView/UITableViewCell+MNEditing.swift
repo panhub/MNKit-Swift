@@ -138,21 +138,32 @@ import ObjectiveC.runtime
         default: break
         }
     }
+}
+
+// MARK: - Update Editing
+extension UITableViewCell {
+    
+    /// 结束编辑状态
+    /// - Parameter animated: 是否动态显示过程
+    @objc func endEditing(animated: Bool) {
+        guard isHaulEditing else { return }
+        updateEditing(false, animated: animated)
+    }
     
     /// 更新编辑状态
     /// - Parameters:
     ///   - editing: 是否开启编辑
     ///   - animated: 是否显示动画过程
-    @objc func updateEditing(_ editing: Bool, animated: Bool) {
+    private func updateEditing(_ editing: Bool, animated: Bool) {
+        tableView?.isHaulEditing = editing
         willBeginUpdateEditing(editing, animated: animated)
         if animated {
+            editingView?.isAnimating = true
             let completionHandler: (Bool)->Void = { [weak self] _ in
                 guard let self = self else { return }
                 self.editingView?.isAnimating = false
-                self.tableView?.isHaulEditing = editing
                 self.didEndUpdateEditing(editing, animated: animated)
             }
-            editingView?.isAnimating = true
             if editing {
                 UIView.animate(withDuration: 0.7, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                     guard let self = self else { return }
@@ -166,11 +177,12 @@ import ObjectiveC.runtime
             }
         } else {
             update(editing: editing)
-            tableView?.isHaulEditing = false
             didEndUpdateEditing(editing, animated: animated)
         }
     }
     
+    /// 更新编辑状态
+    /// - Parameter editing: 是否编辑
     private func update(editing: Bool) {
         guard let editingView = editingView else { return }
         var rect = editingView.frame
@@ -193,7 +205,7 @@ import ObjectiveC.runtime
 // MARK: - MNEditingRecognizerHandler
 extension UITableViewCell: MNEditingRecognizerHandler {
     
-    func gestureRecognizerShouldBegin(_ recognizer: MNEditingRecognizer, direction haulDirection: MNEditingDirection) -> Bool {
+    func shouldBeginEditing(_ recognizer: MNEditingRecognizer, direction haulDirection: MNEditingDirection) -> Bool {
         guard let tableView = tableView else { return false }
         guard let indexPath = tableView.indexPath(for: self) else { return false }
         guard let delegate = tableView.dataSource as? UITableViewEditingDelegate else { return false }
@@ -210,9 +222,7 @@ extension UITableViewCell: MNEditingRecognizerHandler {
         let actions = delegate.tableView(tableView, editingActionsForRowAt: indexPath)
         guard actions.count > 0 else { return false }
         // 结束其它表格编辑状态
-        if tableView.isHaulEditing {
-            tableView.endEditing(animated: true)
-        }
+        tableView.endEditing(animated: true)
         // 添加编辑视图
         var view: MNEditingView! = editingView
         if view == nil {

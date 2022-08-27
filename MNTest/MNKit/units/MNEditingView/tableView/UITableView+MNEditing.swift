@@ -38,9 +38,10 @@ import ObjectiveC.runtime
     /// 结束编辑
     /// - Parameter animated: 是否动态显示过程
     @objc func endEditing(animated: Bool) {
+        guard isHaulEditing else { return }
+        isHaulEditing = false
         for cell in visibleCells {
-            guard cell.isHaulEditing else { continue }
-            cell.updateEditing(false, animated: animated)
+            cell.endEditing(animated: animated)
         }
     }
 }
@@ -49,8 +50,6 @@ import ObjectiveC.runtime
 extension UITableView: MNEditingObserverHandler {
     
     func scrollView(_ scrollView: UIScrollView, contentOffset change: [NSKeyValueChangeKey : Any]?) {
-        guard isHaulEditing else { return }
-        isHaulEditing = false
         endEditing(animated: (scrollView.isDragging || scrollView.isDecelerating))
     }
 }

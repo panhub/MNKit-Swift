@@ -143,7 +143,8 @@ extension MNPageScrollController: UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView.isDragging, scrollView.isDecelerating == false, let dataSource = dataSource else { return }
+        guard scrollView.isDragging, scrollView.isDecelerating == false else { return }
+        guard let dataSource = dataSource else { return }
         let numberOfPages: Int = dataSource.numberOfPages
         guard numberOfPages > 0 else { return }
         let width: CGFloat = scrollView.frame.width
