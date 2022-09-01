@@ -9,40 +9,42 @@ import UIKit
 import Foundation
 import CoreGraphics
 
-// 定义导航按钮大小
+/// 导航按钮大小
 public let MN_NAV_ITEM_SIZE: CGFloat = 20.0
-// 定义导航按钮左右间距
+/// 导航按钮间距
 public let MN_NAV_ITEM_SPACING: CGFloat = 18.0
 
-// 导航条事件代理
+/// 导航条事件代理
 @objc public protocol MNNavigationBarDelegate: NSObjectProtocol {
-    // 获取左按钮视图
+    /// 获取左按钮视图
     @objc optional func navigationBarShouldCreateLeftBarItem() -> UIView?
-    // 获取右按钮视图
+    /// 获取右按钮视图
     @objc optional func navigationBarShouldCreateRightBarItem() -> UIView?
-    // 是否创建返回按钮
+    /// 是否创建返回按钮
     @objc optional func navigationBarShouldDrawBackBarItem() -> Bool
-    // 左按钮点击事件
+    /// 左按钮点击事件
     @objc optional func navigationBarLeftBarItemTouchUpInside(_ leftBarItem: UIView!) -> Void
-    // 右按钮点击事件
+    /// 右按钮点击事件
     @objc optional func navigationBarRightBarItemTouchUpInside(_ rightBarItem: UIView!) -> Void
-    // 已经添加完子视图
-    @objc optional func navigationBarDidCreatedBarItems(_ navigationBar: MNNavigationBar) -> Void
+    /// 已经添加完子视图
+    @objc optional func navigationBarDidLayoutSubitems(_ navigationBar: MNNavigationBar) -> Void
+    /// 告知标题更新
+    @objc optional func navigationBarDidUpdateTitle(_ navigationBar: MNNavigationBar) -> Void
 }
 
 public class MNNavigationBar: UIView {
-    // 事件代理
+    /// 事件代理
     @objc weak var delegate: MNNavigationBarDelegate?
-    // 毛玻璃视图
+    /// 毛玻璃视图
     private lazy var blurView: UIVisualEffectView = {
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         blurView.frame = bounds
         blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         return blurView
     }()
-    // 左按钮
+    /// 导航左按钮
     @objc lazy var leftBarItem: UIView = {
-        var barItem: UIView!
+        var barItem: UIView
         if let view = delegate?.navigationBarShouldCreateLeftBarItem?() {
             barItem = view
         } else {
@@ -62,9 +64,9 @@ public class MNNavigationBar: UIView {
         barItem.autoresizingMask = .flexibleTopMargin
         return barItem
     }()
-    // 右按钮
+    /// 导航右按钮
     @objc lazy var rightBarItem: UIView = {
-        var barItem: UIView!
+        var barItem: UIView
         if let view = delegate?.navigationBarShouldCreateRightBarItem?() {
             barItem = view
         } else {
@@ -80,23 +82,22 @@ public class MNNavigationBar: UIView {
         barItem.autoresizingMask = .flexibleTopMargin
         return barItem
     }()
-    // 底部分割线
+    /// 导航底部分割线
     @objc lazy var shadowView: UIView = {
         let shadowView = UIView(frame: CGRect(x: 0.0, y: bounds.height - 0.7, width: bounds.width, height: 0.7))
         shadowView.autoresizingMask = .flexibleTopMargin
         shadowView.backgroundColor = .gray.withAlphaComponent(0.15)
         return shadowView
     }()
-    // 标题
-    @objc lazy var titleLabel: UILabel = {
-        let x = max(leftBarItem.maxX, width - rightBarItem.minX) + MN_NAV_ITEM_SPACING
-        let titleLabel = UILabel(frame: bounds.inset(by: UIEdgeInsets(top: MN_STATUS_BAR_HEIGHT, left: x, bottom: 0.0, right: x)))
+    /// 导航标题
+    private lazy var titleLabel: UILabel = {
+        let titleLabel = UILabel()
+        titleLabel.center = CGPoint(x: frame.width/2.0, y: (frame.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT)
         titleLabel.numberOfLines = 0
         titleLabel.textAlignment = .center
         titleLabel.textColor = UIColor.black
         titleLabel.lineBreakMode = .byTruncatingMiddle
         titleLabel.font = .systemFont(ofSize: 18.0, weight: .medium)
-        //titleLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         return titleLabel
     }()
     
@@ -118,58 +119,84 @@ public class MNNavigationBar: UIView {
             // 阴影线
             addSubview(shadowView)
             // 回调代理
-            delegate?.navigationBarDidCreatedBarItems?(self)
+            delegate?.navigationBarDidLayoutSubitems?(self)
         }
         super.willMove(toSuperview: newSuperview)
     }
+    
+    /// 更新标题
+    private func updateTitle() {
+        let center: CGPoint = titleLabel.center
+        let spacing: CGFloat = ceil(max(leftBarItem.frame.maxX, frame.width - rightBarItem.frame.minX)) + MN_NAV_ITEM_SPACING
+        titleLabel.sizeToFit()
+        titleLabel.width = min(ceil(titleLabel.width), frame.width - spacing*2.0)
+        titleLabel.height = min(ceil(titleLabel.height), frame.height - MN_STATUS_BAR_HEIGHT)
+        titleLabel.center = center
+        delegate?.navigationBarDidUpdateTitle?(self)
+    }
 }
 
-// MARK: -
+// MARK: - Property
 extension MNNavigationBar {
     
-    // 是否添加毛玻璃效果
+    /// 导航栏是否启用毛玻璃效果
     @objc var translucent: Bool {
         set { blurView.isHidden = newValue == false }
         get { blurView.isHidden == false }
     }
     
-    // 设置标题字体
+    /// 导航栏标题字体
     @objc var title: String? {
-        set { titleLabel.text = newValue }
         get { titleLabel.text }
+        set {
+            titleLabel.text = newValue
+            updateTitle()
+        }
     }
     
-    // 设置标题字体
+    /// 导航栏富文本标题
+    @objc var attributedTitle: NSAttributedString? {
+        get { titleLabel.attributedText }
+        set {
+            titleLabel.attributedText = newValue
+            updateTitle()
+        }
+    }
+    
+    /// 导航栏标题字体
     @objc var titleFont: UIFont? {
-        set { titleLabel.font = newValue }
         get { titleLabel.font }
+        set {
+            titleLabel.font = newValue
+            updateTitle()
+        }
     }
     
-    // 设置标题颜色
+    /// 导航栏标题颜色
     @objc var titleColor: UIColor? {
-        set { titleLabel.textColor = newValue }
         get { titleLabel.textColor }
+        set { titleLabel.textColor = newValue }
     }
     
-    // 返回按钮颜色
+    /// 导航栏返回按钮颜色
     @objc var backColor: UIColor? {
         get { nil }
         set { leftItemImage = UIImage(unicode: .back, color: newValue ?? .black, size: MN_NAV_ITEM_SIZE) }
     }
     
-    // 左按钮图片
+    /// 导航栏左按钮图片
     @objc var leftItemImage: UIImage? {
-        set { leftBarItem.background = newValue }
         get { leftBarItem.background }
+        set { leftBarItem.background = newValue }
     }
     
-    // 右按钮图片
+    /// 导航栏右按钮图片
     @objc var rightItemImage: UIImage? {
-        set { rightBarItem.background = newValue }
         get { rightBarItem.background }
+        set { rightBarItem.background = newValue }
     }
     
-    // 阴影线位置
+    /// 导航栏阴影线位置
     @objc var shadowInset: UIEdgeInsets {
         get { UIEdgeInsets(top: shadowView.minY, left: shadowView.minX, bottom: 0.0, right: width - shadowView.maxX) }
         set {

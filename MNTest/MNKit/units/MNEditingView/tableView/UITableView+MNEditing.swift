@@ -21,7 +21,9 @@ import ObjectiveC.runtime
     @objc var editingOptions: MNEditingOptions {
         if let options = objc_getAssociatedObject(self, &EditingAssociated.options) as? MNEditingOptions { return options }
         if objc_getAssociatedObject(self, &EditingAssociated.observer) == nil {
-            let observer = MNEditingObserver(scrollView: self, delegate: self)
+            let observer = MNEditingObserver()
+            observer.delegate = self
+            addObserver(observer, forKeyPath: "contentOffset", context: nil)
             objc_setAssociatedObject(self, &EditingAssociated.observer, observer, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         let options = MNEditingOptions()

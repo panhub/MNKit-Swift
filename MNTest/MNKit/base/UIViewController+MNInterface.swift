@@ -35,7 +35,7 @@ extension UIViewController {
     /// 是否是主控制器
     @objc var isRootViewController: Bool { false }
     /// 是否以子控制器方式加载
-    @objc var isChildViewController: Bool { false }
+    @objc var isChildViewController: Bool { view.frame.width + view.frame.height != UIScreen.main.bounds.width + UIScreen.main.bounds.height }
 }
 
 // MARK: - 标签栏优化

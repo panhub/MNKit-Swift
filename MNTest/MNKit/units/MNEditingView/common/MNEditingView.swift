@@ -35,7 +35,7 @@ class MNEditingView: UIView {
     /// 事件代理
     weak var delegate: MNEditingViewDelegate?
     
-    /// 是否在动画
+    /// 是否在动画/拖拽中
     @objc var isAnimating: Bool = false
     
     /// 当前按钮的总宽度

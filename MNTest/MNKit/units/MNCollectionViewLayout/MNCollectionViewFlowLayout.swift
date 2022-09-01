@@ -97,10 +97,15 @@ private extension MNCollectionViewFlowLayout {
             }
             
             let width = contentWidth - sectionInset.left - sectionInset.right
-            let minimumInteritemSpacing = minimumInteritemSpacing(inSection: section)
-            let itemWidth: CGFloat = floor((width - CGFloat(columnCount - 1)*minimumInteritemSpacing)/CGFloat(columnCount))
+            var minimumInteritemSpacing = minimumInteritemSpacing(inSection: section)
+            let itemWidth = floor((width - CGFloat(columnCount - 1)*minimumInteritemSpacing)/CGFloat(columnCount))
             
             assert(itemWidth >= 0.0, "item width < 0.0 unable")
+            
+            let spacing = width - CGFloat(columnCount)*itemWidth - CGFloat(columnCount - 1)*minimumInteritemSpacing
+            if spacing > 0.0, columnCount > 1 {
+                minimumInteritemSpacing += (spacing/CGFloat(columnCount - 1))
+            }
             
             let minimumLineSpacing = minimumLineSpacing(inSection: section)
             let itemCount = collectionView!.numberOfItems(inSection: section)
@@ -116,7 +121,9 @@ private extension MNCollectionViewFlowLayout {
                 let y = caches[section][appendIndex]
                 let itemSize = itemSizeOfIndexPath(indexPath)
                 var itemHeight: CGFloat = 0.0
-                if itemSize.width > 0.0 {
+                if abs(itemSize.width - itemWidth) < 0.1 {
+                    itemHeight = floor(itemSize.height)
+                } else if itemSize.width > 0.0 {
                     itemHeight = floor((itemSize.height/itemSize.width)*itemWidth)
                 }
                 attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)

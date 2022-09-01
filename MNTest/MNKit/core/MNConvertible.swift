@@ -86,7 +86,7 @@ extension MNBadgeConvertible {
 }
 
 // MARK: - MNAttributedStringConvertible
-protocol MNAttributedStringConvertible {}
+public protocol MNAttributedStringConvertible {}
 extension String: MNAttributedStringConvertible {}
 extension NSAttributedString: MNAttributedStringConvertible {}
 extension MNAttributedStringConvertible {
@@ -107,7 +107,7 @@ extension MNAttributedStringConvertible {
 }
 
 // MARK: - MNSwizzleConvertible
-@objc protocol MNSwizzleConvertible: NSObjectProtocol {}
+@objc public protocol MNSwizzleConvertible: NSObjectProtocol {}
 extension MNSwizzleConvertible {
     
     // 交换实例方法
@@ -132,5 +132,88 @@ extension MNSwizzleConvertible {
                 method_exchangeImplementations(originalMethod, swizzledMethod);
             }
         }
+    }
+}
+
+public protocol MNCalculateConvertible  {}
+extension Int: MNCalculateConvertible {}
+extension Bool: MNCalculateConvertible {}
+extension Double: MNCalculateConvertible {}
+extension CGFloat: MNCalculateConvertible {}
+extension MNCalculateConvertible {
+    
+    var intValue: Int {
+        if self is Int {
+            return self as! Int
+        } else if self is Double {
+            return Int(self as! Double)
+        } else if self is CGFloat {
+            return Int(self as! CGFloat)
+        } else if self is Bool {
+            let flag = self as! Bool
+            return flag ? 1 : 0
+        }
+        return 0
+    }
+    
+    var doubleValue: Double {
+        if self is Double {
+            return self as! Double
+        } else if self is Int {
+            return Double(self as! Int)
+        } else if self is CGFloat {
+            return Double(self as! CGFloat)
+        } else if self is Bool {
+            let flag = self as! Bool
+            return flag ? 1.0 : 0.0
+        }
+        return 0.0
+    }
+    
+    var floatValue: CGFloat {
+        if self is CGFloat {
+            return self as! CGFloat
+        } else if self is Double {
+            return CGFloat(self as! Double)
+        } else if self is Int {
+            return CGFloat(self as! Int)
+        } else if self is Bool {
+            let flag = self as! Bool
+            return flag ? 1.0 : 0.0
+        }
+        return 0.0
+    }
+    
+    var boolValue: Bool {
+        if self is Bool {
+            return self as! Bool
+        } else if self is Int {
+            return (self as! Int) == 1
+        } else if self is Double {
+            return (self as! Double) == 1.0
+        } else if self is CGFloat {
+            return (self as! CGFloat) == 1.0
+        }
+        return false
+    }
+    
+    var numberValue: NSDecimalNumber {
+        if self is Int {
+            return NSDecimalNumber(value: self as! Int)
+        } else if self is Bool {
+            return NSDecimalNumber(value: self as! Bool)
+        } else if self is Double {
+            return NSDecimalNumber(value: self as! Double)
+        } else if self is CGFloat {
+            return NSDecimalNumber(value: self as! CGFloat)
+        }
+        return NSDecimalNumber(value: 0)
+    }
+    
+    var stringValue: String { numberValue.stringValue }
+    
+    func raise(mode: NSDecimalNumber.RoundingMode, scale: Int) -> NSDecimalNumber {
+        let behavior: NSDecimalNumberHandler = NSDecimalNumberHandler(roundingMode: mode, scale: Int16(scale), raiseOnExactness: false, raiseOnOverflow: false, raiseOnUnderflow: false, raiseOnDivideByZero: false)
+        return numberValue.dividing(by: NSDecimalNumber(value: 1), withBehavior: behavior)
     }
 }

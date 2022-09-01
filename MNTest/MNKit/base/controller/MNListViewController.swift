@@ -29,8 +29,8 @@ import UIKit
     /**瀑布流约束*/
     @objc var collectionViewLayout: UICollectionViewLayout {
         let layout = MNCollectionViewFlowLayout()
-        layout.numberOfColumns = 2;
-        layout.minimumLineSpacing = 10.0;
+        layout.numberOfColumns = 2
+        layout.minimumLineSpacing = 10.0
         layout.minimumInteritemSpacing = 10.0
         layout.itemSize = CGSize(width: 1.0, height: 1.0)
         return layout;

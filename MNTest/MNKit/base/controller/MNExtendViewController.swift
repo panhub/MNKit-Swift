@@ -56,7 +56,8 @@ extension MNExtendViewController: MNNavigationBarDelegate {
     func navigationBarShouldCreateLeftBarItem() -> UIView? { return nil }
     func navigationBarShouldCreateRightBarItem() -> UIView? { return nil }
     func navigationBarShouldDrawBackBarItem() -> Bool { !isRootViewController }
-    func navigationBarDidCreatedBarItems(_ navigationBar: MNNavigationBar) {}
+    func navigationBarDidUpdateTitle(_ navigationBar: MNNavigationBar) {}
+    func navigationBarDidLayoutSubitems(_ navigationBar: MNNavigationBar) {}
     func navigationBarRightBarItemTouchUpInside(_ rightBarItem: UIView!) {}
     func navigationBarLeftBarItemTouchUpInside(_ leftBarItem: UIView!) {
         pop(animated: UIApplication.shared.applicationState == .active)
@@ -66,7 +67,14 @@ extension MNExtendViewController: MNNavigationBarDelegate {
 // MARK: - 获取导航栏
 extension UIViewController {
     @objc var navigationBar: MNNavigationBar! {
-        guard let viewController = self.rootViewController as? MNExtendViewController else { return nil }
-        return viewController._navigationBar
+        var viewController: UIViewController? = self
+        while let vc = viewController {
+            if vc.isChildViewController {
+                viewController = vc.parent
+            } else if vc is MNExtendViewController {
+                return (vc as! MNExtendViewController)._navigationBar
+            } else { break }
+        }
+        return nil
     }
 }

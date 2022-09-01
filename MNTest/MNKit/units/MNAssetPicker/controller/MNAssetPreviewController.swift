@@ -148,9 +148,10 @@ class MNAssetPreviewController: UIViewController {
         
         edgesForExtendedLayout = .all
         extendedLayoutIncludesOpaqueBars = true
-        automaticallyAdjustsScrollViewInsets = false
         if #available(iOS 11.0, *) {
             additionalSafeAreaInsets = .zero
+        } else {
+            automaticallyAdjustsScrollViewInsets = false
         }
         
         // 集合视图

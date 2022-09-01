@@ -169,8 +169,6 @@
 		3BDB705C28992DFA0023D5E3 /* AVAssetTrack+MNExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FEC28992DFA0023D5E3 /* AVAssetTrack+MNExport.swift */; };
 		3BDB705D28992DFA0023D5E3 /* MNAssetExportSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FED28992DFA0023D5E3 /* MNAssetExportSession.swift */; };
 		3BDB705E28992DFA0023D5E3 /* MNMotionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FEE28992DFA0023D5E3 /* MNMotionManager.swift */; };
-		3BDB705F28992DFA0023D5E3 /* CGFloat+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FF028992DFA0023D5E3 /* CGFloat+MNExtension.swift */; };
-		3BDB706028992DFA0023D5E3 /* Bool+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FF128992DFA0023D5E3 /* Bool+MNExtension.swift */; };
 		3BDB706128992DFA0023D5E3 /* DateFormatter+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FF228992DFA0023D5E3 /* DateFormatter+MNExtension.swift */; };
 		3BDB706228992DFA0023D5E3 /* CGSize+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FF328992DFA0023D5E3 /* CGSize+MNExtension.swift */; };
 		3BDB706328992DFA0023D5E3 /* Array+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FF428992DFA0023D5E3 /* Array+MNExtension.swift */; };
@@ -191,7 +189,6 @@
 		3BDB707228992DFA0023D5E3 /* UIBezierPath+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB700428992DFA0023D5E3 /* UIBezierPath+MNExtension.swift */; };
 		3BDB707328992DFA0023D5E3 /* UIWindow+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB700528992DFA0023D5E3 /* UIWindow+MNExtension.swift */; };
 		3BDB707428992DFA0023D5E3 /* FileManager+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB700628992DFA0023D5E3 /* FileManager+MNExtension.swift */; };
-		3BDB707528992DFA0023D5E3 /* Double+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB700728992DFA0023D5E3 /* Double+MNExtension.swift */; };
 		3BDB707628992DFA0023D5E3 /* Progress+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB700828992DFA0023D5E3 /* Progress+MNExtension.swift */; };
 		3BDB707728992DFA0023D5E3 /* Date+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB700928992DFA0023D5E3 /* Date+MNExtension.swift */; };
 		3BDB707828992DFA0023D5E3 /* CALayer+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB700B28992DFA0023D5E3 /* CALayer+MNExtension.swift */; };
@@ -206,6 +203,7 @@
 		3BDB708128992DFA0023D5E3 /* Data+MNImageFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB701528992DFA0023D5E3 /* Data+MNImageFormat.swift */; };
 		3BDEA3A828A6C90000538C48 /* UITableView+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDEA3A728A6C90000538C48 /* UITableView+MNExtension.swift */; };
 		3BDEA3AA28A6C94400538C48 /* UICollectionView+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDEA3A928A6C94400538C48 /* UICollectionView+MNExtension.swift */; };
+		3BEF3BAD28BA7D7A005F65A3 /* MNSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEF3BAC28BA7D7A005F65A3 /* MNSwitch.swift */; };
 		3BFA91BE28B4D0EB0013CE6D /* MNEditingRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BFA91BD28B4D0EB0013CE6D /* MNEditingRecognizer.swift */; };
 		3BFEA9E028B548040079FA2D /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BFEA9DF28B548040079FA2D /* FirstViewController.swift */; };
 /* End PBXBuildFile section */
@@ -375,8 +373,6 @@
 		3BDB6FEC28992DFA0023D5E3 /* AVAssetTrack+MNExport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVAssetTrack+MNExport.swift"; sourceTree = "<group>"; };
 		3BDB6FED28992DFA0023D5E3 /* MNAssetExportSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNAssetExportSession.swift; sourceTree = "<group>"; };
 		3BDB6FEE28992DFA0023D5E3 /* MNMotionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNMotionManager.swift; sourceTree = "<group>"; };
-		3BDB6FF028992DFA0023D5E3 /* CGFloat+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGFloat+MNExtension.swift"; sourceTree = "<group>"; };
-		3BDB6FF128992DFA0023D5E3 /* Bool+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bool+MNExtension.swift"; sourceTree = "<group>"; };
 		3BDB6FF228992DFA0023D5E3 /* DateFormatter+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DateFormatter+MNExtension.swift"; sourceTree = "<group>"; };
 		3BDB6FF328992DFA0023D5E3 /* CGSize+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+MNExtension.swift"; sourceTree = "<group>"; };
 		3BDB6FF428992DFA0023D5E3 /* Array+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+MNExtension.swift"; sourceTree = "<group>"; };
@@ -397,7 +393,6 @@
 		3BDB700428992DFA0023D5E3 /* UIBezierPath+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBezierPath+MNExtension.swift"; sourceTree = "<group>"; };
 		3BDB700528992DFA0023D5E3 /* UIWindow+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIWindow+MNExtension.swift"; sourceTree = "<group>"; };
 		3BDB700628992DFA0023D5E3 /* FileManager+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FileManager+MNExtension.swift"; sourceTree = "<group>"; };
-		3BDB700728992DFA0023D5E3 /* Double+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Double+MNExtension.swift"; sourceTree = "<group>"; };
 		3BDB700828992DFA0023D5E3 /* Progress+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Progress+MNExtension.swift"; sourceTree = "<group>"; };
 		3BDB700928992DFA0023D5E3 /* Date+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+MNExtension.swift"; sourceTree = "<group>"; };
 		3BDB700B28992DFA0023D5E3 /* CALayer+MNExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CALayer+MNExtension.swift"; sourceTree = "<group>"; };
@@ -412,6 +407,7 @@
 		3BDB701528992DFA0023D5E3 /* Data+MNImageFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+MNImageFormat.swift"; sourceTree = "<group>"; };
 		3BDEA3A728A6C90000538C48 /* UITableView+MNExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+MNExtension.swift"; sourceTree = "<group>"; };
 		3BDEA3A928A6C94400538C48 /* UICollectionView+MNExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+MNExtension.swift"; sourceTree = "<group>"; };
+		3BEF3BAC28BA7D7A005F65A3 /* MNSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNSwitch.swift; sourceTree = "<group>"; };
 		3BFA91BD28B4D0EB0013CE6D /* MNEditingRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingRecognizer.swift; sourceTree = "<group>"; };
 		3BFEA9DF28B548040079FA2D /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -689,6 +685,7 @@
 		3BDB6F9C28992DFA0023D5E3 /* units */ = {
 			isa = PBXGroup;
 			children = (
+				3BEF3BAC28BA7D7A005F65A3 /* MNSwitch.swift */,
 				3B5CE56728B36CFC00527F55 /* MNEditingView */,
 				3BDB6F26289928E40023D5E3 /* MNCollectionViewLayout */,
 				3BDB6F9D28992DFA0023D5E3 /* MNSecureView */,
@@ -843,15 +840,12 @@
 		3BDB6FEF28992DFA0023D5E3 /* helper */ = {
 			isa = PBXGroup;
 			children = (
-				3BDB6FF028992DFA0023D5E3 /* CGFloat+MNExtension.swift */,
-				3BDB6FF128992DFA0023D5E3 /* Bool+MNExtension.swift */,
 				3BDB6FF228992DFA0023D5E3 /* DateFormatter+MNExtension.swift */,
 				3BDB6FF328992DFA0023D5E3 /* CGSize+MNExtension.swift */,
 				3BDB6FF428992DFA0023D5E3 /* Array+MNExtension.swift */,
 				3BDB6FF528992DFA0023D5E3 /* String+MNSubscript.swift */,
 				3BDB6FF628992DFA0023D5E3 /* UIHelper */,
 				3BDB700628992DFA0023D5E3 /* FileManager+MNExtension.swift */,
-				3BDB700728992DFA0023D5E3 /* Double+MNExtension.swift */,
 				3BDB700828992DFA0023D5E3 /* Progress+MNExtension.swift */,
 				3BDB700928992DFA0023D5E3 /* Date+MNExtension.swift */,
 				3BDB700A28992DFA0023D5E3 /* CAHelper */,
@@ -1134,11 +1128,9 @@
 				3B3E02A728B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift in Sources */,
 				3BDB706528992DFA0023D5E3 /* UIColor+MNExtension.swift in Sources */,
 				3BDB704D28992DFA0023D5E3 /* MNAssetProgressView.swift in Sources */,
-				3BDB705F28992DFA0023D5E3 /* CGFloat+MNExtension.swift in Sources */,
 				3BDB6F8D289928E40023D5E3 /* HTTPDownloadRequest.swift in Sources */,
 				3BDB707F28992DFA0023D5E3 /* MNPathUtilities.swift in Sources */,
 				3BDB6F55289928E40023D5E3 /* MNCompleteToast.swift in Sources */,
-				3BDB706028992DFA0023D5E3 /* Bool+MNExtension.swift in Sources */,
 				3BDB702F28992DFA0023D5E3 /* MNPageSegment.swift in Sources */,
 				3BDB706D28992DFA0023D5E3 /* UIButton+Category.swift in Sources */,
 				3BDB6F61289928E40023D5E3 /* MNRefresh.swift in Sources */,
@@ -1158,7 +1150,6 @@
 				3BDB703628992DFA0023D5E3 /* MNAssetPicker.swift in Sources */,
 				3BDB702628992DFA0023D5E3 /* AVCaptureDevice+MNFormat.swift in Sources */,
 				3BDB705428992DFA0023D5E3 /* MNAssetPickerOptions.swift in Sources */,
-				3BDB707528992DFA0023D5E3 /* Double+MNExtension.swift in Sources */,
 				3BDB6F68289928E40023D5E3 /* HTTPParser.swift in Sources */,
 				3BDB704828992DFA0023D5E3 /* MNAssetBrowser.swift in Sources */,
 				3BDB6F6A289928E40023D5E3 /* HTTPMethod.swift in Sources */,
@@ -1168,6 +1159,7 @@
 				3BDB6F63289928E40023D5E3 /* MNRefreshHeader.swift in Sources */,
 				3BDB707928992DFA0023D5E3 /* CAAnimation+MNExtension.swift in Sources */,
 				3BDB6F57289928E40023D5E3 /* MNErrorToast.swift in Sources */,
+				3BEF3BAD28BA7D7A005F65A3 /* MNSwitch.swift in Sources */,
 				3BDB6F66289928E40023D5E3 /* MNActivityIndicatorView.swift in Sources */,
 				3BDB6F8E289928E40023D5E3 /* HTTPRequest.swift in Sources */,
 				3BDB6F6E289928E40023D5E3 /* NetworkReachability.swift in Sources */,

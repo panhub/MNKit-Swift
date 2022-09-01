@@ -18,33 +18,11 @@ protocol MNEditingObserverHandler: NSObjectProtocol {
 
 class MNEditingObserver: NSObject {
     
-    /// 监听的视图集合
-    weak var scrollView: UIScrollView?
-    
     /// 事件通知代理
     weak var delegate: MNEditingObserverHandler?
     
-    override init() {
-        super.init()
-    }
-    
-    convenience init(scrollView: UIScrollView, delegate: MNEditingObserverHandler?) {
-        self.init()
-        self.delegate = delegate
-        self.scrollView = scrollView
-        scrollView.addObserver(self, forKeyPath: "contentOffset", options: .new, context: nil)
-    }
-    
-    deinit {
-        if let scrollView = scrollView {
-            scrollView.removeObserver(self, forKeyPath: "contentOffset")
-            self.scrollView = nil
-        }
-    }
-    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if let scrollView = scrollView {
-            delegate?.scrollView(scrollView, contentOffset: change)
-        }
+        guard let scrollView = object as? UIScrollView else { return }
+        delegate?.scrollView(scrollView, contentOffset: change)
     }
 }
