@@ -48,11 +48,11 @@ public class MNCollectionViewLayout: UICollectionViewLayout {
     public var itemSize: CGSize = .zero {
         didSet { invalidateLayout() }
     }
-    /**滑动方向相邻间隔*/
+    /**纵向相邻间隔*/
     public var minimumLineSpacing: CGFloat = 10.0 {
         didSet { invalidateLayout() }
     }
-    /**滑动相反方向相邻间隔*/
+    /**横向相邻间隔*/
     public var minimumInteritemSpacing: CGFloat = 10.0 {
         didSet { invalidateLayout() }
     }

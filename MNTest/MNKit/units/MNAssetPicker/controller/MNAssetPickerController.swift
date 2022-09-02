@@ -16,8 +16,8 @@ class MNAssetPickerController: UIViewController {
     /**空视图*/
     lazy var emptyView: MNEmptyView = {
         let emptyView = MNEmptyView(frame: view.bounds.inset(by: options.contentInset))
-        emptyView.alpha = 1.0
-        emptyView.contentAlignment = .center
+        emptyView.alignment = .top
+        emptyView.contentOffset = UIOffset(horizontal: 0.0, vertical: 120.0)
         emptyView.imageSize = CGSize(width: 120.0, height: 120.0)
         emptyView.backgroundColor = options.backgroundColor
         emptyView.image = MNAssetPicker.image(named: "empty")

@@ -26,8 +26,6 @@ class MNSwitch: UIView {
             fatalError("MNSwitch size not available: \(frame.size)")
         }
         super.init(frame: rect)
-        
-        UIStackView
     }
     
     required init?(coder: NSCoder) {

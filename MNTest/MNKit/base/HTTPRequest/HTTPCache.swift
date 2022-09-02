@@ -109,7 +109,7 @@ public class HTTPCache {
             guard time < (item.time + out) else { return nil }
         }
         if #available(iOS 11.0, *) {
-            return try? NSKeyedUnarchiver.unarchivedObject(ofClasses: [AnyObject.self], from: item.value)
+            return try? NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSDictionary.self, NSArray.self, NSString.self], from: item.value)
         } else {
             return NSKeyedUnarchiver.unarchiveObject(with: item.value)
         }

@@ -37,9 +37,7 @@ class MNBaseViewController: UIViewController {
         let emptyView = MNEmptyView(frame: emptyViewFrame)
         emptyView.isHidden = true
         emptyView.delegate = self
-        emptyView.contentAlignment = .center
-        emptyView.textColor = UIColor(red: 0.61, green: 0.62, blue: 0.65, alpha: 1.0)
-        emptyView.buttonBackgroundColor = .blue
+        emptyView.text = "暂无数据"
         return emptyView
     }()
     
@@ -171,7 +169,7 @@ class MNBaseViewController: UIViewController {
     @objc func finish(request: HTTPPageRequest, result: HTTPResult) -> Bool {
         let isEmpty = request.isEmpty
         let isSuccess = result.isSuccess
-        showEmpty(isEmpty, image: (isEmpty ? UIImage(named: "empty") : nil), text: (isSuccess ? "空空如也" : result.msg), title: "再试一次", type: (request.page == 1 ? .reload : .load))
+        showEmpty(isEmpty, image: nil, text: nil, title: nil, event: (request.page == 1 ? .reload : .load))
         if isEmpty == false, isSuccess == false {
             // 数据不为空, 但请求失败了, 弹窗提示错误信息
             contentView.showMsgToast(result.msg)
@@ -180,16 +178,16 @@ class MNBaseViewController: UIViewController {
     }
     
     // 显示空数据视图
-    @objc func showEmpty(_ needs: Bool, image: UIImage? = nil, text: String? = "暂无数据", title: String? = nil, type: MNEmptyEventType = .reload) {
+    @objc func showEmpty(_ needs: Bool, image: UIImage? = nil, text: String? = nil, title: String? = nil, event: MNEmptyView.Event = .reload) {
         if needs {
             layoutEmptyView()
-            emptyView.type = type
+            emptyView.event = event
             emptyView.isHidden = false
             emptyView.title = title ?? emptyView.title
             emptyView.text = text ?? emptyView.text
             emptyView.image = image ?? emptyView.image
             emptyView.setNeedsLayout()
-            didShowEmptyView(emptyView)
+            emptyViewDidAppear(emptyView)
         } else {
             emptyView.isHidden = true
         }
@@ -197,15 +195,15 @@ class MNBaseViewController: UIViewController {
     
     /// 告知展示空数据视图
     /// - Parameter emptyView: 空数据视图
-    @objc func didShowEmptyView(_ emptyView: MNEmptyView) {}
+    @objc func emptyViewDidAppear(_ emptyView: MNEmptyView) {}
     
     /// 告知添加空数据视图
     /// - Parameters:
     ///   - emptyView: 空数据视图
-    ///   - supreview: 父视图
-    @objc func didMoveEmptyView(_ emptyView: MNEmptyView, to supreview: UIView) {}
+    ///   - superview: 父视图
+    @objc func didMoveEmptyView(toSuperview superview: UIView) {}
     
-    /// 重新约束空数据视图
+    /// 约束空数据视图
     @objc func layoutEmptyView() {
         if emptyView.frame != emptyViewFrame {
             emptyView.frame = emptyViewFrame
@@ -213,9 +211,10 @@ class MNBaseViewController: UIViewController {
         if emptyView.superview == nil || emptyView.superview! != emptySuperview {
             emptyView.removeFromSuperview()
             emptySuperview.addSubview(emptyView)
-            didMoveEmptyView(emptyView, to: emptyView.superview!)
+            didMoveEmptyView(toSuperview: emptyView.superview!)
+        } else {
+            emptyView.superview!.bringSubviewToFront(emptyView)
         }
-        emptyView.superview?.bringSubviewToFront(emptyView)
     }
     
     /// 触摸背景 收起键盘
@@ -228,9 +227,9 @@ class MNBaseViewController: UIViewController {
 extension MNBaseViewController: MNEmptyViewDelegate {
     // 空数据视图代理
     func emptyViewButtonTouchUpInside(_ emptyView: MNEmptyView) {
-        guard emptyView.type != .custom else { return }
+        guard emptyView.event != .custom else { return }
         emptyView.isHidden = true
-        if emptyView.type == .load {
+        if emptyView.event == .load {
             // 加载数据
             loadData()
         } else {

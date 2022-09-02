@@ -11,16 +11,20 @@ import UIKit
     @objc optional func emptyViewButtonTouchUpInside(_ emptyView: MNEmptyView) -> Void
 }
 
-// 事件类型
-@objc enum MNEmptyEventType: Int {
-    case load // 加载数据
-    case reload // 重载数据
-    case custom // 自定义事件
-}
-
 @objc class MNEmptyView: UIView {
+    
+    /// 事件类型
+    @objc enum Event: Int {
+        case load, reload, custom
+    }
+    
+    /// 纵向排列方式
+    @objc enum Alignment: Int {
+        case top, center, bottom
+    }
+    
     // 事件类型
-    @objc var type: MNEmptyEventType = .reload
+    @objc var event: MNEmptyView.Event = .reload
     // 交互代理
     @objc weak var delegate: MNEmptyViewDelegate?
     // 图片
@@ -34,9 +38,9 @@ import UIKit
     // 文字提示
     var text: MNAttributedStringConvertible?
     // 按钮背景颜色
-    @objc var buttonBackgroundColor: UIColor = .black
+    @objc var buttonBackgroundColor: UIColor = .blue
     // 纵向排列方式
-    @objc var contentAlignment: UIControl.ContentVerticalAlignment = .center
+    @objc var alignment: MNEmptyView.Alignment = .center
     // 内容偏移
     @objc var contentOffset: UIOffset = .zero
     // 内容视图
@@ -55,17 +59,17 @@ import UIKit
     // 标题字体
     @objc var titleFont: UIFont {
         set { button.titleLabel?.font = newValue }
-        get { button.titleLabel?.font ?? .systemFont(ofSize: 16.0) }
+        get { button.titleLabel?.font ?? .systemFont(ofSize: 15.0, weight: .medium) }
     }
     // 提示信息颜色
     @objc var textColor: UIColor {
         set { textLabel.textColor = newValue }
-        get { textLabel.textColor ?? .gray }
+        get { textLabel.textColor ?? .darkGray.withAlphaComponent(0.88) }
     }
     // 提示信息字体
     @objc var textFont: UIFont {
         set { textLabel.font = newValue }
-        get { textLabel.font ?? .systemFont(ofSize: 16.0) }
+        get { textLabel.font ?? .systemFont(ofSize: 17.0) }
     }
     
     override init(frame: CGRect) {
@@ -82,14 +86,12 @@ import UIKit
         imageView.contentMode = .scaleAspectFit
         contentView.addSubview(imageView)
         
-        textLabel.textColor = .gray
+        textLabel.textColor = .darkGray
         textLabel.numberOfLines = 0
         textLabel.clipsToBounds = true
         textLabel.textAlignment = .center
-        textLabel.font = UIFont.systemFont(ofSize: 16.0)
         contentView.addSubview(textLabel)
         
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 16.0)
         button.layer.cornerRadius = 5.0
         button.clipsToBounds = true
         button.setTitleColor(.white, for: .normal)
@@ -115,7 +117,7 @@ import UIKit
                 imageView.size = imageSize
             } else {
                 imageView.width = floor(min(frame.width, frame.height)/5.0*4.0)
-                imageView.height = ceil(image.size.height/image.size.width*imageView.width)
+                imageView.height = ceil(image.size.height/image.size.width*imageView.frame.width)
             }
         } else {
             imageView.size = .zero
@@ -126,7 +128,7 @@ import UIKit
             textLabel.size = attributedText.boundingRect(with: CGSize(width: frame.width - 40.0, height: .greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).size
             textLabel.width = ceil(textLabel.width)
             textLabel.height = ceil(textLabel.height)
-            textLabel.minY = imageView.maxY + spacing
+            textLabel.minY = imageView.frame.maxY + (imageView.frame.maxY > 0.0 ? spacing : 0.0)
         } else {
             textLabel.size = .zero
             textLabel.minY = imageView.maxY
@@ -136,9 +138,9 @@ import UIKit
             button.backgroundColor = buttonBackgroundColor
             button.setAttributedTitle(attributedTitle, for: .normal)
             button.sizeToFit()
+            button.height = 40.0
             button.width = ceil(button.width + 30.0)
-            button.height = ceil(button.height + 20.0)
-            button.minY = textLabel.maxY + spacing
+            button.minY = textLabel.frame.maxY + (textLabel.frame.maxY > 0.0 ? spacing : 0.0)
         } else {
             button.size = .zero
             button.minY = textLabel.maxY
@@ -151,16 +153,17 @@ import UIKit
         textLabel.midX = contentView.width/2.0
         imageView.midX = contentView.width/2.0
         
-        contentView.midX = width/2.0 + contentOffset.horizontal
-        switch contentAlignment {
+        switch alignment {
         case .top:
-            contentView.minY = contentOffset.vertical
+            contentView.minY = 0.0
         case .center:
-            contentView.midY = frame.height/2.0 + contentOffset.vertical
+            contentView.midY = frame.height/2.0
         case .bottom:
-            contentView.maxY = frame.height + contentOffset.vertical
-        default: break
+            contentView.maxY = frame.height
         }
+        
+        contentView.midY += contentOffset.vertical
+        contentView.midX = frame.width/2.0 + contentOffset.horizontal
     }
     
     @objc private func buttonTouchUpInside(_ sender: UIButton) -> Void {
