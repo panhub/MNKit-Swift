@@ -8,7 +8,6 @@
 import UIKit
 import Foundation
 
-#if !IN_APP_EXTENSIONS
 extension MNToast {
     @objc static var exist: Bool {
         guard let exist = window?.existToast else { return false }
@@ -145,4 +144,3 @@ extension MNToast {
         }
     }
 }
-#endif

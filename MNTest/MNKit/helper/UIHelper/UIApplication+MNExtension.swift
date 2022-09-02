@@ -10,7 +10,6 @@ import StoreKit
 import Foundation
 import CoreGraphics
 
-#if !IN_APP_EXTENSIONS
 public typealias MNApplicationOpenHandler = ((Bool) -> Void)
 
 public extension UIApplication {
@@ -130,4 +129,3 @@ extension UIApplication {
         return rect
     }
 }
-#endif
