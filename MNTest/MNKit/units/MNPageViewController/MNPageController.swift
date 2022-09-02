@@ -26,11 +26,12 @@ class MNPageController: UIViewController {
         edgesForExtendedLayout = .all
         // 额外布局是否包括不透明的Bar，默认为false
         extendedLayoutIncludesOpaqueBars = true
-        // 是否自动调整滚动视图的内边距,默认true 系统将会根据导航条和TabBar的情况自动增加上下内边距以防止被Bar遮挡
-        automaticallyAdjustsScrollViewInsets = false
         // iOS11 后 additionalSafeAreaInsets 可抵消系统的安全区域
         if #available(iOS 11.0, *) {
             additionalSafeAreaInsets = .zero
+        } else {
+            // 是否自动调整滚动视图的内边距,默认true 系统将会根据导航条和TabBar的情况自动增加上下内边距以防止被Bar遮挡
+            automaticallyAdjustsScrollViewInsets = false
         }
     }
     

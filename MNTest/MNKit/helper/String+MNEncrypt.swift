@@ -8,7 +8,7 @@
 import Foundation
 import CommonCrypto
 
-struct Digest {
+fileprivate struct Digest {
     
     let content: [UInt8]
     

@@ -55,13 +55,20 @@ public extension UIApplication {
             completion?(false)
             return
         }
-        if #available(iOS 10.3, *), mode == .inlay {
-            UIWindow.current?.endEditing(true)
-            SKStoreReviewController.requestReview()
-        } else {
-            let url: String = "itms-apps://itunes.apple.com/app/id\(appId)?action=write-review"
-            handOpen(url, completion: completion)
+        UIWindow.current?.endEditing(true)
+        if mode == .inlay {
+            if #available(iOS 14.0, *) {
+                if let windowScene = UIApplication.shared.delegate?.window??.windowScene {
+                    SKStoreReviewController.requestReview(in: windowScene)
+                    return
+                }
+            } else if #available(iOS 10.3, *) {
+                SKStoreReviewController.requestReview()
+                return
+            }
         }
+        let url: String = "itms-apps://itunes.apple.com/app/id\(appId)?action=write-review"
+        handOpen(url, completion: completion)
     }
 }
 

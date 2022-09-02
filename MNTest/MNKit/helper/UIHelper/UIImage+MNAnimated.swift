@@ -9,6 +9,7 @@ import UIKit
 import Foundation
 import ImageIO.ImageIOBase
 import CoreServices.UTCoreTypes
+import UniformTypeIdentifiers.UTType
 
 extension UIImage {
     
@@ -30,7 +31,13 @@ extension UIImage {
     
     @objc static func image(contentsOfData data: Data?) -> UIImage? {
         guard let imageData = data, imageData.count > 0  else { return nil }
-        let options: [CFString: Any] = [kCGImageSourceShouldCache:kCFBooleanTrue!, kCGImageSourceTypeIdentifierHint:kUTTypeGIF]
+        var identifier: CFString
+        if #available(iOS 15.0, *) {
+            identifier = UTType.gif.identifier as CFString
+        } else {
+            identifier = kUTTypeGIF
+        }
+        let options: [CFString: Any] = [kCGImageSourceShouldCache:kCFBooleanTrue!, kCGImageSourceTypeIdentifierHint:identifier]
         guard let imageSource = CGImageSourceCreateWithData(imageData as CFData, options as CFDictionary) else { return nil }
         let count = CGImageSourceGetCount(imageSource)
         guard count > 0 else { return nil }
@@ -46,9 +53,13 @@ extension UIImage {
             guard let value = CFDictionaryGetValue(properties, key) else { continue }
             let dic = Unmanaged<NSDictionary>.fromOpaque(value).takeUnretainedValue()
             guard let gifProperties = dic as? [CFString:Any] else { continue }
-            let interval: TimeInterval? = (gifProperties[kCGImagePropertyGIFDelayTime] as? TimeInterval) ?? (gifProperties[kCGImagePropertyGIFUnclampedDelayTime] as? TimeInterval)
-            guard let delay = interval else { continue }
-            duration += max(delay, 0.1)
+            var interval: TimeInterval = 0.0
+            if let unclamped = gifProperties[kCGImagePropertyGIFUnclampedDelayTime] as? TimeInterval, unclamped > 0.0 {
+                interval = unclamped
+            } else if let time = gifProperties[kCGImagePropertyGIFDelayTime] as? TimeInterval, time > 0.0 {
+                interval = time
+            }
+            duration += interval
             images.append(image)
         }
         // 生成动态图
@@ -77,7 +88,13 @@ extension Data {
         let delay: TimeInterval = image.duration/TimeInterval(count)
         let frameProperties: [CFString:[CFString:Any]] = [kCGImagePropertyGIFDictionary:[kCGImagePropertyGIFDelayTime :delay]]
         let gifData: NSMutableData = NSMutableData()
-        guard let destination = CGImageDestinationCreateWithData(gifData as CFMutableData, kUTTypeGIF, count, nil) else { return nil }
+        var identifier: CFString
+        if #available(iOS 15.0, *) {
+            identifier = UTType.gif.identifier as CFString
+        } else {
+            identifier = kUTTypeGIF
+        }
+        guard let destination = CGImageDestinationCreateWithData(gifData as CFMutableData, identifier, count, nil) else { return nil }
         let imageProperties: [CFString:[CFString:Any]] = [kCGImagePropertyGIFDictionary:[kCGImagePropertyGIFLoopCount:0]]
         CGImageDestinationSetProperties(destination, imageProperties as CFDictionary)
         for index in 0..<count {

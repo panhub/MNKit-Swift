@@ -144,7 +144,6 @@ class MNBaseViewController: UIViewController {
     @objc func reloadDataIfNeeded() {
         guard isNeedReloadData else { return }
         isNeedReloadData = false
-        guard isFirstAppear == false else { return }
         reloadData()
     }
     
