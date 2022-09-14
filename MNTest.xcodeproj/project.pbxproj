@@ -17,6 +17,7 @@
 		3BA6550828B3CF3F00BD54BA /* MNEditingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */; };
 		3BA6550A28B422A000BD54BA /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550928B422A000BD54BA /* TableViewCell.swift */; };
 		3BC67631289A1CDA00E57BA1 /* MNComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC67630289A1CDA00E57BA1 /* MNComponents.swift */; };
+		3BC9B8D428D023F6003A6D40 /* MNButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC9B8D328D023F6003A6D40 /* MNButton.swift */; };
 		3BDB6D6328990C940023D5E3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6228990C940023D5E3 /* AppDelegate.swift */; };
 		3BDB6D6C28990C950023D5E3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6B28990C950023D5E3 /* Assets.xcassets */; };
 		3BDB6D6F28990C950023D5E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6D28990C950023D5E3 /* LaunchScreen.storyboard */; };
@@ -219,6 +220,7 @@
 		3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingOptions.swift; sourceTree = "<group>"; };
 		3BA6550928B422A000BD54BA /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		3BC67630289A1CDA00E57BA1 /* MNComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNComponents.swift; sourceTree = "<group>"; };
+		3BC9B8D328D023F6003A6D40 /* MNButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNButton.swift; sourceTree = "<group>"; };
 		3BDB6D5F28990C940023D5E3 /* MNTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MNTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BDB6D6228990C940023D5E3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3BDB6D6B28990C950023D5E3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -686,6 +688,7 @@
 			isa = PBXGroup;
 			children = (
 				3BEF3BAC28BA7D7A005F65A3 /* MNSwitch.swift */,
+				3BC9B8D328D023F6003A6D40 /* MNButton.swift */,
 				3B5CE56728B36CFC00527F55 /* MNEditingView */,
 				3BDB6F26289928E40023D5E3 /* MNCollectionViewLayout */,
 				3BDB6F9D28992DFA0023D5E3 /* MNSecureView */,
@@ -1158,6 +1161,7 @@
 				3BDB705028992DFA0023D5E3 /* MNAssetSelectButton.swift in Sources */,
 				3BDB6F63289928E40023D5E3 /* MNRefreshHeader.swift in Sources */,
 				3BDB707928992DFA0023D5E3 /* CAAnimation+MNExtension.swift in Sources */,
+				3BC9B8D428D023F6003A6D40 /* MNButton.swift in Sources */,
 				3BDB6F57289928E40023D5E3 /* MNErrorToast.swift in Sources */,
 				3BEF3BAD28BA7D7A005F65A3 /* MNSwitch.swift in Sources */,
 				3BDB6F66289928E40023D5E3 /* MNActivityIndicatorView.swift in Sources */,
