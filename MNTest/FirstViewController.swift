@@ -28,6 +28,16 @@ class FirstViewController: MNBaseViewController {
         b.alignment = .center
         b.addTarget(self, action: #selector(sssssss), for: .touchUpInside)
         contentView.addSubview(b)
+        
+        let s = MNSwitch()
+        s.midX = b.midX
+        s.minY = b.maxY + 50.0
+        contentView.addSubview(s)
+        
+        let w = UISwitch(frame: CGRect(x: 0.0, y: 0.0, width: 150.0, height: 50.0))
+        w.midX = s.midX
+        w.minY = s.maxY + 50.0
+        contentView.addSubview(w)
     }
     
     @objc func sssssss() {
