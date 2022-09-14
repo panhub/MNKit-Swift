@@ -13,10 +13,10 @@ class MNFileManager {}
 extension MNFileManager {
     
     /// 磁盘大小
-    static var diskSize: Int {
+    static var diskSize: Int64 {
         do {
             let attributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
-            if let fileSize = (attributes[FileAttributeKey.systemSize] as? NSNumber)?.intValue { return fileSize }
+            if let fileSize = (attributes[FileAttributeKey.systemSize] as? NSNumber)?.int64Value { return fileSize }
         } catch {
             #if DEBUG
             print("读取系统磁盘大小出错: \n\(error.localizedDescription)")
@@ -26,10 +26,10 @@ extension MNFileManager {
     }
     
     /// 空余磁盘大小
-    static var diskFreeSize: Int {
+    static var freeSize: Int64 {
         do {
             let attributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
-            if let fileSize = (attributes[FileAttributeKey.systemFreeSize] as? NSNumber)?.intValue { return fileSize }
+            if let fileSize = (attributes[FileAttributeKey.systemFreeSize] as? NSNumber)?.int64Value { return fileSize }
         } catch {
             #if DEBUG
             print("读取空余磁盘大小出错: \n\(error.localizedDescription)")
@@ -39,12 +39,10 @@ extension MNFileManager {
     }
     
     /// 磁盘使用大小
-    static var diskUsedSize: Int {
+    static var diskUsedSize: Int64 {
         let total = diskSize
-        let free = diskFreeSize
-        guard total > 0, free > 0, total > free else { return 0 }
-        let used = total - free
-        return used
+        let free = freeSize
+        return max(0, total - free)
     }
     
     /// 计算路径下文件大小
