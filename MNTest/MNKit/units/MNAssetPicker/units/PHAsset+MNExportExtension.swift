@@ -36,7 +36,7 @@ extension PHAsset {
             return false
         } else {
             let uti = (value(forKey: "uniformTypeIdentifier") as? String) ?? ""
-            return uti.contains("gif")
+            return uti.contains("mov")
         }
     }
     

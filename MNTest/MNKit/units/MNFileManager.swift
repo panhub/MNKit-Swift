@@ -48,7 +48,7 @@ extension MNFileManager {
     /// 计算路径下文件大小
     /// - Parameter url: 指定路径
     /// - Returns: 文件大小
-    static func itemSize(at url: URL) -> Int {
+    static func itemSize(at url: URL) -> Int64 {
         guard url.isFileURL else { return 0 }
         return itemSize(atPath: url.path)
     }
@@ -56,13 +56,13 @@ extension MNFileManager {
     /// 计算路径下文件大小
     /// - Parameter filePath: 指定路径
     /// - Returns: 文件大小
-    static func itemSize(atPath filePath: String) -> Int {
+    static func itemSize(atPath filePath: String) -> Int64 {
         var isDirectory: ObjCBool = false
         guard FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory) else { return 0 }
         if isDirectory.boolValue {
             // 文件夹
             guard let subpaths = FileManager.default.subpaths(atPath: filePath) else { return 0 }
-            var fileSize: Int = 0
+            var fileSize: Int64 = 0
             for subpath in subpaths {
                 let pathExtension = subpath.pathExtension
                 if pathExtension.count > 0 {
@@ -78,11 +78,11 @@ extension MNFileManager {
     /// 计算单个文件大小
     /// - Parameter filePath: 文件路径
     /// - Returns: 文件大小
-    static func fileSize(atPath filePath: String) -> Int {
+    static func fileSize(atPath filePath: String) -> Int64 {
         guard FileManager.default.fileExists(atPath: filePath, isDirectory: nil) else { return 0 }
         do {
             let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
-            if let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.intValue { return fileSize }
+            if let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value { return fileSize }
         } catch {
             #if DEBUG
             print("读取文件大小出错: \n\(error.localizedDescription)")

@@ -947,6 +947,19 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
+				ar,
+				"zh-Hans",
+				ja,
+				es,
+				it,
+				"ko-KR",
+				ko,
+				"zh-Hant",
+				ru,
+				fr,
+				nl,
+				"pt-PT",
 			);
 			mainGroup = 3BDB6D5628990C940023D5E3;
 			productRefGroup = 3BDB6D6028990C940023D5E3 /* Products */;
