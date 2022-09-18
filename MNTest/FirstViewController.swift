@@ -34,10 +34,14 @@ class FirstViewController: MNBaseViewController {
         s.minY = b.maxY + 50.0
         contentView.addSubview(s)
         
-        let w = UISwitch(frame: CGRect(x: 0.0, y: 0.0, width: 150.0, height: 50.0))
-        w.midX = s.midX
-        w.minY = s.maxY + 50.0
-        contentView.addSubview(w)
+        s.isHidden = true
+        b.isHidden = true
+        
+        
+        let picker = MNDatePicker(frame: CGRect(x: 0.0, y: 0.0, width: contentView.width, height: 250.0))
+        picker.backgroundColor = UIColor(all: 220.0)
+        picker.center = contentView.Center
+        contentView.addSubview(picker)
     }
     
     @objc func sssssss() {

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3B01165428D4506300408903 /* MNDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B01165328D4506300408903 /* MNDatePicker.swift */; };
 		3B3E02A528B7E9310062AB8A /* UICollectionView+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02A428B7E9310062AB8A /* UICollectionView+MNEditing.swift */; };
 		3B3E02A728B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02A628B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift */; };
 		3B3E02AC28B7F76B0062AB8A /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02AB28B7F76B0062AB8A /* CollectionViewCell.swift */; };
@@ -210,6 +211,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3B01165328D4506300408903 /* MNDatePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNDatePicker.swift; sourceTree = "<group>"; };
 		3B3E02A428B7E9310062AB8A /* UICollectionView+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+MNEditing.swift"; sourceTree = "<group>"; };
 		3B3E02A628B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewCell+MNEditing.swift"; sourceTree = "<group>"; };
 		3B3E02AB28B7F76B0062AB8A /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
@@ -710,6 +712,7 @@
 				3BDB6FE528992DFA0023D5E3 /* MNScanView.swift */,
 				3BDB6FE628992DFA0023D5E3 /* MNAssetExporter */,
 				3BDB6FEE28992DFA0023D5E3 /* MNMotionManager.swift */,
+				3B01165328D4506300408903 /* MNDatePicker.swift */,
 			);
 			path = units;
 			sourceTree = "<group>";
@@ -1133,6 +1136,7 @@
 				3BDB701728992DFA0023D5E3 /* MNSecureView.swift in Sources */,
 				3BDB703328992DFA0023D5E3 /* MNPlayView.swift in Sources */,
 				3BDB704228992DFA0023D5E3 /* MNAssetCaptureBar.swift in Sources */,
+				3B01165428D4506300408903 /* MNDatePicker.swift in Sources */,
 				3BDB705228992DFA0023D5E3 /* MNAssetPickerNavBar.swift in Sources */,
 				3BDB704128992DFA0023D5E3 /* MNPHError.swift in Sources */,
 				3BDB6F82289928E40023D5E3 /* MNNavigationController.swift in Sources */,
