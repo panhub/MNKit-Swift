@@ -29,9 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let s = formatter.string(from: date!)
         
         print(s)
-        
-        
-        
         return true
     }
 }

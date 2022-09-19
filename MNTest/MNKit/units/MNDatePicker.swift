@@ -264,6 +264,19 @@ class MNDatePicker: UIView {
     var maximumDate: Date = Date()
     /// 行高
     var rowHeight: CGFloat = 40.0
+    /// 时区
+    var timeZone: TimeZone {
+        get { calendar.timeZone }
+        set {
+            calendar.timeZone = newValue
+            formatter.timeZone = newValue
+        }
+    }
+    /// 选择项颜色
+    override var tintColor: UIColor! {
+        get { picker.tintColor }
+        set { picker.tintColor = newValue }
+    }
     /// 记录当前时间
     private var time: Time = Time()
     /// 组件集合
@@ -284,7 +297,7 @@ class MNDatePicker: UIView {
         return formatter
     }()
     /// 日历
-    private let calendar: Calendar = {
+    private lazy var calendar: Calendar = {
         var calendar = Calendar.current
         calendar.timeZone = TimeZone.current
         return calendar
@@ -302,7 +315,7 @@ class MNDatePicker: UIView {
     override func willMove(toSuperview newSuperview: UIView?) {
         reloadComponents()
         layoutPicker()
-        select(date: maximumDate, animated: false)
+        selectDate(maximumDate, animated: false)
         reloadDayComponent()
         super.willMove(toSuperview: newSuperview)
     }
@@ -320,7 +333,7 @@ class MNDatePicker: UIView {
 extension MNDatePicker {
     
     /// 当前选择的时间
-    var date: Date? {
+    var date: Date {
         // 年
         var year: String = time.year
         if let index = components.indexOfYear {
@@ -338,6 +351,7 @@ extension MNDatePicker {
         // 日
         var day: String = time.day
         if let index = components.indexOfDay {
+            reloadDayComponent()
             let component = components[index]
             let row = picker.selectedRow(inComponent: index)
             day = component.rows[row]
@@ -387,7 +401,7 @@ extension MNDatePicker {
         // 生成时间
         let string: String = "\(year)-\(month)-\(day) \(hour):\(minute):\(second)"
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        return formatter.date(from: string)
+        return formatter.date(from: string) ?? maximumDate
     }
     
     /// 重载配件
@@ -581,7 +595,7 @@ extension MNDatePicker {
     /// - Parameters:
     ///   - date: 日期
     ///   - animated: 是否使用动画
-    func select(date: Date, animated: Bool) {
+    func selectDate(_ date: Date, animated: Bool) {
         
         formatter.dateFormat = "yyyy M d H m s"
         let selectDate: Date = min(max(minimumDate, date), maximumDate)
@@ -607,7 +621,7 @@ extension MNDatePicker {
                 // 月
                 let month: Int = NSDecimalNumber(string: time.month).intValue
                 let months: [String] = months(of: lang, abbr: isAbbr)
-                let string: String = months[month]
+                let string: String = months[month - 1]
                 if let idx = component.rows.firstIndex(of: string) {
                     picker.selectRow(idx, inComponent: index, animated: animated)
                 }
