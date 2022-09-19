@@ -266,10 +266,17 @@ class MNDatePicker: UIView {
     var rowHeight: CGFloat = 40.0
     /// 记录当前时间
     private var time: Time = Time()
-    /// 使用的选择器控件
-    private let picker = UIPickerView()
     /// 组件集合
     private var components: [Component] = [Component]()
+    /// 选择器控件
+    private lazy var picker: UIPickerView = {
+        let picker = UIPickerView(frame: bounds)
+        picker.delegate = self
+        picker.dataSource = self
+        picker.backgroundColor = .clear
+        picker.tintColor = UIColor(red: 220.0/255.0, green: 220.0/255.0, blue: 220.0/255.0, alpha: 1.0)
+        return picker
+    }()
     /// 格式化器
     private let formatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -285,11 +292,6 @@ class MNDatePicker: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        picker.frame = bounds
-        picker.delegate = self
-        picker.dataSource = self
-        picker.tintColor = UIColor(red: 220.0/255.0, green: 220.0/255.0, blue: 220.0/255.0, alpha: 1.0)
         addSubview(picker)
     }
     
