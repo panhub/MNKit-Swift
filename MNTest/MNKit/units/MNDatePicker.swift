@@ -242,8 +242,6 @@ class MNDatePicker: UIView {
         let module: MNDatePicker.Module
         /// 行数
         var rows: [String] = [String]()
-        /// 行对应的时间(仅对年/月有效)
-        var times: [String] = [String]()
         /// 配件宽度
         var width: CGFloat = 0.0
         
@@ -287,6 +285,7 @@ class MNDatePicker: UIView {
         picker.delegate = self
         picker.dataSource = self
         picker.backgroundColor = .clear
+        picker.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         picker.tintColor = UIColor(red: 220.0/255.0, green: 220.0/255.0, blue: 220.0/255.0, alpha: 1.0)
         return picker
     }()
@@ -313,20 +312,19 @@ class MNDatePicker: UIView {
     }
     
     override func willMove(toSuperview newSuperview: UIView?) {
-        reloadComponents()
-        layoutPicker()
         selectDate(maximumDate, animated: false)
-        reloadDayComponent()
         super.willMove(toSuperview: newSuperview)
     }
     
-    private func layoutPicker() {
-        var rect: CGRect = .zero
-        rect.size.width = components.reduce(0.0, { $0 + $1.width })
-        rect.size.width += (min(frame.width - rect.width, 100.0))
-        rect.size.height = frame.height
-        rect.origin.x = (frame.width - rect.width)/2.0
-        picker.frame = rect
+    override func sizeToFit() {
+        reloadComponents()
+        reloadDayComponent()
+        let autoresizingMask = autoresizingMask
+        self.autoresizingMask = []
+        var rect: CGRect = frame
+        rect.size.width = components.reduce(0.0, { $0 + $1.width }) + 100.0
+        frame = rect
+        self.autoresizingMask = autoresizingMask
     }
 }
 
@@ -339,14 +337,16 @@ extension MNDatePicker {
         if let index = components.indexOfYear {
             let component = components[index]
             let row = picker.selectedRow(inComponent: index)
-            year = component.times[row]
+            year = self.year(of: component.rows[row])
         }
         // 月
         var month: String = time.month
         if let index = components.indexOfMonth {
-            let component = components[index]
             let row = picker.selectedRow(inComponent: index)
-            month = component.times[row]
+            month = "\(row + 1)"
+            if month.count == 1 {
+                month.insert("0", at: month.startIndex)
+            }
         }
         // 日
         var day: String = time.day
@@ -404,6 +404,98 @@ extension MNDatePicker {
         return formatter.date(from: string) ?? maximumDate
     }
     
+    /// 指定选择日期
+    /// - Parameters:
+    ///   - date: 日期
+    ///   - animated: 是否使用动画
+    func selectDate(_ date: Date, animated: Bool) {
+        
+        // 刷新配件
+        reloadComponents()
+        
+        formatter.dateFormat = "yyyy M d H m s"
+        let selectDate: Date = min(max(minimumDate, date), maximumDate)
+        let times: [String] = formatter.string(from: selectDate).components(separatedBy: " ")
+        let time: Time = Time(year: times[0], month: times[1], day: times[2], hour: times[3], minute: times[4], second: times[5])
+        
+        for (index, component) in components.enumerated() {
+            switch component.module {
+            case .year(abbr: let isAbbr, suffix: _):
+                // 年
+                var string: String = time.year
+                if isAbbr {
+                    let begin = string.startIndex
+                    let end = string.index(string.startIndex, offsetBy: 1)
+                    string.removeSubrange(begin...end)
+                }
+                if let idx = component.rows.firstIndex(of: string) {
+                    picker.selectRow(idx, inComponent: index, animated: animated)
+                }
+            case .month(abbr: let isAbbr, lang: let lang, suffix: _):
+                // 月
+                let month: Int = NSDecimalNumber(string: time.month).intValue
+                let months: [String] = months(of: lang, abbr: isAbbr)
+                let string: String = months[month - 1]
+                if let idx = component.rows.firstIndex(of: string) {
+                    picker.selectRow(idx, inComponent: index, animated: animated)
+                }
+            case .day(abbr: let isAbbr, suffix: _):
+                // 天
+                var string: String = time.day
+                if isAbbr == false, string.count == 1 {
+                    string.insert("0", at: string.startIndex)
+                }
+                if let idx = component.rows.firstIndex(of: string) {
+                    picker.selectRow(idx, inComponent: index, animated: animated)
+                }
+            case .hour(abbr: let isAbbr, lang: _, clock12: let is12HourClock, suffix: _):
+                // 时段
+                let hour: Int = NSDecimalNumber(string: time.hour).intValue
+                if is12HourClock, let section = components.indexOfStage {
+                    let idx = hour < 12 ? 0 : 1
+                    picker.selectRow(idx, inComponent: section, animated: animated)
+                }
+                // 时
+                var string: String = time.hour
+                if is12HourClock {
+                    formatter.dateFormat = "yyyy MM dd h mm ss"
+                    let array: [String] = formatter.string(from: selectDate).components(separatedBy: " ")
+                    if array.count > 3 {
+                        string = array[3]
+                    }
+                }
+                if isAbbr == false, string.count == 1 {
+                    string.insert("0", at: string.startIndex)
+                }
+                if let idx = component.rows.firstIndex(of: string) {
+                    picker.selectRow(idx, inComponent: index, animated: animated)
+                }
+            case .minute(abbr: let isAbbr, suffix: _):
+                // 分
+                var string: String = time.minute
+                if isAbbr == false, string.count == 1 {
+                    string.insert("0", at: string.startIndex)
+                }
+                if let idx = component.rows.firstIndex(of: string) {
+                    picker.selectRow(idx, inComponent: index, animated: animated)
+                }
+            case .second(abbr: let isAbbr, suffix: _):
+                // 秒
+                var string: String = time.second
+                if isAbbr == false, string.count == 1 {
+                    string.insert("0", at: string.startIndex)
+                }
+                if let idx = component.rows.firstIndex(of: string) {
+                    picker.selectRow(idx, inComponent: index, animated: animated)
+                }
+            default: break
+            }
+        }
+        
+        // 刷新日配件
+        reloadDayComponent()
+    }
+    
     /// 重载配件
     func reloadComponents() {
         
@@ -437,7 +529,6 @@ extension MNDatePicker {
             component.width = ceil(((isAbbr ? "00" : "0000") as NSString).size(withAttributes: [.font:font]).width) + 15.0
             for year in minYear...maxYear {
                 var string: String = "\(year)"
-                component.times.append(string)
                 if isAbbr {
                     let begin = string.startIndex
                     let end = string.index(string.startIndex, offsetBy: 1)
@@ -454,7 +545,6 @@ extension MNDatePicker {
         if let module = modules.month {
             let component = Component(module: module)
             component.rows = months(of: module.language, abbr: module.isAbbr)
-            component.times.append(contentsOf: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"])
             let width = component.rows.reduce(0.0, { partialResult, string in
                 let w = (string as NSString).size(withAttributes: [.font:font]).width
                 return max(w, partialResult)
@@ -552,6 +642,54 @@ extension MNDatePicker {
             
             append(spacing: module.suffix)
         }
+        
+        // 刷新选择器
+        picker.reloadAllComponents()
+    }
+    
+    /// 刷新日配件
+    private func reloadDayComponent() {
+        
+        var year: String = time.year
+        if let index = components.indexOfYear {
+            let component = components[index]
+            let row = picker.selectedRow(inComponent: index)
+            year = self.year(of: component.rows[row])
+        }
+        
+        var month: String = time.month
+        if let index = components.indexOfMonth {
+            let row = picker.selectedRow(inComponent: index)
+            month = "\(row)"
+            if month.count == 1 {
+                month.insert("0", at: month.startIndex)
+            }
+        }
+        
+        // 日期
+        let string = "\(year)-\(month)-01 12:00:00"
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        guard let date = formatter.date(from: string) else { return }
+        
+        // 天数
+        guard let range = calendar.range(of: .day, in: .month, for: date) else { return }
+        let numberOfDays = range.count
+        
+        // 日配件
+        guard let index = components.indexOfDay else { return }
+        let component = components[index]
+        
+        // 计算天数是否对应
+        if component.rows.count == numberOfDays { return }
+        //let row = picker.selectedRow(inComponent: index)
+        if component.rows.count > numberOfDays {
+            component.rows.removeSubrange(numberOfDays..<component.rows.count)
+        } else {
+            for day in component.rows.count..<numberOfDays {
+                component.rows.append("\(day + 1)")
+            }
+        }
+        picker.reloadComponent(index)
     }
     
     /// 追加后缀(间隔)
@@ -591,135 +729,14 @@ extension MNDatePicker {
         }
     }
     
-    /// 指定选择日期
-    /// - Parameters:
-    ///   - date: 日期
-    ///   - animated: 是否使用动画
-    func selectDate(_ date: Date, animated: Bool) {
-        
-        formatter.dateFormat = "yyyy M d H m s"
-        let selectDate: Date = min(max(minimumDate, date), maximumDate)
-        let times: [String] = formatter.string(from: selectDate).components(separatedBy: " ")
-        let time: Time = Time(year: times[0], month: times[1], day: times[2], hour: times[3], minute: times[4], second: times[5])
-        
-        picker.reloadAllComponents()
-        
-        for (index, component) in components.enumerated() {
-            switch component.module {
-            case .year(abbr: let isAbbr, suffix: _):
-                // 年
-                var string: String = time.year
-                if isAbbr {
-                    let begin = string.startIndex
-                    let end = string.index(string.startIndex, offsetBy: 1)
-                    string.removeSubrange(begin...end)
-                }
-                if let idx = component.rows.firstIndex(of: string) {
-                    picker.selectRow(idx, inComponent: index, animated: animated)
-                }
-            case .month(abbr: let isAbbr, lang: let lang, suffix: _):
-                // 月
-                let month: Int = NSDecimalNumber(string: time.month).intValue
-                let months: [String] = months(of: lang, abbr: isAbbr)
-                let string: String = months[month - 1]
-                if let idx = component.rows.firstIndex(of: string) {
-                    picker.selectRow(idx, inComponent: index, animated: animated)
-                }
-            case .day(abbr: let isAbbr, suffix: _):
-                // 天
-                var string: String = time.day
-                if isAbbr == false, string.count == 1 {
-                    string.insert("0", at: string.startIndex)
-                }
-                if let idx = component.rows.firstIndex(of: string) {
-                    picker.selectRow(idx, inComponent: index, animated: animated)
-                }
-            case .hour(abbr: let isAbbr, lang: _, clock12: let is12HourClock, suffix: _):
-                // 时段
-                let hour: Int = NSDecimalNumber(string: time.hour).intValue
-                if is12HourClock, let section = components.indexOfStage {
-                    let idx = hour < 12 ? 0 : 1
-                    picker.selectRow(idx, inComponent: section, animated: animated)
-                }
-                // 时
-                var string: String = time.hour
-                if is12HourClock {
-                    formatter.dateFormat = "yyyy MM dd h mm ss"
-                    let array: [String] = formatter.string(from: selectDate).components(separatedBy: " ")
-                    if array.count > 3 {
-                        string = array[3]
-                    }
-                }
-                if isAbbr == false, string.count == 1 {
-                    string.insert("0", at: string.startIndex)
-                }
-                if let idx = component.rows.firstIndex(of: string) {
-                    picker.selectRow(idx, inComponent: index, animated: animated)
-                }
-            case .minute(abbr: let isAbbr, suffix: _):
-                // 分
-                var string: String = time.minute
-                if isAbbr == false, string.count == 1 {
-                    string.insert("0", at: string.startIndex)
-                }
-                if let idx = component.rows.firstIndex(of: string) {
-                    picker.selectRow(idx, inComponent: index, animated: animated)
-                }
-            case .second(abbr: let isAbbr, suffix: _):
-                // 秒
-                var string: String = time.second
-                if isAbbr == false, string.count == 1 {
-                    string.insert("0", at: string.startIndex)
-                }
-                if let idx = component.rows.firstIndex(of: string) {
-                    picker.selectRow(idx, inComponent: index, animated: animated)
-                }
-            default: break
-            }
-        }
-    }
-    
-    /// 刷新日配件
-    private func reloadDayComponent() {
-        
-        var year: String = time.year
-        if let index = components.indexOfYear {
-            let component = components[index]
-            let row = picker.selectedRow(inComponent: index)
-            year = component.times[row]
-        }
-        
-        var month: String = time.month
-        if let index = components.indexOfMonth {
-            let component = components[index]
-            let row = picker.selectedRow(inComponent: index)
-            month = component.times[row]
-        }
-        
-        // 日期
-        let string = "\(year)-\(month)-01 12:00:00"
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        guard let date = formatter.date(from: string) else { return }
-        
-        // 天数
-        guard let range = calendar.range(of: .day, in: .month, for: date) else { return }
-        let numberOfDays = range.count
-        
-        // 日配件
-        guard let index = components.indexOfDay else { return }
-        let component = components[index]
-        
-        // 计算天数是否对应
-        if component.rows.count == numberOfDays { return }
-        //let row = picker.selectedRow(inComponent: index)
-        if component.rows.count > numberOfDays {
-            component.rows.removeSubrange(numberOfDays..<component.rows.count)
-        } else {
-            for day in component.rows.count..<numberOfDays {
-                component.rows.append("\(day + 1)")
-            }
-        }
-        picker.reloadComponent(index)
+    /// 获取年份全写
+    /// - Parameter string: 年份
+    /// - Returns: 年份全写
+    private func year(of string: String) -> String {
+        let year: Int = (string as NSString).integerValue
+        guard year < 100 else { return string }
+        let prefix: String = year >= 70 ? "19" : "20"
+        return prefix + string
     }
 }
 
