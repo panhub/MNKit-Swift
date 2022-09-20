@@ -224,15 +224,23 @@ class MNDatePicker: UIView {
         case arabic, chinese, english
     }
     
-    /// 日期组件(午段 间隔 年 月 日 时 分 秒)
+    /// 日期组件
     enum Module {
+        /// 午段（上午/下午）
         case stage
+        /// 间隔（后缀）
         case spacing(String)
+        /// 年（是否简写 后缀）
         case year(abbr: Bool, suffix: String)
+        /// 月（是否简写 语言 后缀）
         case month(abbr: Bool, lang: MNDatePicker.Language, suffix: String)
+        /// 天（是否简写 后缀）
         case day(abbr: Bool, suffix: String)
+        /// 时（是否简写 语言 是否12时制 后缀）
         case hour(abbr: Bool, lang: MNDatePicker.Language, clock12: Bool, suffix: String)
+        /// 分（是否简写 后缀）
         case minute(abbr: Bool, suffix: String)
+        /// 秒（是否简写 后缀）
         case second(abbr: Bool, suffix: String)
     }
     
@@ -248,6 +256,14 @@ class MNDatePicker: UIView {
         init(module: MNDatePicker.Module) {
             self.module = module
         }
+        
+        func widthToFit(using font: UIFont, append adding: CGFloat) {
+            let width = rows.reduce(0.0, { partialResult, string in
+                let w = (string as NSString).size(withAttributes: [.font:font]).width
+                return max(w, partialResult)
+            })
+            self.width = ceil(width) + adding
+        }
     }
     
     /// 字体
@@ -255,13 +271,15 @@ class MNDatePicker: UIView {
     /// 字体颜色
     var textColor: UIColor = .black
     /// 组件集合
-    var modules: [Module] = [.year(abbr: true, suffix: "-"), .month(abbr: true, lang: .english, suffix: "-"), .day(abbr: false, suffix: ""), .hour(abbr: false, lang: .arabic, clock12: true, suffix: ":"), .minute(abbr: false, suffix: ":"), .second(abbr: false, suffix: "")]
+    var modules: [Module] = [.year(abbr: false, suffix: "-"), .month(abbr: false, lang: .arabic, suffix: "-"), .day(abbr: false, suffix: " "), .hour(abbr: false, lang: .arabic, clock12: false, suffix: ":"), .minute(abbr: false, suffix: ":"), .second(abbr: false, suffix: "")]
     /// 最早的时间
     var minimumDate: Date = Date(timeIntervalSince1970: 0.0)
     /// 最晚的时间
     var maximumDate: Date = Date()
     /// 行高
     var rowHeight: CGFloat = 40.0
+    /// 组建间隔
+    var spacing: CGFloat = 13.0
     /// 时区
     var timeZone: TimeZone {
         get { calendar.timeZone }
@@ -275,6 +293,13 @@ class MNDatePicker: UIView {
         get { picker.tintColor }
         set { picker.tintColor = newValue }
     }
+    override var frame: CGRect {
+        get { super.frame }
+        set {
+            super.frame = newValue
+            picker.frame = CGRect(x: 0.0, y: 0.0, width: frame.width, height: frame.height)
+        }
+    }
     /// 记录当前时间
     private var time: Time = Time()
     /// 组件集合
@@ -285,7 +310,6 @@ class MNDatePicker: UIView {
         picker.delegate = self
         picker.dataSource = self
         picker.backgroundColor = .clear
-        picker.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         picker.tintColor = UIColor(red: 220.0/255.0, green: 220.0/255.0, blue: 220.0/255.0, alpha: 1.0)
         return picker
     }()
@@ -312,23 +336,34 @@ class MNDatePicker: UIView {
     }
     
     override func willMove(toSuperview newSuperview: UIView?) {
-        selectDate(maximumDate, animated: false)
+        if let _ = newSuperview {
+            selectDate(maximumDate, animated: false)
+        }
         super.willMove(toSuperview: newSuperview)
     }
     
     override func sizeToFit() {
-        reloadComponents()
-        reloadDayComponent()
+        let contentSize = contentSize
         let autoresizingMask = autoresizingMask
         self.autoresizingMask = []
         var rect: CGRect = frame
-        rect.size.width = components.reduce(0.0, { $0 + $1.width }) + 100.0
+        rect.size.width = contentSize.width
+        rect.size.height = max(contentSize.height, 245.0)
         frame = rect
         self.autoresizingMask = autoresizingMask
     }
 }
 
 extension MNDatePicker {
+    
+    /// 获取选择器最佳尺寸
+    var contentSize: CGSize {
+        if components.count <= 0 {
+            reloadComponents()
+        }
+        let width = components.reduce(0.0, { $0 + $1.width }) + 100.0
+        return CGSize(width: width, height: frame.height)
+    }
     
     /// 当前选择的时间
     var date: Date {
@@ -411,7 +446,9 @@ extension MNDatePicker {
     func selectDate(_ date: Date, animated: Bool) {
         
         // 刷新配件
-        reloadComponents()
+        if components.count <= 0 {
+            reloadComponents()
+        }
         
         formatter.dateFormat = "yyyy M d H m s"
         let selectDate: Date = min(max(minimumDate, date), maximumDate)
@@ -526,7 +563,6 @@ extension MNDatePicker {
             
             let isAbbr: Bool = module.isAbbr
             let component = Component(module: module)
-            component.width = ceil(((isAbbr ? "00" : "0000") as NSString).size(withAttributes: [.font:font]).width) + 15.0
             for year in minYear...maxYear {
                 var string: String = "\(year)"
                 if isAbbr {
@@ -536,6 +572,7 @@ extension MNDatePicker {
                 }
                 component.rows.append(string)
             }
+            component.widthToFit(using: font, append: spacing)
             components.append(component)
             
             append(spacing: module.suffix)
@@ -545,11 +582,7 @@ extension MNDatePicker {
         if let module = modules.month {
             let component = Component(module: module)
             component.rows = months(of: module.language, abbr: module.isAbbr)
-            let width = component.rows.reduce(0.0, { partialResult, string in
-                let w = (string as NSString).size(withAttributes: [.font:font]).width
-                return max(w, partialResult)
-            })
-            component.width = ceil(width) + 10.0
+            component.widthToFit(using: font, append: spacing)
             components.append(component)
             
             append(spacing: module.suffix)
@@ -560,7 +593,6 @@ extension MNDatePicker {
             
             let isAbbr: Bool = module.isAbbr
             let component = Component(module: module)
-            component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + 15.0
             for day in 1..<32 {
                 var string: String = "\(day)"
                 if isAbbr == false, string.count == 1 {
@@ -568,6 +600,7 @@ extension MNDatePicker {
                 }
                 component.rows.append(string)
             }
+            component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + spacing
             components.append(component)
             
             append(spacing: module.suffix)
@@ -583,16 +616,11 @@ extension MNDatePicker {
                 // 时段
                 let component = Component(module: .stage)
                 component.rows = stages(of: module.language, abbr: isAbbr)
-                let width = component.rows.reduce(0.0, { partialResult, string in
-                    let w = (string as NSString).size(withAttributes: [.font:font]).width
-                    return max(w, partialResult)
-                })
-                component.width = ceil(width) + 10.0
+                component.widthToFit(using: font, append: 10.0)
                 components.append(component)
             }
             
             let component = Component(module: module)
-            component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + 8.0
             let begin: Int = is12HourClock ? 1 : 0
             let end: Int = is12HourClock ? 13 : 24
             for hour in begin..<end {
@@ -602,6 +630,7 @@ extension MNDatePicker {
                 }
                 component.rows.append(string)
             }
+            component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + max(10.0, spacing - 3.0)
             components.append(component)
             
             append(spacing: module.suffix)
@@ -612,7 +641,6 @@ extension MNDatePicker {
             
             let isAbbr: Bool = module.isAbbr
             let component = Component(module: module)
-            component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + 8.0
             for minute in 0..<60 {
                 var string: String = "\(minute)"
                 if isAbbr == false, string.count == 1 {
@@ -620,6 +648,7 @@ extension MNDatePicker {
                 }
                 component.rows.append(string)
             }
+            component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + max(10.0, spacing - 3.0)
             components.append(component)
             
             append(spacing: module.suffix)
@@ -630,7 +659,6 @@ extension MNDatePicker {
             
             let isAbbr: Bool = module.isAbbr
             let component = Component(module: module)
-            component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + 8.0
             for second in 0..<60 {
                 var string: String = "\(second)"
                 if isAbbr == false, string.count == 1 {
@@ -638,6 +666,7 @@ extension MNDatePicker {
                 }
                 component.rows.append(string)
             }
+            component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + max(10.0, spacing - 3.0)
             components.append(component)
             
             append(spacing: module.suffix)
@@ -645,6 +674,8 @@ extension MNDatePicker {
         
         // 刷新选择器
         picker.reloadAllComponents()
+        // 刷新日配件
+        reloadDayComponent()
     }
     
     /// 刷新日配件
@@ -681,7 +712,6 @@ extension MNDatePicker {
         
         // 计算天数是否对应
         if component.rows.count == numberOfDays { return }
-        //let row = picker.selectedRow(inComponent: index)
         if component.rows.count > numberOfDays {
             component.rows.removeSubrange(numberOfDays..<component.rows.count)
         } else {
@@ -694,11 +724,11 @@ extension MNDatePicker {
     
     /// 追加后缀(间隔)
     /// - Parameter suffix: 后缀内容
-    func append(spacing suffix: String) {
+    private func append(spacing suffix: String) {
         guard suffix.count > 0 else { return }
         let component = Component(module: .spacing(suffix))
-        component.width = ceil((suffix as NSString).size(withAttributes: [.font:font]).width)
         component.rows.append(suffix)
+        component.widthToFit(using: font, append: 0.0)
         components.append(component)
     }
     
