@@ -116,7 +116,7 @@ class MNAssetPickerController: UIViewController {
         view.addSubview(navBar)
         view.addSubview(albumView)
         view.addSubview(toolBar)
-        if options.maxPickingCount > 1, options.isAllowsSlidingPicking, options.isAllowsMultiplePickingPhoto, options.isAllowsMultiplePickingGif, options.isAllowsMultiplePickingVideo, options.isAllowsMultiplePickingLivePhoto {
+        if options.maxPickingCount > 1, options.isAllowsSlidePicking, options.isAllowsMultiplePickingPhoto, options.isAllowsMultiplePickingGif, options.isAllowsMultiplePickingVideo, options.isAllowsMultiplePickingLivePhoto {
             // 滑动选择
             collectionView.bounces = false
             let pan = UIPanGestureRecognizer(target: self, action: #selector(pan(recognizer:)))
@@ -158,37 +158,37 @@ class MNAssetPickerController: UIViewController {
         // 判断是否超过限制
         if selecteds.count >= options.maxPickingCount {
             // 标记不能再选择
-            for asset in assets.filter({ $0.isTaking == false && $0.isSelected == false && $0.isEnabled }) {
+            for asset in assets.filter({ $0.isSelected == false && $0.isEnabled }) {
                 asset.isEnabled = false
             }
         } else {
             // 结束限制
-            for asset in assets.filter({ $0.isTaking == false && $0.isSelected == false && $0.isEnabled == false }) {
+            for asset in assets.filter({ $0.isSelected == false && $0.isEnabled == false }) {
                 asset.isEnabled = true
             }
             // 类型限制
             if selecteds.count > 0 {
                 let type = selecteds.first!.type
                 if options.isAllowsMixPicking == false {
-                    for asset in assets.filter({ $0.isTaking == false && $0.isSelected == false && $0.type != type }) {
+                    for asset in assets.filter({ $0.isSelected == false && $0.type != type }) {
                         asset.isEnabled = false
                     }
                 }
                 // 检查限制(可不加)
                 if type == .photo, options.isAllowsMultiplePickingPhoto == false {
-                    for asset in assets.filter({ $0.isTaking == false && $0.isSelected == false && $0.type == .photo }) {
+                    for asset in assets.filter({ $0.isSelected == false && $0.type == .photo }) {
                         asset.isEnabled = false
                     }
                 } else if type == .gif, options.isAllowsMultiplePickingGif == false {
-                    for asset in assets.filter({ $0.isTaking == false && $0.isSelected == false && $0.type == .gif }) {
+                    for asset in assets.filter({ $0.isSelected == false && $0.type == .gif }) {
                         asset.isEnabled = false
                     }
                 } else if type == .video, options.isAllowsMultiplePickingVideo == false {
-                    for asset in assets.filter({ $0.isTaking == false && $0.isSelected == false && $0.type == .video }) {
+                    for asset in assets.filter({ $0.isSelected == false && $0.type == .video }) {
                         asset.isEnabled = false
                     }
                 } else if type == .livePhoto, options.isAllowsMultiplePickingLivePhoto == false {
-                    for asset in assets.filter({ $0.isTaking == false && $0.isSelected == false && $0.type == .livePhoto }) {
+                    for asset in assets.filter({ $0.isSelected == false && $0.type == .livePhoto }) {
                         asset.isEnabled = false
                     }
                 }
@@ -278,7 +278,7 @@ extension MNAssetPickerController {
             guard let indexPath = collectionView.indexPathForItem(at: point), indexPath.item != lastTouchIndex, indexPath.item < assets.count else { return }
             lastTouchIndex = indexPath.item
             let asset = assets[indexPath.item]
-            guard asset.isEnabled, asset.isTaking == false else { return }
+            guard asset.isEnabled else { return }
             update(asset: asset)
         default:
             lastTouchIndex = -1
@@ -312,20 +312,9 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
         guard indexPath.item < assets.count else { return }
         let asset = assets[indexPath.item]
         guard asset.isEnabled else { return }
-        if asset.isTaking {
-            // TODO 拍摄
-        } else if options.isAllowsPreview == false && (options.maxPickingCount <= 1 || (asset.type == .photo && options.isAllowsMultiplePickingPhoto == false) || (asset.type == .gif && options.isAllowsMultiplePickingGif == false) || (asset.type == .video && options.isAllowsMultiplePickingVideo == false) || (asset.type == .livePhoto && options.isAllowsMultiplePickingLivePhoto == false)) {
-            if asset.type == .photo, options.isAllowsEditing {
-                // TODO 图片裁剪
-            } else if asset.type == .video, options.isAllowsEditing {
-                // TODO 视频裁剪
-            } else {
-                // 导出
-                export(assets: [asset])
-            }
-        } else if options.isAllowsPreview {
+        if options.isAllowsPreview {
             // 预览
-            let assets: [MNAsset] = self.assets.filter { $0.isTaking == false }
+            let assets: [MNAsset] = assets
             guard assets.count > 0, let index = assets.firstIndex(of: asset) else { return }
             let browser = MNAssetBrowser(assets: assets)
             browser.events = [.back]
@@ -339,6 +328,15 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
                 self?.setNeedsStatusBarAppearanceUpdate()
             }
             browser.present(in: view, from: index, animated: true, completion: nil)
+        } else if options.maxPickingCount <= 1 || (asset.type == .photo && options.isAllowsMultiplePickingPhoto == false) || (asset.type == .gif && options.isAllowsMultiplePickingGif == false) || (asset.type == .video && options.isAllowsMultiplePickingVideo == false) || (asset.type == .livePhoto && options.isAllowsMultiplePickingLivePhoto == false) {
+            if asset.type == .photo, options.isAllowsEditing {
+                // TODO 图片裁剪
+            } else if asset.type == .video, options.isAllowsEditing {
+                // TODO 视频裁剪
+            } else {
+                // 导出
+                export(assets: [asset])
+            }
         } else {
             // 更新资源状态
             update(asset: asset)
@@ -406,7 +404,7 @@ extension MNAssetPickerController: MNAssetPickerToolDelegate {
         alert.addAction(UIAlertAction(title: "清空", style: .default, handler: { [weak self] _ in
             guard let self = self else { return }
             for album in self.albumView.albums {
-                for asset in album.assets.filter({ $0.isTaking == false && ($0.isSelected || $0.isEnabled == false) }) {
+                for asset in album.assets.filter({ $0.isSelected || $0.isEnabled == false }) {
                     asset.isEnabled = true
                     asset.isSelected = false
                 }

@@ -40,16 +40,12 @@ class MNAssetAlbum: NSObject {
      */
     func add(asset: MNAsset) {
         objc_sync_enter(self)
-        if assets.count <= 0 || assets.last!.isTaking == false {
+        if assets.count <= 0 {
             assets.append(asset)
         } else {
             assets[assets.count - 1] = asset
         }
-        if assets.first!.isTaking {
-            thumbnail = assets[1].thumbnail
-        } else {
-            thumbnail = assets.first!.thumbnail
-        }
+        thumbnail = assets.first!.thumbnail
         objc_sync_exit(self)
     }
     
@@ -59,16 +55,12 @@ class MNAssetAlbum: NSObject {
      */
     func insertAsset(atFront asset: MNAsset) {
         objc_sync_enter(self)
-        if assets.count <= 0 || assets.first!.isTaking == false {
+        if assets.count <= 0 {
             assets[0] = asset
         } else {
             assets[1] = asset
         }
-        if assets.first!.isTaking {
-            thumbnail = assets[1].thumbnail
-        } else {
-            thumbnail = assets.first!.thumbnail
-        }
+        thumbnail = assets.first!.thumbnail
         objc_sync_exit(self)
     }
     

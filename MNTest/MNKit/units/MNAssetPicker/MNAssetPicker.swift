@@ -19,10 +19,7 @@ class MNAssetPicker: UINavigationController {
     private var pickingHandler: MNAssetPickingHandler!
     /**配置信息*/
     @objc lazy var options: MNAssetPickerOptions! = {
-        guard let rootViewController = viewControllers.first else { return nil}
-        if let vc = rootViewController as? MNAssetPickerController { return vc.options }
-        if let vc = rootViewController as? MNCameraController { return vc.options }
-        return nil
+        return (rootViewController as? MNAssetPickerController)?.options
     }()
     
     /**图片选择器*/
@@ -30,9 +27,12 @@ class MNAssetPicker: UINavigationController {
         return MNAssetPicker(rootViewController: MNAssetPickerController())
     }
     
-    /**照相机*/
-    @objc static var camera: MNAssetPicker {
-        return MNAssetPicker(rootViewController: MNCameraController())
+    convenience init() {
+        self.init(rootViewController: MNAssetPickerController())
+    }
+    
+    private override init(navigationBarClass: AnyClass?, toolbarClass: AnyClass?) {
+        super.init(navigationBarClass: navigationBarClass, toolbarClass: toolbarClass)
     }
     
     private override init(rootViewController: UIViewController) {
@@ -67,10 +67,10 @@ class MNAssetPicker: UINavigationController {
 extension MNAssetPicker {
     
     @objc func present(pickingHandler: @escaping MNAssetPickingHandler, cancelHandler: MNAssetCancelHandler? = nil) {
-        present(nil, animated: true, pickingHandler: pickingHandler, cancelHandler: cancelHandler)
+        present(in: nil, animated: true, pickingHandler: pickingHandler, cancelHandler: cancelHandler)
     }
     
-    @objc func present(_ viewController: UIViewController? = nil, animated: Bool = true, pickingHandler: @escaping MNAssetPickingHandler, cancelHandler: MNAssetCancelHandler? = nil) {
+    @objc func present(in viewController: UIViewController? = nil, animated: Bool = true, pickingHandler: @escaping MNAssetPickingHandler, cancelHandler: MNAssetCancelHandler? = nil) {
         guard let parent = (viewController ?? MNAssetPicker.present) else { return }
         isAnimated = animated
         options.delegate = self
@@ -87,6 +87,7 @@ extension MNAssetPicker {
 
 // MARK: - 调起资源选择器
 extension MNAssetPicker: MNAssetPickerDelegate {
+    
     func assetPicker(didCancel picker: MNAssetPicker) {
         if options.isAllowsAutoDismiss {
             dismiss(animated: (isAnimated && UIApplication.shared.applicationState == .active)) { [weak self] in

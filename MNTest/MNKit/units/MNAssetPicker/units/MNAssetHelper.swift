@@ -179,13 +179,13 @@ extension MNAssetHelper {
                 let isDegraded: Bool = (info?[PHImageResultIsDegradedKey] as? NSNumber)?.boolValue ?? false
                 if isDegraded {
                     // 衰减图片
-                    asset.image = image
+                    asset.degradedImage = image
                     DispatchQueue.main.async {
                         asset.thumbnailUpdateHandler?(asset)
                     }
                 } else {
                     // 缩略图
-                    asset.image = nil
+                    asset.degradedImage = nil
                     asset.update(thumbnail: image)
                     asset.requestId = PHInvalidImageRequestID
                 }
@@ -204,10 +204,10 @@ extension MNAssetHelper {
                 
                 if let options = options, options.isShowFileSize, asset.fileSize < 0, isClould == false {
                     // 获取大小
-                    var fileSize: Int = 0
+                    var fileSize: Int64 = 0
                     let resources = PHAssetResource.assetResources(for: phAsset)
                     for resource in resources {
-                        fileSize += (resource.value(forKey: "fileSize") as? Int ?? 0)
+                        fileSize += (resource.value(forKey: "fileSize") as? Int64 ?? 0)
                     }
                     asset.update(fileSize: fileSize)
                 }
@@ -272,7 +272,7 @@ extension MNAssetHelper {
                     if asset.fileSize <= 0 {
                         do {
                             let attributes = try FileManager.default.attributesOfItem(atPath: avAsset.url.path)
-                            if let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.intValue, fileSize >= 0 {
+                            if let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value, fileSize >= 0 {
                                 asset.update(fileSize: fileSize)
                             }
                         } catch {}
@@ -332,7 +332,7 @@ extension MNAssetHelper {
                         asset.content = image.resizingOrientation
                     }
                     if asset.fileSize <= 0 {
-                        let fileSize = imageData!.count
+                        let fileSize = Int64(imageData!.count)
                         asset.update(fileSize: fileSize)
                     }
                 }
@@ -393,10 +393,10 @@ extension MNAssetHelper {
             videoOptions.deliveryMode = .highQualityFormat;
             PHImageManager.default().requestAVAsset(forVideo: phAsset, options: videoOptions) { result, _, _ in
                 if let avAsset = result as? AVURLAsset {
-                    if options.isAllowsExportMov == false, avAsset.url.pathExtension.lowercased().contains("mov") {
+                    if options.isAllowsMovExporting == false, avAsset.url.pathExtension.lowercased().contains("mov") {
                         let outputURL: URL = options.exportURL(pathExtension: "mp4")
                         try? FileManager.default.createDirectory(at: outputURL.deletingLastPathComponent(), withIntermediateDirectories: true, attributes: nil)
-                        if let exportSession = AVAssetExportSession(asset: avAsset, presetName: options.exportPreset ?? (options.isUsingOptimizeExport ? AVAssetExportPresetMediumQuality : AVAssetExportPresetHighestQuality)) {
+                        if let exportSession = AVAssetExportSession(asset: avAsset, presetName: options.exportPreset ?? AVAssetExportPresetHighestQuality) {
                             exportSession.outputURL = outputURL
                             exportSession.outputFileType = .mp4
                             exportSession.shouldOptimizeForNetworkUse = true
@@ -483,14 +483,14 @@ extension MNAssetHelper {
                         image = result
                     } else {
                         // 判断是否需要转化heif/heic格式图片
-                        if #available(iOS 10.0, *), options.isAllowsExportHeifc == false, phAsset.isHeifc, let ciImage = CIImage(data: imageData!), let colorSpace = ciImage.colorSpace, let jpgData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace, options: [CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String):options.compressionQuality]) {
+                        if #available(iOS 10.0, *), options.isAllowsHeifcExporting == false, phAsset.isHeifc, let ciImage = CIImage(data: imageData!), let colorSpace = ciImage.colorSpace, let jpgData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace, options: [CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String):options.compressionQuality]) {
                             image = UIImage(data: jpgData)
                         } else {
                             image = result
                         }
                         image = image?.resizingOrientation
-                        if options.isUsingOptimizeExport {
-                            image = image?.optimized(compressionQuality: options.compressionQuality)
+                        if options.compressionQuality < 1.0 {
+                            image = image?.optimized(compressionQuality: max(options.compressionQuality, 0.1))
                         }
                     }
                 }

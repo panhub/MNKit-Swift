@@ -3,7 +3,7 @@
 //  MNFoundation
 //
 //  Created by 冯盼 on 2021/9/27.
-//  资源选择器配置信息
+//  资源选择器配置信息 allowsMultipleSelection
 
 import UIKit
 import Foundation
@@ -51,18 +51,6 @@ class MNAssetPickerOptions: NSObject {
      */
     @objc var isShowFileSize: Bool = false
     /**
-     视频拍摄最大长度
-    */
-    @objc var maxCaptureDuration: TimeInterval = 30.0
-    /**
-     是否允许拍照/录像
-     */
-    @objc var isAllowsTaking: Bool = false
-    /**
-     是否允许储存图片/视频到系统相册
-     */
-    @objc var isAllowsWriting: Bool = false
-    /**
      是否允许挑选图片
      */
     @objc var isAllowsPickingPhoto: Bool = true
@@ -98,15 +86,15 @@ class MNAssetPickerOptions: NSObject {
      #available(iOS 10.0, *)
      是否允许输出heif/heic格式图片
      */
-    @objc var isAllowsExportHeifc: Bool = false
+    @objc var isAllowsHeifcExporting: Bool = false
     /**
-     如果需要采取压缩 压缩系数
+     是否允许输出Mov格式视频
      */
-    @objc var compressionQuality: CGFloat = 0.7
+    @objc var isAllowsMovExporting: Bool = false
     /**
-     是否允许输出Mov格式图片
+     如果需要压缩 压缩系数
      */
-    @objc var isAllowsExportMov: Bool = false
+    @objc var compressionQuality: CGFloat = 1.0
     /**
      把GIF当做Image使用
      */
@@ -120,13 +108,13 @@ class MNAssetPickerOptions: NSObject {
      */
     @objc var isAllowsMixPicking: Bool = true
     /**
-     当代理未响应时是否允许自动退出
+     当未响应退出代理方法时是否允许内部自行退出
      */
     @objc var isAllowsAutoDismiss: Bool = true
     /**
      是否允许滑动选择
      */
-    @objc var isAllowsSlidingPicking: Bool = false
+    @objc var isAllowsSlidePicking: Bool = false
     /**
      视频编辑界面是否允许调整视频尺寸
      */
@@ -147,10 +135,6 @@ class MNAssetPickerOptions: NSObject {
      是否导出LivePhoto的资源文件
      */
     @objc var shouldExportLiveResource: Bool = false
-    /**
-     优化导出的图片<接近于微信朋友圈质量>
-     */
-    @objc var shouldOptimizeExportImage: Bool = false
     /**
      显示的列数
      */
@@ -192,14 +176,6 @@ class MNAssetPickerOptions: NSObject {
      */
     @objc var renderSize: CGSize = CGSize(width: 250.0, height: 250.0)
     /**
-     是否原图输出<内部使用>
-     */
-    @objc var isOriginalExport: Bool = false
-    /**
-     是否允许以原图导出<使用原图则 'allowsOptimizeExporting' 无效>
-     */
-    @objc var isAllowsOriginalExport: Bool = true
-    /**
      主题颜色 UIColor(red: 23.0/255.0, green: 79.0/255.0, blue: 218.0/255.0, alpha: 1.0)
      */
     @objc var color: UIColor = UIColor(red: 72.0/255.0, green: 122.0/255.0, blue: 245.0/255.0, alpha: 1.0)
@@ -220,10 +196,6 @@ class MNAssetPickerOptions: NSObject {
      */
     @objc var isUsingFullScreenPresentation: Bool = true
     /**
-     监听相册变化以改变
-     */
-    @objc var isAllowsObserveLibraryChange: Bool = false
-    /**
      分析文件位置及大小的队列
      */
     @objc let queue: DispatchQueue = DispatchQueue(label: "com.mn.asset.queue", attributes: .concurrent)
@@ -232,17 +204,15 @@ class MNAssetPickerOptions: NSObject {
 // MARK: - 辅助
 extension MNAssetPickerOptions {
     // 顶部栏高度
-    @objc var topbarHeight: CGFloat { isUsingFullScreenPresentation ? MN_TOP_BAR_HEIGHT : 55.0 }
+    @objc var topBarHeight: CGFloat { isUsingFullScreenPresentation ? MN_TOP_BAR_HEIGHT : 55.0 }
     // 底部栏高度
-    @objc var toolbarHeight: CGFloat { max(MN_TAB_BAR_HEIGHT, 55.0) }
+    @objc var toolBarHeight: CGFloat { max(MN_TAB_BAR_HEIGHT, 55.0) }
     /**内容布局*/
     @objc var contentInset: UIEdgeInsets {
-        UIEdgeInsets(top: topbarHeight, left: 0.0, bottom: (maxPickingCount <= 1 && isAllowsPreview == false) ? 0.0 : toolbarHeight, right: 0.0)
+        UIEdgeInsets(top: topBarHeight, left: 0.0, bottom: (maxPickingCount <= 1 && isAllowsPreview == false) ? 0.0 : toolBarHeight, right: 0.0)
     }
     /**背景颜色*/
     @objc var backgroundColor: UIColor { mode == .light ? .white : UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0) }
-    /**是否优化质量*/
-    @objc var isUsingOptimizeExport: Bool { (isAllowsOriginalExport && isOriginalExport == false) || (isAllowsOriginalExport == false && shouldOptimizeExportImage) }
 }
 
 // MARK: - Export

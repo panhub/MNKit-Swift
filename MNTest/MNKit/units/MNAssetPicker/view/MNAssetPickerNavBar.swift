@@ -24,7 +24,7 @@ class MNAssetPickerNavBar: UIView {
         
         badge = MNAssetAlbumBadge(options: options)
         
-        super.init(frame: UIScreen.main.bounds.inset(by: UIEdgeInsets(top: 0.0, left: 0.0, bottom: UIScreen.main.bounds.height - options.topbarHeight, right: 0.0)))
+        super.init(frame: UIScreen.main.bounds.inset(by: UIEdgeInsets(top: 0.0, left: 0.0, bottom: UIScreen.main.bounds.height - options.topBarHeight, right: 0.0)))
         
         if options.mode == .light {
             backgroundColor = .white.withAlphaComponent(0.97)

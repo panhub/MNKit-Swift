@@ -9,13 +9,16 @@ import UIKit
 
 class MNCameraController: UIViewController {
     
-    /**配置信息*/
+    /**配置信息**/
     lazy var options: MNAssetPickerOptions = {
         return MNAssetPickerOptions()
     }()
     
     /**视频路径**/
     var outputURL: URL?
+    
+    /**最大拍摄时长**/
+    var maxCaptureDuration: TimeInterval = 60.0
     
     private lazy var movieView: UIView = {
         let movieView = UIView(frame: view.bounds)
@@ -45,7 +48,7 @@ class MNCameraController: UIViewController {
         toolBar.maxY = view.bounds.height - MN_TAB_SAFE_HEIGHT - 60.0
         toolBar.delegate = self
         toolBar.options = functions
-        toolBar.timeoutInterval = max(options.maxCaptureDuration, options.maxExportDuration)
+        toolBar.timeoutInterval = max(maxCaptureDuration, options.maxExportDuration)
         return toolBar
     }()
     

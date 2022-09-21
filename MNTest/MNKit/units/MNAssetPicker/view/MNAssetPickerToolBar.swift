@@ -31,17 +31,13 @@ class MNAssetPickerToolBar: UIView {
     private let previewButton: UIButton = UIButton(type: .custom)
     // 文件大小
     private let fileSizeLabel: UILabel = UILabel()
-    // 原图选中标记
-    private let fileSizeBadge: UIView = UIView()
-    // 原图按钮
-    private let fileSizeControl: UIControl = UIControl()
     
     init(options: MNAssetPickerOptions) {
         
         self.options = options
         disabledColor = options.mode == .light ? UIColor(white: 0.0, alpha: 0.12) : UIColor(red: 74.0/255.0, green: 74.0/255.0, blue: 74.0/255.0, alpha: 1.0)
     
-        super.init(frame: UIScreen.main.bounds.inset(by: UIEdgeInsets(top: UIScreen.main.bounds.height - options.toolbarHeight, left: 0.0, bottom: 0.0, right: 0.0)))
+        super.init(frame: UIScreen.main.bounds.inset(by: UIEdgeInsets(top: UIScreen.main.bounds.height - options.toolBarHeight, left: 0.0, bottom: 0.0, right: 0.0)))
         
         if options.contentInset.bottom <= 0.0 {
             minY = UIScreen.main.bounds.height
@@ -103,26 +99,12 @@ class MNAssetPickerToolBar: UIView {
         addSubview(doneButton)
         
         fileSizeLabel.numberOfLines = 1
-        fileSizeLabel.textAlignment = .left
+        fileSizeLabel.textAlignment = .right
         fileSizeLabel.font = .systemFont(ofSize: 13.0)
         fileSizeLabel.isUserInteractionEnabled = false
-        fileSizeLabel.isHidden = (options.isShowFileSize == false && options.isAllowsOriginalExport == false)
+        fileSizeLabel.textColor = disabledColor
+        fileSizeLabel.isHidden = options.isShowFileSize == false
         addSubview(fileSizeLabel)
-        
-        fileSizeControl.size = CGSize(width: 18.0, height: 18.0)
-        fileSizeControl.midY = doneButton.midY
-        fileSizeControl.clipsToBounds = true
-        fileSizeControl.layer.borderWidth = 1.5
-        fileSizeControl.layer.cornerRadius = fileSizeControl.bounds.height/2.0
-        fileSizeControl.isHidden = options.isAllowsOriginalExport == false
-        fileSizeControl.addTarget(self, action: #selector(updateOriginal), for: .touchUpInside)
-        addSubview(fileSizeControl)
-        
-        fileSizeBadge.frame = fileSizeControl.bounds.inset(by: UIEdgeInsets(top: 3.0, left: 3.0, bottom: 3.0, right: 3.0))
-        fileSizeBadge.clipsToBounds = true
-        fileSizeBadge.isUserInteractionEnabled = false
-        fileSizeBadge.layer.cornerRadius = fileSizeBadge.bounds.height/2.0
-        fileSizeControl.addSubview(fileSizeBadge)
         
         let separator = UIView(frame: CGRect(x: 0.0, y: 0.0, width: bounds.width, height: 0.7))
         separator.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
@@ -139,13 +121,6 @@ class MNAssetPickerToolBar: UIView {
         }
         
         updateFileSize([])
-    }
-    
-    @objc func updateOriginal() {
-        options.isOriginalExport = !options.isOriginalExport
-        fileSizeLabel.textColor = options.isOriginalExport ? options.color : disabledColor
-        fileSizeControl.layer.borderColor = fileSizeLabel.textColor?.cgColor
-        fileSizeBadge.backgroundColor = fileSizeLabel.textColor
     }
     
     required init?(coder: NSCoder) {
@@ -186,22 +161,13 @@ extension MNAssetPickerToolBar {
     
     private func updateFileSize(_ assets: [MNAsset]) {
         guard fileSizeLabel.isHidden == false else { return }
-        var title: String = "原图"
-        if options.isShowFileSize {
-            let fileSize: [Int] = assets.compactMap { $0.fileSize }
-            let sum: Int = fileSize.reduce(0, +)
-            title = sum > 0 ? sum.fileSizeValue : "0.0M"
-        }
+        let fileSize: Int64 = assets.reduce(0) { $0 + max($1.fileSize, 0) }
+        let title = fileSize > 0 ? fileSize.fileSizeValue : "0.0M"
         fileSizeLabel.text = title
         fileSizeLabel.sizeToFit()
         fileSizeLabel.height = ceil(fileSizeLabel.height)
         fileSizeLabel.width = ceil(fileSizeLabel.width) + 10.0
         fileSizeLabel.maxX = doneButton.minX
         fileSizeLabel.midY = doneButton.midY
-        fileSizeLabel.textColor = options.isOriginalExport ? options.color : disabledColor
-        guard options.isAllowsOriginalExport else { return }
-        fileSizeControl.maxX = fileSizeLabel.minX - 5.0
-        fileSizeControl.layer.borderColor = fileSizeLabel.textColor?.cgColor
-        fileSizeBadge.backgroundColor = fileSizeLabel.textColor
     }
 }

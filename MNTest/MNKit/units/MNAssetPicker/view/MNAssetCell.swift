@@ -149,7 +149,7 @@ class MNAssetCell: UICollectionViewCell {
         
         topShadow.isHidden = false
         bottomShadow.isHidden = false
-        imageView.image = asset.thumbnail ?? asset.image
+        imageView.image = asset.thumbnail ?? asset.degradedImage
         holdView.isHidden = asset.isEnabled
         cloudView.isHidden = asset.source != .cloud
         if cloudView.isHidden == false {
@@ -159,13 +159,6 @@ class MNAssetCell: UICollectionViewCell {
         if options.isShowFileSize, asset.fileSize > 0 {
             updateFileSize()
         }
-//        if asset.isEnabled == false || asset.isTaking || (options.isAllowsPreview == false && (options.maxPickingCount <= 1 || (asset.type == .photo && options.isAllowsMultiplePickingPhoto == false) || (asset.type == .video && options.isAllowsMultiplePickingVideo == false) || (asset.type == .gif && options.isAllowsMultiplePickingGif == false) || (asset.type == .livePhoto && options.isAllowsMultiplePickingLivePhoto == false))) {
-//            selectControl.isHidden = true
-//        } else {
-//            selectControl.isHidden = false
-//            selectControl.index = asset.index
-//            selectControl.isSelected = asset.isSelected
-//        }
         
         switch asset.type {
         case .video:
@@ -206,7 +199,7 @@ class MNAssetCell: UICollectionViewCell {
         asset.thumbnailUpdateHandler = nil
         asset.thumbnailUpdateHandler = { [weak self] m in
             guard let self = self, let _ = self.asset, m == self.asset else { return }
-            self.imageView.image = m.thumbnail ?? m.image
+            self.imageView.image = m.thumbnail ?? m.degradedImage
         }
         
         asset.sourceUpdateHandler = nil

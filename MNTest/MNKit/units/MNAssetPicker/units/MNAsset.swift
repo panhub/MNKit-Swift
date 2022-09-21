@@ -71,10 +71,6 @@ class MNAsset: NSObject {
      */
     @objc var renderSize: CGSize = CGSize(width: 250.0, height: 250.0)
     /**
-     是否是拍摄模型
-     */
-    private(set) var isTaking: Bool = false
-    /**
      时长(仅视频资源有效)
      */
     @objc var duration: TimeInterval = 0.0
@@ -87,7 +83,7 @@ class MNAsset: NSObject {
     /**
      文件大小
      */
-    @objc var fileSize: Int = -1
+    @objc var fileSize: Int64 = -1
     /**
      文件大小字符串
      */
@@ -98,7 +94,7 @@ class MNAsset: NSObject {
     /**
      相册内部使用 保存缩略图衰减图片
      */
-    var image: UIImage?
+    var degradedImage: UIImage?
     /**
      缩略图
      */
@@ -151,18 +147,6 @@ class MNAsset: NSObject {
      文件大小变化回调
      */
     @objc var fileSizeUpdateHandler: MNAssetUpdateHandler?
-    
-    /**
-     实例化拍照模型
-     @return 拍照/录像资源模型
-     */
-    @objc static var takeModel: MNAsset {
-        let model = MNAsset()
-        model.isTaking = true
-        model.source = .local
-        model.state = .normal
-        return model
-    }
     
     /**
      取消内容请求
@@ -221,7 +205,7 @@ class MNAsset: NSObject {
      修改文件大小
      @param fileSize 文件大小
      */
-    @objc func update(fileSize: Int) {
+    @objc func update(fileSize: Int64) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.fileSize = fileSize
@@ -269,7 +253,7 @@ class MNAsset: NSObject {
             duration = MNAssetExporter.duration(mediaAtPath: filePath)
             thumbnail = MNAssetExporter.thumbnail(videoAtPath: filePath)
             //durationString = Date(timeIntervalSince1970: ceil(duration)).timeValue
-            if let _ = options, options!.isShowFileSize, let attributes = try? FileManager.default.attributesOfItem(atPath: filePath), let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.intValue {
+            if let _ = options, options!.isShowFileSize, let attributes = try? FileManager.default.attributesOfItem(atPath: filePath), let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value {
                 self.fileSize = fileSize
             }
             self.content = filePath
@@ -278,11 +262,11 @@ class MNAsset: NSObject {
                 type = .livePhoto
                 thumbnail = UIImage(contentsOfFile: imageURL.path)?.resizing(toMax: max(renderSize.width, renderSize.height))
                 if let _ = options, options!.isShowFileSize {
-                    var fileSize: Int = 0
-                    if let attributes = try? FileManager.default.attributesOfItem(atPath: imageURL.path), let imageFileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.intValue {
+                    var fileSize: Int64 = 0
+                    if let attributes = try? FileManager.default.attributesOfItem(atPath: imageURL.path), let imageFileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value {
                         fileSize += imageFileSize
                     }
-                    if let attributes = try? FileManager.default.attributesOfItem(atPath: videoURL.path), let videoFileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.intValue {
+                    if let attributes = try? FileManager.default.attributesOfItem(atPath: videoURL.path), let videoFileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value {
                         fileSize += videoFileSize
                     }
                     self.fileSize = fileSize
