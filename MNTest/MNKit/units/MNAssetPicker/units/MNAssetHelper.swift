@@ -362,7 +362,7 @@ extension MNAssetHelper {
             }
             progress?(index, assets.count)
             MNAssetHelper.export(asset: assets[index], options: options) { asset in
-                if asset.state == .normal {
+                if let _ = asset.content {
                     container.assets.append(asset)
                 }
                 MNAssetHelper.export(assets: assets, index: index + 1, options: options, container: container, progress: progress, completion: completion)
@@ -373,12 +373,11 @@ extension MNAssetHelper {
     // 导出资源内容
     private static func export(asset: MNAsset, options: MNAssetPickerOptions, completion: ((MNAsset)->Void)?) {
         guard let phAsset = asset.phAsset else {
-            asset.state = .failed
             completion?(asset)
             return
         }
         // 开始下载数据
-        asset.update(state: .downloading)
+        asset.content = nil
         if asset.type == .video {
             let videoOptions = MNAssetHelper.helper.videoOptions
             videoOptions.version = .current
@@ -397,30 +396,25 @@ extension MNAssetHelper {
                                 let status = exportSession?.status ?? .failed
                                 if status == .completed, FileManager.default.fileExists(atPath: outputURL.path) {
                                     asset.content = outputURL.path
-                                    asset.update(state: .normal)
                                 } else {
                                     try? FileManager.default.removeItem(at: outputURL)
-                                    asset.update(state: .failed)
                                 }
                                 DispatchQueue.main.async {
                                     completion?(asset)
                                 }
                             }
                         } else {
-                            asset.update(state: .failed)
                             DispatchQueue.main.async {
                                 completion?(asset)
                             }
                         }
                     } else {
                         asset.content = avAsset.url.path
-                        asset.update(state: .normal)
                         DispatchQueue.main.async {
                             completion?(asset)
                         }
                     }
                 } else {
-                    asset.update(state: .failed)
                     DispatchQueue.main.async {
                         completion?(asset)
                     }
@@ -439,12 +433,10 @@ extension MNAssetHelper {
                                     livePhoto.imageFileURL = image
                                     livePhoto.videoFileURL = video
                                     asset.content = livePhoto
-                                    asset.update(state: .normal)
                                     DispatchQueue.main.async {
                                         completion?(asset)
                                     }
                                 } else {
-                                    asset.update(state: .failed)
                                     DispatchQueue.main.async {
                                         completion?(asset)
                                     }
@@ -452,13 +444,11 @@ extension MNAssetHelper {
                             }
                         } else {
                             asset.content = livePhoto
-                            asset.update(state: .normal)
                             DispatchQueue.main.async {
                                 completion?(asset)
                             }
                         }
                     } else {
-                        asset.update(state: .failed)
                         DispatchQueue.main.async {
                             completion?(asset)
                         }
@@ -487,12 +477,7 @@ extension MNAssetHelper {
                         }
                     }
                 }
-                if let _ = image {
-                    asset.content = image
-                    asset.update(state: .normal)
-                } else {
-                    asset.update(state: .failed)
-                }
+                asset.content = image
                 DispatchQueue.main.async {
                     completion?(asset)
                 }

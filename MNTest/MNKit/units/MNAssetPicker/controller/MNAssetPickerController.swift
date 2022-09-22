@@ -332,10 +332,7 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
         guard indexPath.item < assets.count else { return }
         let asset = assets[indexPath.item]
         guard asset.isEnabled else { return }
-        if options.isAllowsPreview {
-            // 预览
-            
-        } else if options.maxPickingCount <= 1 || (asset.type == .photo && options.isAllowsMultiplePickingPhoto == false) || (asset.type == .gif && options.isAllowsMultiplePickingGif == false) || (asset.type == .video && options.isAllowsMultiplePickingVideo == false) || (asset.type == .livePhoto && options.isAllowsMultiplePickingLivePhoto == false) {
+        if options.maxPickingCount <= 1 || (asset.type == .photo && options.isAllowsMultiplePickingPhoto == false) || (asset.type == .gif && options.isAllowsMultiplePickingGif == false) || (asset.type == .video && options.isAllowsMultiplePickingVideo == false) || (asset.type == .livePhoto && options.isAllowsMultiplePickingLivePhoto == false) {
             if asset.type == .photo, options.isAllowsEditing {
                 // TODO 图片裁剪
             } else if asset.type == .video, options.isAllowsEditing {
@@ -362,7 +359,7 @@ extension MNAssetPickerController: MNAssetCellDelegate {
         let browser = MNAssetBrowser(assets: [asset])
         browser.events = [.back]
         browser.backgroundColor = .black
-        browser.isCleanWhenDeinit = false
+        browser.isCleanWhenDeinit = true
         browser.statusBarStyle = .lightContent
         browser.isAllowsDismissWhenPulled = true
         browser.statusBarUpdateHandler = { [weak self] style, hidden, animated in

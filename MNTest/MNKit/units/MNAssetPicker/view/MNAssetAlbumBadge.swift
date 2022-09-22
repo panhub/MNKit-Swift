@@ -31,7 +31,7 @@ class MNAssetAlbumBadge: UIControl {
         get { imageView.transform != .identity }
         set {
             let transform: CGAffineTransform = newValue ? CGAffineTransform(rotationAngle: Double.pi).concatenating(CGAffineTransform(translationX: 0.0, y: -1.5)) : .identity
-            UIView.animate(withDuration: 0.28, delay: 0.0, options: .curveEaseInOut, animations: { [weak self] in
+            UIView.animate(withDuration: 0.28, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                 guard let self = self else { return }
                 self.imageView.transform = transform
             }, completion: nil)

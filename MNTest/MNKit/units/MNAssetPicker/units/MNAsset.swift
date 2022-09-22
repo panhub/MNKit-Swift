@@ -36,15 +36,6 @@ class MNAsset: NSObject {
         case unknown, local, cloud
     }
     /**
-     当前状态
-     - normal: 正常状态
-     - downloading: 正在下载资源
-     - failed: 资源下载失败
-     */
-    @objc enum AssetState: Int {
-        case normal, downloading, failed
-    }
-    /**
      本地标识
      */
     @objc var identifier: String = ""
@@ -52,10 +43,6 @@ class MNAsset: NSObject {
      文件类型
      */
     @objc var type: AssetType = .photo
-    /**
-     当前状态
-     */
-    @objc var state: AssetState = .normal
     /**
      资源来源
      */
@@ -179,20 +166,6 @@ class MNAsset: NSObject {
     }
     
     /**
-     修改状态
-     @param state 指定状态
-     */
-    @objc func update(state: AssetState) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.state = state
-            if state != .downloading {
-                self.progress = 0.0
-            }
-        }
-    }
-    
-    /**
      修改文件大小
      @param fileSize 文件大小
      */
@@ -220,7 +193,6 @@ class MNAsset: NSObject {
         self.init()
         isEnabled = true
         source = .local
-        state = .normal
         if let _ = options { renderSize = options!.renderSize }
         var filePath: String!
         if content is UIImage, let image = content as? UIImage {

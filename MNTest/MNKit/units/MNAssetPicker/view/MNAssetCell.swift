@@ -61,7 +61,7 @@ class MNAssetCell: UICollectionViewCell {
     private lazy var cloudView: UIImageView = {
         let cloudView = UIImageView(frame: CGRect(x: spacing, y: spacing, width: 17.0, height: 17.0))
         cloudView.isUserInteractionEnabled = false
-        cloudView.image = MNAssetPicker.image(named: "cloud")?.renderBy(color: .white.withAlphaComponent(0.8))
+        cloudView.image = MNAssetPicker.image(named: "cloud")?.renderBy(color: .white.withAlphaComponent(0.85))
         cloudView.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
         return cloudView
     }()
@@ -71,7 +71,7 @@ class MNAssetCell: UICollectionViewCell {
         checkButton.maxX = contentView.bounds.width
         checkButton.autoresizingMask = [.flexibleLeftMargin, .flexibleBottomMargin]
         checkButton.addTarget(self, action: #selector(preview), for: .touchUpInside)
-        let imageView = UIImageView(image: MNAssetPicker.image(named: "preview")?.renderBy(color: .white.withAlphaComponent(0.8)))
+        let imageView = UIImageView(image: MNAssetPicker.image(named: "preview")?.renderBy(color: .white.withAlphaComponent(0.85)))
         imageView.size = CGSize(width: ceil(180.0/121.0*13.0), height: 13.0)
         imageView.midY = cloudView.midY
         imageView.maxX = checkButton.bounds.width - spacing
