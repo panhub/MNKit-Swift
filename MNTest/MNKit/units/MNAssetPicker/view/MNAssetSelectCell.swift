@@ -37,7 +37,7 @@ class MNAssetSelectCell: UICollectionViewCell {
     }
     
     func update(asset: MNAsset) {
-        imageView.image = asset.thumbnail ?? asset.degradedImage
+        imageView.image = asset.thumbnail
     }
     
     func update(selected isSelected: Bool) {

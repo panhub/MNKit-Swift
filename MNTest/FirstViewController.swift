@@ -28,24 +28,15 @@ class FirstViewController: MNBaseViewController {
         b.alignment = .center
         b.addTarget(self, action: #selector(sssssss), for: .touchUpInside)
         contentView.addSubview(b)
-        
-        let s = MNSwitch()
-        s.midX = b.midX
-        s.minY = b.maxY + 50.0
-        contentView.addSubview(s)
-        
-        s.isHidden = true
-        b.isHidden = true
-        
-        
-        let picker = MNDatePicker(frame: CGRect(x: 0.0, y: 0.0, width: contentView.width, height: 250.0))
-        picker.backgroundColor = UIColor(all: 220.0)
-        picker.center = contentView.Center
-        contentView.addSubview(picker)
     }
     
     @objc func sssssss() {
-        navigationController?.pushViewController(ViewController(), animated: true)
+        //navigationController?.pushViewController(ViewController(), animated: true)
+        let picker = MNAssetPicker()
+        picker.options.maxPickingCount = 10
+        picker.present { pic, assets in
+            
+        }
     }
 
     /*

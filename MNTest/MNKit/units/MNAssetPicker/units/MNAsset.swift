@@ -83,7 +83,7 @@ class MNAsset: NSObject {
     /**
      文件大小
      */
-    @objc var fileSize: Int64 = -1
+    @objc var fileSize: Int64 = 0
     /**
      文件大小字符串
      */
@@ -91,10 +91,6 @@ class MNAsset: NSObject {
         guard fileSize > 0 else { return "" }
         return fileSize.fileSizeValue
     }()
-    /**
-     相册内部使用 保存缩略图衰减图片
-     */
-    var degradedImage: UIImage?
     /**
      缩略图
      */
@@ -139,10 +135,6 @@ class MNAsset: NSObject {
      资源来源发生变化回调
      */
     @objc var sourceUpdateHandler: MNAssetUpdateHandler?
-    /**
-     状态发生变化回调
-     */
-    @objc var stateUpdateHandler: MNAssetUpdateHandler?
     /**
      文件大小变化回调
      */
@@ -197,7 +189,6 @@ class MNAsset: NSObject {
             if state != .downloading {
                 self.progress = 0.0
             }
-            self.stateUpdateHandler?(self)
         }
     }
     
@@ -220,7 +211,6 @@ class MNAsset: NSObject {
         content = nil
         thumbnailUpdateHandler = nil
         sourceUpdateHandler = nil
-        stateUpdateHandler = nil
         fileSizeUpdateHandler = nil
         cancelRequest()
         cancelDownload()

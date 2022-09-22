@@ -19,7 +19,7 @@ class MNAssetPicker: UINavigationController {
     private var pickingHandler: MNAssetPickingHandler!
     /**配置信息*/
     @objc lazy var options: MNAssetPickerOptions! = {
-        return (rootViewController as? MNAssetPickerController)?.options
+        return (viewControllers.first as? MNAssetPickerController)?.options
     }()
     
     /**图片选择器*/
@@ -76,11 +76,7 @@ extension MNAssetPicker {
         options.delegate = self
         self.cancelHandler = cancelHandler
         self.pickingHandler = pickingHandler
-        if options.isUsingFullScreenPresentation {
-            modalPresentationStyle = .fullScreen
-        } else {
-            modalPresentationCapturesStatusBarAppearance = true
-        }
+        self.modalPresentationStyle = .fullScreen
         parent.present(self, animated: (animated && UIApplication.shared.applicationState == .active), completion: nil)
     }
 }

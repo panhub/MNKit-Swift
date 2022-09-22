@@ -22,14 +22,15 @@ import Foundation
     @objc optional func assetPicker(_ picker: MNAssetPicker, didFinishPicking assets: [MNAsset]) -> Void
 }
 
+/**
+ 选择器样式
+ */
+@objc enum MNAssetPickerMode: Int {
+    case light = 0 // 白色
+    case dark = 1 // 暗黑
+}
+
 class MNAssetPickerOptions: NSObject {
-    /**
-     选择器样式
-     */
-    @objc enum AssetPickerMode: Int {
-        case light = 0 // 白色
-        case dark = 1 // 暗黑
-    }
     /**
      最多选择数量
      */
@@ -186,15 +187,11 @@ class MNAssetPickerOptions: NSObject {
     /**
      背景样式
      */
-    @objc var mode: AssetPickerMode = .dark
+    @objc var mode: MNAssetPickerMode = .dark
     /**
      交互事件代理
      */
     @objc weak var delegate: MNAssetPickerDelegate?
-    /**
-     弹出/落下样式
-     */
-    @objc var isUsingFullScreenPresentation: Bool = true
     /**
      分析文件位置及大小的队列
      */
@@ -204,7 +201,7 @@ class MNAssetPickerOptions: NSObject {
 // MARK: - 辅助
 extension MNAssetPickerOptions {
     // 顶部栏高度
-    @objc var topBarHeight: CGFloat { isUsingFullScreenPresentation ? MN_TOP_BAR_HEIGHT : 55.0 }
+    @objc var topBarHeight: CGFloat { MN_TOP_BAR_HEIGHT }
     // 底部栏高度
     @objc var toolBarHeight: CGFloat { max(MN_TAB_BAR_HEIGHT, 55.0) }
     /**内容布局*/

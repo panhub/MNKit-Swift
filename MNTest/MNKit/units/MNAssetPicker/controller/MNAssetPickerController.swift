@@ -9,12 +9,8 @@ import UIKit
 import Photos
 
 class MNAssetPickerController: UIViewController {
-    /**配置信息*/
-    lazy var options: MNAssetPickerOptions = {
-        return MNAssetPickerOptions()
-    }()
     /**空视图*/
-    lazy var emptyView: MNEmptyView = {
+    private lazy var emptyView: MNEmptyView = {
         let emptyView = MNEmptyView(frame: view.bounds.inset(by: options.contentInset))
         emptyView.alignment = .top
         emptyView.contentOffset = UIOffset(horizontal: 0.0, vertical: 120.0)
@@ -23,6 +19,8 @@ class MNAssetPickerController: UIViewController {
         emptyView.image = MNAssetPicker.image(named: "empty")
         return emptyView
     }()
+    /**配置信息*/
+    let options: MNAssetPickerOptions = MNAssetPickerOptions()
     /**选中的资源集合*/
     private var assets: [MNAsset] = [MNAsset]()
     /**选中的资源集合*/
@@ -151,6 +149,28 @@ class MNAssetPickerController: UIViewController {
             let indexPath = IndexPath(item: album.assets.count - 1, section: 0)
             collectionView.scrollToItem(at: indexPath, at: .top, animated: false)
         }
+    }
+    
+    // 更新资源
+    func update(asset: MNAsset) {
+        if asset.isSelected {
+            asset.isSelected = false
+            if let index = selecteds.firstIndex(of: asset) {
+                selecteds.remove(at: index)
+            }
+        } else {
+            asset.isSelected = true
+            selecteds.append(asset)
+        }
+        // 更新标记
+        if options.isShowPickingNumber {
+            for (index, asset) in selecteds.enumerated() {
+                asset.index = index + 1
+            }
+        }
+        reload(assets: assets)
+        toolBar.update(assets: selecteds)
+        collectionView.reloadData()
     }
     
     // 刷新指定数据状态
@@ -295,8 +315,8 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "com.mn.asset.picker.cell", for: indexPath)
-        (cell as? MNAssetCell)?.options = options
         (cell as? MNAssetCell)?.delegate = self
+        (cell as? MNAssetCell)?.options = options
         return cell
     }
     
@@ -314,20 +334,7 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
         guard asset.isEnabled else { return }
         if options.isAllowsPreview {
             // 预览
-            let assets: [MNAsset] = assets
-            guard assets.count > 0, let index = assets.firstIndex(of: asset) else { return }
-            let browser = MNAssetBrowser(assets: assets)
-            browser.events = [.back]
-            browser.isCleanWhenDeinit = false
-            browser.backgroundColor = .black
-            browser.statusBarStyle = .lightContent
-            browser.isAllowsDismissWhenPulled = true
-            browser.statusBarUpdateHandler = { [weak self] style, hidden, animated in
-                self?.statusBarStyle = style
-                self?.statusBarHidden = hidden
-                self?.setNeedsStatusBarAppearanceUpdate()
-            }
-            browser.present(in: view, from: index, animated: true, completion: nil)
+            
         } else if options.maxPickingCount <= 1 || (asset.type == .photo && options.isAllowsMultiplePickingPhoto == false) || (asset.type == .gif && options.isAllowsMultiplePickingGif == false) || (asset.type == .video && options.isAllowsMultiplePickingVideo == false) || (asset.type == .livePhoto && options.isAllowsMultiplePickingLivePhoto == false) {
             if asset.type == .photo, options.isAllowsEditing {
                 // TODO 图片裁剪
@@ -344,27 +351,26 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
     }
 }
 
-// MARK: - MNAssetSelectDelegate
-extension MNAssetPickerController: MNAssetSelectDelegate {
-    func update(asset: MNAsset) {
-        if asset.isSelected {
-            asset.isSelected = false
-            if let index = selecteds.firstIndex(of: asset) {
-                selecteds.remove(at: index)
-            }
-        } else {
-            asset.isSelected = true
-            selecteds.append(asset)
+// MARK: - MNAssetCellDelegate
+extension MNAssetPickerController: MNAssetCellDelegate {
+    
+    func assetCellShouldPreviewAsset(_ cell: MNAssetCell) {
+        guard let asset = cell.asset, let _ = asset.thumbnail else {
+            view.showMsgToast("暂无法预览")
+            return
         }
-        // 更新标记
-        if options.isShowPickingNumber {
-            for (index, asset) in selecteds.enumerated() {
-                asset.index = index + 1
-            }
+        let browser = MNAssetBrowser(assets: [asset])
+        browser.events = [.back]
+        browser.backgroundColor = .black
+        browser.isCleanWhenDeinit = false
+        browser.statusBarStyle = .lightContent
+        browser.isAllowsDismissWhenPulled = true
+        browser.statusBarUpdateHandler = { [weak self] style, hidden, animated in
+            self?.statusBarStyle = style
+            self?.statusBarHidden = hidden
+            self?.setNeedsStatusBarAppearanceUpdate()
         }
-        reload(assets: assets)
-        toolBar.update(assets: selecteds)
-        collectionView.reloadData()
+        browser.present(in: view)
     }
 }
 

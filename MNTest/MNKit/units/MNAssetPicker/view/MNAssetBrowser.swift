@@ -16,8 +16,6 @@ import CoreMedia
     @objc optional func assetBrowser(didDismiss browser: MNAssetBrowser) -> Void
     @objc optional func assetBrowser(didScroll browser: MNAssetBrowser) -> Void
     @objc optional func assetBrowser(_ browser: MNAssetBrowser, buttonTouchUpInside sender: UIControl) -> Void
-    @objc optional func update(asset: MNAsset) -> Void
-    @objc optional func assetBrowser(_ browser: MNAssetBrowser, shouldShowSelectButton button: MNAssetSelectButton) -> Bool
 }
 
 class MNAssetBrowser: UIView {
@@ -25,14 +23,12 @@ class MNAssetBrowser: UIView {
     struct BrowseEvent: OptionSet {
         // 返回
         static let back = BrowseEvent(rawValue: 1 << 1)
-        // 选择
-        static let select = BrowseEvent(rawValue: 1 << 2)
         // 确定
-        static let done = BrowseEvent(rawValue: 1 << 3)
+        static let done = BrowseEvent(rawValue: 1 << 2)
         // 保存
-        static let save = BrowseEvent(rawValue: 1 << 4)
+        static let save = BrowseEvent(rawValue: 1 << 3)
         // 分享
-        static let share = BrowseEvent(rawValue: 1 << 5)
+        static let share = BrowseEvent(rawValue: 1 << 4)
         
         let rawValue: Int
         init(rawValue: Int) {
@@ -155,16 +151,6 @@ class MNAssetBrowser: UIView {
             navView.addSubview(back)
         }
         var right: CGFloat = navView.bounds.width - 15.0
-        if events.contains(.select) {
-            let select = MNAssetSelectButton(frame: CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0), options: options)
-            select.isSelected = true
-            select.tag = BrowseEvent.select.rawValue
-            select.maxX = right
-            select.midY = (navView.bounds.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
-            select.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
-            navView.addSubview(select)
-            right = select.minX - 15.0
-        }
         if events.contains(.done) {
             let done = UIButton(type: .custom)
             done.tag = BrowseEvent.done.rawValue
@@ -172,7 +158,7 @@ class MNAssetBrowser: UIView {
             done.maxX = right
             done.midY = (navView.bounds.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
             done.setBackgroundImage(MNAssetPicker.image(named: "done"), for: .normal)
-            done.addTarget(self, action: #selector(update(asset:)), for: .touchUpInside)
+            done.addTarget(self, action: #selector(buttonTouchUpInside(_:)), for: .touchUpInside)
             navView.addSubview(done)
             right = done.minX - 15.0
         }
@@ -290,11 +276,17 @@ extension MNAssetBrowser {
         if let images = animatedImage?.images, images.count > 1 { animatedImage = images.first }
         
         guard let _ = animatedImage else {
-            fatalError("unknown from asset image.")
+            #if DEBUG
+            print("unknown from asset thumbnail.")
+            #endif
+            return
         }
         
         guard let superview = (view ?? UIWindow.current) else {
-            fatalError("unknown from superview.")
+            #if DEBUG
+            print("unknown from superview.")
+            #endif
+            return
         }
         
         let isUserInteractionEnabled = superview.isUserInteractionEnabled
@@ -465,16 +457,6 @@ private extension MNAssetBrowser {
         displayIndex = currentIndex
         delegate?.assetBrowser?(didScroll: self)
         cellForItemAtCurrent()?.beginDisplaying()
-        guard displayIndex < assets.count, events.contains(.select), let button = navView.viewWithTag(BrowseEvent.select.rawValue) as? MNAssetSelectButton else { return }
-        button.isSelected = assets[displayIndex].isSelected
-        let isShow = delegate?.assetBrowser?(self, shouldShowSelectButton: button) ?? true
-        guard button.isHidden == isShow else { return }
-        button.isHidden = isShow == false
-        let add = isShow ? -(button.bounds.width + 15.0) : (button.bounds.width + 15.0)
-        for subview in navView.subviews {
-            guard subview is UIButton, subview.tag > BrowseEvent.select.rawValue, subview.frame.maxX <= button.frame.maxX else { continue }
-            subview.maxX += add
-        }
     }
     
     func cellForItemAtCurrent() -> MNAssetBrowserCell? {
@@ -528,13 +510,6 @@ extension MNAssetBrowser {
         } else {
             dismiss(animated: true, completion: nil)
         }
-    }
-    
-    @objc private func update(asset sender: UIControl) {
-        guard displayIndex < assets.count, let button = sender as? MNAssetSelectButton else { return }
-        let asset = assets[displayIndex]
-        delegate?.update?(asset: asset)
-        button.isSelected = asset.isSelected
     }
     
     @objc private func buttonTouchUpInside(_ sender: UIControl) {

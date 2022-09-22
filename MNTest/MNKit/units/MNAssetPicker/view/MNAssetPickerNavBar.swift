@@ -36,12 +36,10 @@ class MNAssetPickerNavBar: UIView {
             addSubview(effectView)
         }
         
-        let top = options.isUsingFullScreenPresentation ? MN_STATUS_BAR_HEIGHT : 0.0
-        
         let closeButton = UIButton(type: .custom)
         closeButton.minX = 15.0
         closeButton.size = CGSize(width: 24.0, height: 24.0)
-        closeButton.midY = (height - top)/2.0 + top
+        closeButton.midY = (height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
         closeButton.setBackgroundImage(MNAssetPicker.image(named: "back")?.renderBy(color: options.mode == .light ? .black : UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .normal)
         closeButton.addTarget(self, action: #selector(closeButton(touchUpInside:)), for: .touchUpInside)
         addSubview(closeButton)

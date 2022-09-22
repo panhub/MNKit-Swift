@@ -152,9 +152,7 @@
 		3BDB704928992DFA0023D5E3 /* MNAssetSelectCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FD828992DFA0023D5E3 /* MNAssetSelectCell.swift */; };
 		3BDB704A28992DFA0023D5E3 /* MNAssetSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FD928992DFA0023D5E3 /* MNAssetSelectView.swift */; };
 		3BDB704B28992DFA0023D5E3 /* MNStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FDA28992DFA0023D5E3 /* MNStateView.swift */; };
-		3BDB704C28992DFA0023D5E3 /* MNAssetIndexLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FDB28992DFA0023D5E3 /* MNAssetIndexLabel.swift */; };
 		3BDB704D28992DFA0023D5E3 /* MNAssetProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FDC28992DFA0023D5E3 /* MNAssetProgressView.swift */; };
-		3BDB704E28992DFA0023D5E3 /* MNAssetSelectControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FDD28992DFA0023D5E3 /* MNAssetSelectControl.swift */; };
 		3BDB704F28992DFA0023D5E3 /* MNAssetBrowserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FDE28992DFA0023D5E3 /* MNAssetBrowserCell.swift */; };
 		3BDB705028992DFA0023D5E3 /* MNAssetSelectButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FDF28992DFA0023D5E3 /* MNAssetSelectButton.swift */; };
 		3BDB705128992DFA0023D5E3 /* MNAssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6FE028992DFA0023D5E3 /* MNAssetCell.swift */; };
@@ -358,9 +356,7 @@
 		3BDB6FD828992DFA0023D5E3 /* MNAssetSelectCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNAssetSelectCell.swift; sourceTree = "<group>"; };
 		3BDB6FD928992DFA0023D5E3 /* MNAssetSelectView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNAssetSelectView.swift; sourceTree = "<group>"; };
 		3BDB6FDA28992DFA0023D5E3 /* MNStateView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNStateView.swift; sourceTree = "<group>"; };
-		3BDB6FDB28992DFA0023D5E3 /* MNAssetIndexLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNAssetIndexLabel.swift; sourceTree = "<group>"; };
 		3BDB6FDC28992DFA0023D5E3 /* MNAssetProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNAssetProgressView.swift; sourceTree = "<group>"; };
-		3BDB6FDD28992DFA0023D5E3 /* MNAssetSelectControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNAssetSelectControl.swift; sourceTree = "<group>"; };
 		3BDB6FDE28992DFA0023D5E3 /* MNAssetBrowserCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNAssetBrowserCell.swift; sourceTree = "<group>"; };
 		3BDB6FDF28992DFA0023D5E3 /* MNAssetSelectButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNAssetSelectButton.swift; sourceTree = "<group>"; };
 		3BDB6FE028992DFA0023D5E3 /* MNAssetCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNAssetCell.swift; sourceTree = "<group>"; };
@@ -817,9 +813,7 @@
 				3BDB6FD828992DFA0023D5E3 /* MNAssetSelectCell.swift */,
 				3BDB6FD928992DFA0023D5E3 /* MNAssetSelectView.swift */,
 				3BDB6FDA28992DFA0023D5E3 /* MNStateView.swift */,
-				3BDB6FDB28992DFA0023D5E3 /* MNAssetIndexLabel.swift */,
 				3BDB6FDC28992DFA0023D5E3 /* MNAssetProgressView.swift */,
-				3BDB6FDD28992DFA0023D5E3 /* MNAssetSelectControl.swift */,
 				3BDB6FDE28992DFA0023D5E3 /* MNAssetBrowserCell.swift */,
 				3BDB6FDF28992DFA0023D5E3 /* MNAssetSelectButton.swift */,
 				3BDB6FE028992DFA0023D5E3 /* MNAssetCell.swift */,
@@ -1024,7 +1018,6 @@
 				3BDB706C28992DFA0023D5E3 /* UIImage+MNExtension.swift in Sources */,
 				3BDB6F8F289928E40023D5E3 /* HTTPBodyAdaptor.swift in Sources */,
 				3BDB707728992DFA0023D5E3 /* Date+MNExtension.swift in Sources */,
-				3BDB704E28992DFA0023D5E3 /* MNAssetSelectControl.swift in Sources */,
 				3BDB701C28992DFA0023D5E3 /* MNAuthorization.swift in Sources */,
 				3BDB6F96289928E50023D5E3 /* MNEmptyView.swift in Sources */,
 				3BDB706128992DFA0023D5E3 /* DateFormatter+MNExtension.swift in Sources */,
@@ -1144,7 +1137,6 @@
 				3BDEA3AA28A6C94400538C48 /* UICollectionView+MNExtension.swift in Sources */,
 				3BDB703128992DFA0023D5E3 /* UIScrollView+MNSubpageAssociated.swift in Sources */,
 				3BDB707028992DFA0023D5E3 /* UIDevice+MNExtension.swift in Sources */,
-				3BDB704C28992DFA0023D5E3 /* MNAssetIndexLabel.swift in Sources */,
 				3B3E02A728B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift in Sources */,
 				3BDB706528992DFA0023D5E3 /* UIColor+MNExtension.swift in Sources */,
 				3BDB704D28992DFA0023D5E3 /* MNAssetProgressView.swift in Sources */,
@@ -1332,6 +1324,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MNTest/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Test;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "相册使用权限说明";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = LaunchScreen;
@@ -1361,6 +1354,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MNTest/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Test;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "相册使用权限说明";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = LaunchScreen;

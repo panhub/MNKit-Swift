@@ -21,14 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.rootViewController = MNNavigationController(rootViewController: FirstViewController())
         self.window = window
         
-        let formatter = DateFormatter()
-        formatter.timeZone = TimeZone.current
-        formatter.dateFormat = "yyy-MM-dd HH:mm:ss"
-        let date = formatter.date(from: "2022-9-19 00:00:00")
-        formatter.dateFormat = "yyy-MM-dd hh:mm:ss"
-        let s = formatter.string(from: date!)
-        
-        print(s)
         return true
     }
 }

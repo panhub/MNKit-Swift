@@ -7,22 +7,25 @@
 
 import UIKit
 
-// 资源选择回调
-protocol MNAssetSelectDelegate: NSObjectProtocol {
-    func update(asset: MNAsset) -> Void
+protocol MNAssetCellDelegate: NSObjectProtocol {
+    
+    /// 预览资源回调
+    /// - Parameter cell: 资源表格
+    func assetCellShouldPreviewAsset(_ cell: MNAssetCell) -> Void
 }
 
 class MNAssetCell: UICollectionViewCell {
-    // 间隔
-    private let margin: CGFloat = 6.0
+    // 控件间隔
+    private let spacing: CGFloat = 6.0
     // 媒体资源模型
-    var asset: MNAsset!
+    private(set) var asset: MNAsset!
     // 事件代理
-    weak var delegate: MNAssetSelectDelegate?
+    weak var delegate: MNAssetCellDelegate?
     // 配置信息
-    var options: MNAssetPickerOptions {
-        get { indexLabel.options }
-        set { indexLabel.update(options: newValue) }
+    var options: MNAssetPickerOptions! {
+        didSet {
+            indexLabel.backgroundColor = options?.color.withAlphaComponent(0.38)
+        }
     }
     // 顶部阴影
     private lazy var topShadow: UIImageView = {
@@ -54,52 +57,38 @@ class MNAssetCell: UICollectionViewCell {
         imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         return imageView
     }()
-    // 选择索引展示
-    private lazy var indexLabel: MNAssetIndexLabel = {
-        let indexLabel = MNAssetIndexLabel(frame: contentView.bounds)
-        indexLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        return indexLabel
-    }()
     // 云端标识
-    private lazy var cloudView: MNStateView = {
-        let cloudView = MNStateView(frame: CGRect(x: margin, y: margin, width: 17.0, height: 17.0))
-        cloudView.setImage(MNAssetPicker.image(named: "cloud")?.renderBy(color: .white.withAlphaComponent(0.78)), for: .normal)
-        cloudView.setImage(MNAssetPicker.image(named: "cloud_download")?.renderBy(color: .white.withAlphaComponent(0.78)), for: .highlighted)
+    private lazy var cloudView: UIImageView = {
+        let cloudView = UIImageView(frame: CGRect(x: spacing, y: spacing, width: 17.0, height: 17.0))
+        cloudView.isUserInteractionEnabled = false
+        cloudView.image = MNAssetPicker.image(named: "cloud")?.renderBy(color: .white.withAlphaComponent(0.8))
         cloudView.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
         return cloudView
     }()
-//    // 选择按钮
-//    private lazy var selectControl: MNAssetSelectControl = {
-//        let selectControl = MNAssetSelectControl()
-//        selectControl.minY = cloudView.minY
-//        selectControl.maxX = contentView.bounds.width - margin
-//        selectControl.addTarget(self, action: #selector(select(sender:)), for: .touchUpInside)
-//        selectControl.autoresizingMask = [.flexibleLeftMargin, .flexibleBottomMargin]
-//        return selectControl
-//    }()
+    // 预览按钮
+    private lazy var checkButton: UIControl = {
+        let checkButton = UIControl(frame: CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0))
+        checkButton.maxX = contentView.bounds.width
+        checkButton.autoresizingMask = [.flexibleLeftMargin, .flexibleBottomMargin]
+        checkButton.addTarget(self, action: #selector(preview), for: .touchUpInside)
+        let imageView = UIImageView(image: MNAssetPicker.image(named: "preview")?.renderBy(color: .white.withAlphaComponent(0.8)))
+        imageView.size = CGSize(width: ceil(180.0/121.0*13.0), height: 13.0)
+        imageView.midY = cloudView.midY
+        imageView.maxX = checkButton.bounds.width - spacing
+        checkButton.addSubview(imageView)
+        return checkButton
+    }()
     // 资源类型
     private lazy var badgeView: MNStateView = {
         let badgeView = MNStateView(frame: cloudView.frame)
-        badgeView.maxY = contentView.bounds.height - margin
+        badgeView.maxY = contentView.bounds.height - spacing
         badgeView.setImage(MNAssetPicker.image(named: "video")?.renderBy(color: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .normal)
         badgeView.setImage(MNAssetPicker.image(named: "livephoto")?.renderBy(color: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .highlighted)
         badgeView.setImage(MNAssetPicker.image(named: "gif")?.renderBy(color: UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)), for: .selected)
         badgeView.autoresizingMask = [.flexibleRightMargin, .flexibleTopMargin]
         return badgeView
     }()
-    // 文件大小
-    private lazy var fileSizeLabel: UILabel = {
-        let fileSizeLabel = UILabel()
-        fileSizeLabel.maxX = contentView.bounds.width - margin
-        fileSizeLabel.midY = badgeView.midY
-        fileSizeLabel.numberOfLines = 1
-        fileSizeLabel.textAlignment = .right
-        fileSizeLabel.isUserInteractionEnabled = false
-        fileSizeLabel.font = UIFont.systemFont(ofSize: 12.0)
-        fileSizeLabel.textColor = UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)
-        return fileSizeLabel
-    }()
-    // 资源时长
+    // 视频时长
     private lazy var durationLabel: UILabel = {
         let durationLabel = UILabel()
         durationLabel.minX = badgeView.maxX + 5.0
@@ -110,8 +99,32 @@ class MNAssetCell: UICollectionViewCell {
         durationLabel.textColor = UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)
         return durationLabel
     }()
+    // 文件大小
+    private lazy var fileSizeLabel: UILabel = {
+        let fileSizeLabel = UILabel()
+        fileSizeLabel.maxX = contentView.bounds.width - spacing
+        fileSizeLabel.midY = badgeView.midY
+        fileSizeLabel.numberOfLines = 1
+        fileSizeLabel.textAlignment = .right
+        fileSizeLabel.isUserInteractionEnabled = false
+        fileSizeLabel.font = UIFont.systemFont(ofSize: 12.0)
+        fileSizeLabel.textColor = UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)
+        return fileSizeLabel
+    }()
+    // 选择索引
+    private lazy var indexLabel: UILabel = {
+        let indexLabel = UILabel(frame: contentView.bounds)
+        indexLabel.textColor = .white
+        indexLabel.numberOfLines = 1
+        indexLabel.textAlignment = .center
+        indexLabel.backgroundColor = .clear
+        indexLabel.isUserInteractionEnabled = false
+        indexLabel.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        indexLabel.font = UIFont(name: "Trebuchet MS Bold", size: 30.0)
+        return indexLabel
+    }()
     // 资源无效
-    private lazy var holdView: UIView = {
+    private lazy var disableView: UIView = {
         let holdView = UIView(frame: contentView.bounds)
         holdView.isHidden = true
         holdView.isUserInteractionEnabled = false
@@ -131,12 +144,12 @@ class MNAssetCell: UICollectionViewCell {
         contentView.addSubview(topShadow)
         contentView.addSubview(bottomShadow)
         contentView.addSubview(cloudView)
-        //contentView.addSubview(selectControl)
+        contentView.addSubview(checkButton)
         contentView.addSubview(badgeView)
         contentView.addSubview(durationLabel)
         contentView.addSubview(fileSizeLabel)
         contentView.addSubview(indexLabel)
-        contentView.addSubview(holdView)
+        contentView.addSubview(disableView)
     }
     
     required init?(coder: NSCoder) {
@@ -147,15 +160,15 @@ class MNAssetCell: UICollectionViewCell {
         self.asset = asset
         asset.container = imageView
         
+        imageView.image = asset.thumbnail
+        
         topShadow.isHidden = false
         bottomShadow.isHidden = false
-        imageView.image = asset.thumbnail ?? asset.degradedImage
-        holdView.isHidden = asset.isEnabled
-        cloudView.isHidden = asset.source != .cloud
-        if cloudView.isHidden == false {
-            cloudView.state = asset.state == .downloading ? .highlighted : .normal
-        }
         fileSizeLabel.isHidden = true
+        durationLabel.isHidden = true
+        cloudView.isHidden = asset.source != .cloud
+        checkButton.isHidden = options.isAllowsPreview == false
+        
         if options.isShowFileSize, asset.fileSize > 0 {
             updateFileSize()
         }
@@ -164,9 +177,7 @@ class MNAssetCell: UICollectionViewCell {
         case .video:
             badgeView.state = .normal
             badgeView.isHidden = false
-            if options.isShowFileSize, asset.fileSize > 0 {
-                durationLabel.isHidden = true
-            } else {
+            if options.isShowFileSize == false || asset.fileSize <= 0 {
                 durationLabel.text = asset.durationValue
                 durationLabel.sizeToFit()
                 durationLabel.midY = badgeView.midY
@@ -175,23 +186,38 @@ class MNAssetCell: UICollectionViewCell {
         case .livePhoto:
             badgeView.state = .highlighted
             badgeView.isHidden = false
-            durationLabel.isHidden = true
         case .gif:
             badgeView.state = .selected
             badgeView.isHidden = false
-            durationLabel.isHidden = true
         default:
             badgeView.isHidden = true
+        }
+        
+        if asset.isEnabled {
+            disableView.isHidden = true
+        } else {
+            disableView.isHidden = false
+            indexLabel.isHidden = true
+            cloudView.isHidden = true
+            badgeView.isHidden = true
+            topShadow.isHidden = true
+            checkButton.isHidden = true
+            fileSizeLabel.isHidden = true
             durationLabel.isHidden = true
+            bottomShadow.isHidden = true
         }
         
         if asset.isSelected {
             indexLabel.text = "\(asset.index)"
             indexLabel.isHidden = false
-            topShadow.isHidden = true
-            bottomShadow.isHidden = true
+            disableView.isHidden = true
+            cloudView.isHidden = true
             badgeView.isHidden = true
+            topShadow.isHidden = true
+            checkButton.isHidden = true
+            fileSizeLabel.isHidden = true
             durationLabel.isHidden = true
+            bottomShadow.isHidden = true
         } else {
             indexLabel.isHidden = true
         }
@@ -199,7 +225,7 @@ class MNAssetCell: UICollectionViewCell {
         asset.thumbnailUpdateHandler = nil
         asset.thumbnailUpdateHandler = { [weak self] m in
             guard let self = self, let _ = self.asset, m == self.asset else { return }
-            self.imageView.image = m.thumbnail ?? m.degradedImage
+            self.imageView.image = m.thumbnail
         }
         
         asset.sourceUpdateHandler = nil
@@ -207,13 +233,6 @@ class MNAssetCell: UICollectionViewCell {
             guard let self = self, let _ = self.asset, m == self.asset else { return }
             self.cloudView.isHidden = m.source != .cloud
         }
-        
-        asset.stateUpdateHandler = nil
-        asset.stateUpdateHandler = { [weak self] m in
-            guard let self = self, let _ = self.asset, m == self.asset else { return }
-            self.cloudView.state = m.state == .downloading ? .highlighted : .normal
-        }
-        
         asset.fileSizeUpdateHandler = nil
         asset.fileSizeUpdateHandler = { [weak self] m in
             guard let self = self, self.options.isShowFileSize, let _ = self.asset, m == self.asset, m.fileSize > 0 else { return }
@@ -226,7 +245,7 @@ class MNAssetCell: UICollectionViewCell {
     func updateFileSize() {
         fileSizeLabel.text = asset.fileSizeValue
         fileSizeLabel.sizeToFit()
-        fileSizeLabel.maxX = contentView.bounds.width - margin
+        fileSizeLabel.maxX = contentView.bounds.width - spacing
         fileSizeLabel.midY = badgeView.midY
         fileSizeLabel.isHidden = false
         durationLabel.isHidden = true
@@ -234,7 +253,6 @@ class MNAssetCell: UICollectionViewCell {
     
     func endDisplaying() {
         asset?.container = nil
-        asset?.stateUpdateHandler = nil
         asset?.sourceUpdateHandler = nil
         asset?.fileSizeUpdateHandler = nil
         asset?.thumbnailUpdateHandler = nil
@@ -242,8 +260,10 @@ class MNAssetCell: UICollectionViewCell {
     }
 }
 
-extension MNAssetCell {
-    @objc func select(sender: MNAssetSelectControl) {
-        delegate?.update(asset: asset)
+// MARK: - Event
+private extension MNAssetCell {
+    
+    @objc func preview() {
+        delegate?.assetCellShouldPreviewAsset(self)
     }
 }

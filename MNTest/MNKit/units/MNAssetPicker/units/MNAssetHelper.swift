@@ -177,16 +177,9 @@ extension MNAssetHelper {
                 guard isCancelled == false else { return }
                 guard let image = result?.resizingOrientation else { return }
                 let isDegraded: Bool = (info?[PHImageResultIsDegradedKey] as? NSNumber)?.boolValue ?? false
-                if isDegraded {
+                asset.update(thumbnail: image)
+                if isDegraded == false {
                     // 衰减图片
-                    asset.degradedImage = image
-                    DispatchQueue.main.async {
-                        asset.thumbnailUpdateHandler?(asset)
-                    }
-                } else {
-                    // 缩略图
-                    asset.degradedImage = nil
-                    asset.update(thumbnail: image)
                     asset.requestId = PHInvalidImageRequestID
                 }
             }
@@ -202,7 +195,7 @@ extension MNAssetHelper {
                 }
                 asset.update(source: isClould ? .cloud : .local)
                 
-                if let options = options, options.isShowFileSize, asset.fileSize < 0, isClould == false {
+                if let options = options, options.isShowFileSize, asset.fileSize <= 0, isClould == false {
                     // 获取大小
                     var fileSize: Int64 = 0
                     let resources = PHAssetResource.assetResources(for: phAsset)
