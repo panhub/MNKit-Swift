@@ -233,6 +233,7 @@ class MNAssetCell: UICollectionViewCell {
             guard let self = self, let _ = self.asset, m == self.asset else { return }
             self.cloudView.isHidden = m.source != .cloud
         }
+        
         asset.fileSizeUpdateHandler = nil
         asset.fileSizeUpdateHandler = { [weak self] m in
             guard let self = self, self.options.isShowFileSize, let _ = self.asset, m == self.asset, m.fileSize > 0 else { return }

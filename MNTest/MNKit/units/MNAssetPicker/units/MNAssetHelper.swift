@@ -128,6 +128,7 @@ extension MNAssetHelper {
             let asset = MNAsset()
             asset.type = type
             asset.phAsset = pha
+            asset.identifier = pha.localIdentifier
             asset.renderSize = options.renderSize
             if type == .video {
                 asset.duration = pha.duration
@@ -262,15 +263,10 @@ extension MNAssetHelper {
                 let isCancelled: Bool = (info?[PHImageCancelledKey] as? NSNumber)?.boolValue ?? false
                 guard isCancelled == false else { return }
                 if let avAsset = result as? AVURLAsset {
-                    if asset.fileSize <= 0 {
-                        do {
-                            let attributes = try FileManager.default.attributesOfItem(atPath: avAsset.url.path)
-                            if let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value, fileSize >= 0 {
-                                asset.update(fileSize: fileSize)
-                            }
-                        } catch {}
-                    }
                     asset.content = avAsset.url.path
+                    if asset.fileSize <= 0 {
+                        asset.updateFileSize()
+                    }
                 }
                 DispatchQueue.main.async {
                     completion?(asset)
@@ -396,6 +392,7 @@ extension MNAssetHelper {
                                 let status = exportSession?.status ?? .failed
                                 if status == .completed, FileManager.default.fileExists(atPath: outputURL.path) {
                                     asset.content = outputURL.path
+                                    asset.updateFileSize()
                                 } else {
                                     try? FileManager.default.removeItem(at: outputURL)
                                 }
@@ -410,6 +407,7 @@ extension MNAssetHelper {
                         }
                     } else {
                         asset.content = avAsset.url.path
+                        asset.updateFileSize()
                         DispatchQueue.main.async {
                             completion?(asset)
                         }
@@ -433,6 +431,7 @@ extension MNAssetHelper {
                                     livePhoto.imageFileURL = image
                                     livePhoto.videoFileURL = video
                                     asset.content = livePhoto
+                                    asset.updateFileSize()
                                     DispatchQueue.main.async {
                                         completion?(asset)
                                     }

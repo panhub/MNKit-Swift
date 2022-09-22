@@ -173,6 +173,7 @@ class MNAsset: NSObject {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.fileSize = fileSize
+            self.fileSizeValue = fileSize.fileSizeValue
             self.fileSizeUpdateHandler?(self)
         }
     }
@@ -214,7 +215,6 @@ class MNAsset: NSObject {
             type = .video
             duration = MNAssetExporter.duration(mediaAtPath: filePath)
             thumbnail = MNAssetExporter.thumbnail(videoAtPath: filePath)
-            //durationString = Date(timeIntervalSince1970: ceil(duration)).timeValue
             if let _ = options, options!.isShowFileSize, let attributes = try? FileManager.default.attributesOfItem(atPath: filePath), let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value {
                 self.fileSize = fileSize
             }
@@ -237,7 +237,22 @@ class MNAsset: NSObject {
             }
         }
         guard let _ = self.content else { return nil }
-        fileSizeValue = fileSize.fileSizeValue
+    }
+    
+    func updateFileSize() {
+        guard let content = content else { return }
+        switch type {
+        case .video:
+            do {
+                let attributes = try FileManager.default.attributesOfItem(atPath: content as! String)
+                if let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value, fileSize >= 0 {
+                    update(fileSize: fileSize)
+                }
+            } catch {}
+        case .livePhoto:
+            
+        default: break
+        }
     }
 }
 
