@@ -23,7 +23,7 @@ class MNShapeToast: MNToast {
         indicator.frame = container.bounds
         indicator.contentsScale = UIScreen.main.scale
         indicator.fillColor = UIColor.clear.cgColor
-        indicator.strokeColor = Self.color.cgColor
+        indicator.strokeColor = Self.tintColor.cgColor
         indicator.lineWidth = lineWidth
         indicator.lineCap = .round
         indicator.lineJoin = .round

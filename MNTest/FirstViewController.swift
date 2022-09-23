@@ -8,6 +8,8 @@
 import UIKit
 
 class FirstViewController: MNBaseViewController {
+    
+    let tailorView = MNVideoTailorView(frame: CGRect(x: 0.0, y: 0.0, width: 300.0, height: 48.0))
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,19 +28,29 @@ class FirstViewController: MNBaseViewController {
         b.center = contentView.Center
         b.distribution = .firstImage
         b.alignment = .center
-        b.addTarget(self, action: #selector(sssssss), for: .touchUpInside)
+        b.addTarget(self, action: #selector(pick), for: .touchUpInside)
         contentView.addSubview(b)
+        
+        tailorView.midX = contentView.midX
+        tailorView.maxY = contentView.height - MN_TAB_SAFE_HEIGHT
+        contentView.addSubview(tailorView)
     }
     
-    @objc func sssssss() {
+    @objc func pick() {
         //navigationController?.pushViewController(ViewController(), animated: true)
         let picker = MNAssetPicker()
         picker.options.mode = .dark
         picker.options.isAllowsPreview = true
         picker.options.isShowFileSize = false
         picker.options.maxPickingCount = 10
-        picker.present { pic, assets in
-            
+        picker.options.isAllowsPickingGif = false
+        picker.options.isAllowsPickingPhoto = false
+        picker.options.isAllowsPickingLivePhoto = false
+        picker.options.maxPickingCount = 1
+        picker.present { [weak self] _, assets in
+            guard let self = self else { return }
+            self.tailorView.videoPath = assets.first!.content as! String
+            self.tailorView.reloadThumbnails()
         }
     }
 

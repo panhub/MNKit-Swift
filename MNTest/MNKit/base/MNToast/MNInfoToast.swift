@@ -14,7 +14,7 @@ class MNInfoToast: MNToast {
         
         let imageView = UIImageView(image: MNToast.image(named: "info")?.withRenderingMode(.alwaysTemplate))
         imageView.frame = CGRect(x: 0.0, y: 0.0, width: 45.0, height: 45.0)
-        imageView.tintColor = Self.color
+        imageView.tintColor = Self.tintColor
         imageView.contentMode = .scaleAspectFit
         container.frame = imageView.frame
         container.addSubview(imageView)

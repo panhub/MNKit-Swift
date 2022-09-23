@@ -23,7 +23,7 @@ class MNProgressToast: MNToast {
         
         let percent = UILabel(frame: container.bounds)
         percent.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-        percent.textColor = Self.color
+        percent.textColor = Self.tintColor
         percent.textAlignment = .center
         percent.text = "0%"
         percent.numberOfLines = 1
@@ -38,7 +38,7 @@ class MNProgressToast: MNToast {
         shape.frame = container.bounds
         shape.contentsScale = UIScreen.main.scale
         shape.fillColor = UIColor.clear.cgColor
-        shape.strokeColor = Self.color.cgColor
+        shape.strokeColor = Self.tintColor.cgColor
         shape.lineWidth = lineWidth
         shape.lineCap = .round
         shape.lineJoin = .round
@@ -59,7 +59,7 @@ class MNProgressToast: MNToast {
         complete.frame = container.bounds
         complete.contentsScale = UIScreen.main.scale
         complete.fillColor = UIColor.clear.cgColor
-        complete.strokeColor = Self.color.cgColor
+        complete.strokeColor = Self.tintColor.cgColor
         complete.lineWidth = lineWidth
         complete.lineCap = .round
         complete.lineJoin = .round

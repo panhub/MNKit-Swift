@@ -21,7 +21,7 @@ class MNActivityToast: MNToast {
             style = .whiteLarge
         }
         let indicator = UIActivityIndicatorView(style: style)
-        indicator.color = Self.color
+        indicator.color = Self.tintColor
         indicator.hidesWhenStopped = true
         indicator.startAnimating()
         container.frame = indicator.frame

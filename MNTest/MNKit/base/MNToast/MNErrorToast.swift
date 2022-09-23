@@ -30,7 +30,7 @@ class MNErrorToast: MNToast {
         error.frame = container.bounds
         error.contentsScale = UIScreen.main.scale
         error.fillColor = UIColor.clear.cgColor
-        error.strokeColor = Self.color.cgColor
+        error.strokeColor = Self.tintColor.cgColor
         error.lineWidth = lineWidth
         error.lineCap = .round
         error.lineJoin = .round

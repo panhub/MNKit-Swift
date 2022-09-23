@@ -36,8 +36,8 @@ class MNToast: UIView {
     @objc static var effect: ToastEffect = .dark
     // 相对于位置的纵向偏移
     @objc static var offset: CGFloat = 0.0
-    // 内容颜色
-    @objc static var color: UIColor = UIColor(red: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 0.93)
+    // 文字/画笔颜色
+    @objc static var tintColor: UIColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
     // 弹窗颜色
     @objc static var contentColor: UIColor = MNToast.effect == .light ? .white : (MNToast.effect == .dark ? .clear : .black)
     // 背景颜色
@@ -81,7 +81,7 @@ class MNToast: UIView {
         var attributes = [NSAttributedString.Key: Any]()
         attributes[.paragraphStyle] = paragraph
         attributes[.font] = Self.font
-        attributes[.foregroundColor] = Self.color
+        attributes[.foregroundColor] = Self.tintColor
         return attributes
     }()
     // 富文本信息
@@ -96,17 +96,19 @@ class MNToast: UIView {
         contentView.layer.cornerRadius = 8.0
         contentView.isUserInteractionEnabled = false
         contentView.backgroundColor = Self.contentColor
-        if Self.effect == .dark {
+        switch Self.effect {
+        case .dark:
             let effect = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
             effect.frame = contentView.bounds
             effect.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             contentView.addSubview(effect)
-        } else if Self.effect == .light {
+        case .light:
             let effect = UIView()
             effect.frame = contentView.bounds
             effect.backgroundColor = UIColor(white: 0.0, alpha: 0.12)
             effect.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             contentView.addSubview(effect)
+        default: break
         }
         addSubview(contentView)
         return contentView

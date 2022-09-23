@@ -27,7 +27,7 @@ class MNCompleteToast: MNToast {
         complete.frame = container.bounds
         complete.contentsScale = UIScreen.main.scale
         complete.fillColor = UIColor.clear.cgColor
-        complete.strokeColor = Self.color.cgColor
+        complete.strokeColor = Self.tintColor.cgColor
         complete.lineWidth = lineWidth
         complete.lineCap = .round
         complete.lineJoin = .round

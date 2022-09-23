@@ -3,7 +3,7 @@
 //  MNFoundation
 //
 //  Created by 冯盼 on 2021/10/15.
-//
+//  UIImage扩展
 
 import UIKit
 import Foundation
@@ -11,6 +11,17 @@ import QuartzCore
 import CoreGraphics
 
 extension UIImage {
+    
+    /// 灰度图片
+    @objc var grayImage: UIImage? {
+        guard let cgImage = cgImage else { return nil }
+        let size: CGSize = CGSize(width: size.width*scale, height: size.height*scale)
+        let colorSpace: CGColorSpace = CGColorSpaceCreateDeviceGray()
+        guard let context = CGContext(data: nil, width: Int(size.width), height: Int(size.height), bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.none.rawValue) else { return nil }
+        context.draw(cgImage, in: CGRect(x: 0.0, y: 0.0, width: size.width, height: size.height))
+        guard let newImage = context.makeImage() else { return nil }
+        return UIImage(cgImage: newImage)
+    }
     
     /**调整方向*/
     @objc var resizingOrientation: UIImage {
@@ -134,7 +145,7 @@ extension UIImage {
     /// - Parameters:
     ///   - color: 颜色
     ///   - size: 尺寸
-    @objc convenience init?(color: UIColor, size: CGSize = CGSize(width: 1, height: 1)) {
+    @objc convenience init?(color: UIColor, size: CGSize = CGSize(width: 1.0, height: 1.0)) {
         UIGraphicsBeginImageContextWithOptions(size, false, 1.0)
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         context.setFillColor(color.cgColor)
