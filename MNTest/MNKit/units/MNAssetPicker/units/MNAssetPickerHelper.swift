@@ -13,16 +13,19 @@ import CoreGraphics
 // MARK: - 图片处理
 extension UIImage {
     
-    /**近似微信朋友圈图片压缩(以1280为界以0.6为压缩系数)*/
-    @objc func optimized(compressionQuality quality: CGFloat) -> UIImage {
-        if let images = images, images.count > 1 {
-            return images.first!
-        }
-        // 计算新尺寸
+    
+    /// 近似微信朋友圈图片压缩 (以1280为界以 0.6为压缩系数)
+    /// - Parameters:
+    ///   - pixel: 像素阀值
+    ///   - quality: 压缩系数
+    /// - Returns: (压缩后图片, 图片质量)
+    func compress(pixel: CGFloat = 1280.0, quality: CGFloat) -> (UIImage?, Int) {
+        guard pixel > 0.0, quality > 0.01 else { return (nil, 0) }
+        // 调整尺寸
         var width: CGFloat = size.width*scale
         var height: CGFloat = size.height*scale
-        guard width > 0.0, height > 0.0 else { return self }
-        let boundary: CGFloat = 1280.0
+        guard width > 0.0, height > 0.0 else { return (nil, 0) }
+        let boundary: CGFloat = pixel
         let isSquare: Bool = width == height
         if width > boundary || height > boundary {
             if max(width, height)/min(width, height) <= 2.0 {
@@ -44,21 +47,28 @@ extension UIImage {
                     width = width*ratio
                 }
             }
-            width = floor(width)
-            height = floor(height)
+            width = ceil(width)
+            height = ceil(height)
             if isSquare {
                 width = min(width, height)
                 height = width
             }
         }
-        // 调整尺寸, 压缩图片
+        // 缩图片
         UIGraphicsBeginImageContext(CGSize(width: width, height: height))
         draw(in: CGRect(x: 0.0, y: 0.0, width: width, height: height))
         let result = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        guard let image = result else { return self }
-        guard let imageData = image.jpegData(compressionQuality: quality) else { return image }
-        return UIImage(data: imageData) ?? image
+        // 压图片
+        if let imageData = result?.jpegData(compressionQuality: quality), let image = UIImage(data: imageData) {
+            return (image, imageData.count)
+        }
+        return (nil, 0)
+    }
+    
+    /**近似微信朋友圈图片压缩(以1280为界以0.6为压缩系数)*/
+    @objc func optimized(compressionQuality quality: CGFloat) -> UIImage {
+        return compress(pixel: 1280, quality: quality).0 ?? self
     }
 }
 

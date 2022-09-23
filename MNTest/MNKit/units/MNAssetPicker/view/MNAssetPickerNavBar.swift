@@ -26,15 +26,12 @@ class MNAssetPickerNavBar: UIView {
         
         super.init(frame: UIScreen.main.bounds.inset(by: UIEdgeInsets(top: 0.0, left: 0.0, bottom: UIScreen.main.bounds.height - options.topBarHeight, right: 0.0)))
         
-        if options.mode == .light {
-            backgroundColor = .white.withAlphaComponent(0.97)
-        } else {
-            backgroundColor = .clear
-            let effectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            effectView.frame = bounds
-            effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            addSubview(effectView)
-        }
+        backgroundColor = .clear
+        
+        let effectView = UIVisualEffectView(effect: UIBlurEffect(style: options.mode == .light ? .extraLight : .dark))
+        effectView.frame = bounds
+        effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        addSubview(effectView)
         
         let closeButton = UIButton(type: .custom)
         closeButton.minX = 15.0

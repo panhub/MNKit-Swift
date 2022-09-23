@@ -42,13 +42,13 @@ class MNAssetAlbumCell: UITableViewCell {
         titleLabel.numberOfLines = 1
         titleLabel.isUserInteractionEnabled = false
         titleLabel.font = .systemFont(ofSize: 17.0, weight: .regular)
-        titleLabel.textColor = options.mode == .light ? .darkText.withAlphaComponent(0.95) : UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)
+        titleLabel.textColor = options.mode == .light ? .darkText.withAlphaComponent(0.91) : .white.withAlphaComponent(0.86)//UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
         contentView.addSubview(titleLabel)
         
         countLabel.numberOfLines = 1
         countLabel.isUserInteractionEnabled = false
-        countLabel.font = .systemFont(ofSize: 16.0, weight: .regular)
-        countLabel.textColor = UIColor(red: 74.0/255.0, green: 74.0/255.0, blue: 74.0/255.0, alpha: 1.0)
+        countLabel.font = .systemFont(ofSize: 15.0, weight: .regular)
+        countLabel.textColor = titleLabel.textColor//UIColor(red: 74.0/255.0, green: 74.0/255.0, blue: 74.0/255.0, alpha: 1.0)
         contentView.addSubview(countLabel)
         
         selectedView.isHidden = true

@@ -264,9 +264,6 @@ extension MNAssetHelper {
                 guard isCancelled == false else { return }
                 if let avAsset = result as? AVURLAsset {
                     asset.content = avAsset.url.path
-                    if asset.fileSize <= 0 {
-                        asset.updateFileSize()
-                    }
                 }
                 DispatchQueue.main.async {
                     completion?(asset)
@@ -319,10 +316,6 @@ extension MNAssetHelper {
                         asset.content = image
                     } else {
                         asset.content = image.resizingOrientation
-                    }
-                    if asset.fileSize <= 0 {
-                        let fileSize = Int64(imageData!.count)
-                        asset.update(fileSize: fileSize)
                     }
                 }
                 DispatchQueue.main.async {
@@ -460,23 +453,39 @@ extension MNAssetHelper {
             imageOptions.deliveryMode = .highQualityFormat;
             let resultHandler: (Data?, String?, Any, [AnyHashable : Any]?) -> Void = { imageData, _, _, _ in
                 var image: UIImage?
+                var fileSize: Int64 = 0
+                var isAllowCompress: Bool = false
                 if let result = asset.type == .gif ? UIImage.image(contentsOfData: imageData) : (imageData == nil ? nil : UIImage(data: imageData!)) {
                     if result.isAnimatedImage {
                         image = result
-                    } else {
+                        fileSize = Int64(imageData!.count)
+                    } else if #available(iOS 10.0, *), options.isAllowsHeifcExporting == false, phAsset.isHeifc {
                         // 判断是否需要转化heif/heic格式图片
-                        if #available(iOS 10.0, *), options.isAllowsHeifcExporting == false, phAsset.isHeifc, let ciImage = CIImage(data: imageData!), let colorSpace = ciImage.colorSpace, let jpgData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace, options: [CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String):options.compressionQuality]) {
-                            image = UIImage(data: jpgData)
-                        } else {
-                            image = result
+                        if let ciImage = CIImage(data: imageData!), let colorSpace = ciImage.colorSpace, let jpgData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace, options: [CIImageRepresentationOption(rawValue: kCGImageDestinationLossyCompressionQuality as String):max(min(options.compressionQuality, 1.0), 0.1)]) {
+                            image = UIImage(data: jpgData)?.resizingOrientation
+                            if let _ = image {
+                                fileSize = Int64(jpgData.count)
+                            }
                         }
-                        image = image?.resizingOrientation
-                        if options.compressionQuality < 1.0 {
-                            image = image?.optimized(compressionQuality: max(options.compressionQuality, 0.1))
+                    } else {
+                        image = result.resizingOrientation
+                        isAllowCompress = true
+                        fileSize = Int64(imageData!.count)
+                    }
+                    if isAllowCompress, options.compressionQuality < 1.0 {
+                        let value = image!.compress(pixel: 1280.0, quality: max(options.compressionQuality, 0.1))
+                        image = value.0
+                        if let _ = image {
+                            fileSize = Int64(value.1)
+                        } else {
+                            fileSize = 0
                         }
                     }
                 }
                 asset.content = image
+                if fileSize > 0 {
+                    asset.update(fileSize: fileSize)
+                }
                 DispatchQueue.main.async {
                     completion?(asset)
                 }

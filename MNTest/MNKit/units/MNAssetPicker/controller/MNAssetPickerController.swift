@@ -163,10 +163,8 @@ class MNAssetPickerController: UIViewController {
             selecteds.append(asset)
         }
         // 更新标记
-        if options.isShowPickingNumber {
-            for (index, asset) in selecteds.enumerated() {
-                asset.index = index + 1
-            }
+        for (index, asset) in selecteds.enumerated() {
+            asset.index = index + 1
         }
         reload(assets: assets)
         toolBar.update(assets: selecteds)
@@ -183,7 +181,7 @@ class MNAssetPickerController: UIViewController {
             }
         } else {
             // 结束限制
-            for asset in assets.filter({ $0.isSelected == false && $0.isEnabled == false }) {
+            for asset in assets {
                 asset.isEnabled = true
             }
             // 类型限制

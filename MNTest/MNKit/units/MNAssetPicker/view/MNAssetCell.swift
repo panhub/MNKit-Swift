@@ -236,7 +236,7 @@ class MNAssetCell: UICollectionViewCell {
         
         asset.fileSizeUpdateHandler = nil
         asset.fileSizeUpdateHandler = { [weak self] m in
-            guard let self = self, self.options.isShowFileSize, let _ = self.asset, m == self.asset, m.fileSize > 0 else { return }
+            guard let self = self, self.options.isShowFileSize, let asset = self.asset, m == asset, m.fileSize > 0 else { return }
             self.updateFileSize()
         }
         

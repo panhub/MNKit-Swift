@@ -33,6 +33,9 @@ class FirstViewController: MNBaseViewController {
     @objc func sssssss() {
         //navigationController?.pushViewController(ViewController(), animated: true)
         let picker = MNAssetPicker()
+        picker.options.mode = .dark
+        picker.options.isAllowsPreview = true
+        picker.options.isShowFileSize = false
         picker.options.maxPickingCount = 10
         picker.present { pic, assets in
             

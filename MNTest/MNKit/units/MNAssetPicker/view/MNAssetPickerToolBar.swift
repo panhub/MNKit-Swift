@@ -29,8 +29,6 @@ class MNAssetPickerToolBar: UIView {
     private let doneButton: UIButton = UIButton(type: .custom)
     // 预览
     private let previewButton: UIButton = UIButton(type: .custom)
-    // 文件大小
-    private let fileSizeLabel: UILabel = UILabel()
     
     init(options: MNAssetPickerOptions) {
         
@@ -43,22 +41,19 @@ class MNAssetPickerToolBar: UIView {
             minY = UIScreen.main.bounds.height
         }
         
-        if options.mode == .light {
-            backgroundColor = .white.withAlphaComponent(0.97)
-        } else {
-            backgroundColor = .clear
-            let effectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            effectView.frame = bounds
-            effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            addSubview(effectView)
-        }
+        backgroundColor = .clear
+        
+        let effectView = UIVisualEffectView(effect: UIBlurEffect(style: options.mode == .light ? .extraLight : .dark))
+        effectView.frame = bounds
+        effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        addSubview(effectView)
         
         clearButton.isEnabled = false
         clearButton.frame = CGRect(x: 16.0, y: 0.0, width: 50.0, height: 32.0)
         clearButton.setTitle("清空", for: .normal)
         clearButton.setTitleColor(options.color, for: .normal)
         clearButton.setTitleColor(disabledColor, for: .disabled)
-        clearButton.titleLabel?.font = .systemFont(ofSize: 16.0)
+        clearButton.titleLabel?.font = .systemFont(ofSize: 16.0, weight: .medium)
         clearButton.contentHorizontalAlignment = .left
         clearButton.contentVerticalAlignment = .center
         clearButton.addTarget(self, action: #selector(clear), for: .touchUpInside)
@@ -84,27 +79,19 @@ class MNAssetPickerToolBar: UIView {
         
         doneButton.isEnabled = false
         doneButton.frame = clearButton.frame
-        doneButton.setTitle("完成", for: .normal)
+        doneButton.setTitle("确定", for: .normal)
         doneButton.maxX = width - clearButton.minX
-        doneButton.titleLabel?.font = .systemFont(ofSize: 15.0)
+        doneButton.titleLabel?.font = .systemFont(ofSize: 15.0, weight: .medium)
         doneButton.setTitleColor(UIColor(red:251.0/255.0, green:251.0/255.0, blue:251.0/255.0, alpha:1.0), for: .normal)
         doneButton.setTitleColor(options.mode == .light ? UIColor(red:251.0/255.0, green:251.0/255.0, blue:251.0/255.0, alpha:1.0) : .white.withAlphaComponent(0.5), for: .disabled)
         doneButton.setBackgroundImage(UIImage(color: options.color), for: .normal)
         doneButton.setBackgroundImage(UIImage(color: disabledColor), for: .disabled)
-        doneButton.contentHorizontalAlignment = .center
-        doneButton.contentVerticalAlignment = .center
-        doneButton.layer.cornerRadius = 4.0
         doneButton.clipsToBounds = true
+        doneButton.layer.cornerRadius = 4.0
+        doneButton.contentVerticalAlignment = .center
+        doneButton.contentHorizontalAlignment = .center
         doneButton.addTarget(self, action: #selector(done), for: .touchUpInside)
         addSubview(doneButton)
-        
-        fileSizeLabel.numberOfLines = 1
-        fileSizeLabel.textAlignment = .right
-        fileSizeLabel.font = .systemFont(ofSize: 13.0)
-        fileSizeLabel.isUserInteractionEnabled = false
-        fileSizeLabel.textColor = disabledColor
-        fileSizeLabel.isHidden = options.isShowFileSize == false
-        addSubview(fileSizeLabel)
         
         let separator = UIView(frame: CGRect(x: 0.0, y: 0.0, width: bounds.width, height: 0.7))
         separator.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
@@ -119,8 +106,6 @@ class MNAssetPickerToolBar: UIView {
         } else {
             previewButton.isHidden = true
         }
-        
-        updateFileSize([])
     }
     
     required init?(coder: NSCoder) {
@@ -145,29 +130,26 @@ extension MNAssetPickerToolBar {
 extension MNAssetPickerToolBar {
     
     func update(assets: [MNAsset]) {
-        var title: String = assets.count > 0 ? "(\(assets.count))" : ""
-        title = "确定\(title)"
+        var suffix: String
+        if options.isShowFileSize {
+            let fileSize: Int64 = assets.reduce(0) { $0 + max($1.fileSize, 0) }
+            suffix = fileSize > 0 ? fileSize.fileSizeValue : ""
+        } else {
+            suffix = assets.count > 0 ? "\(assets.count)" : ""
+        }
+        let title = suffix.count > 0 ? "确定(\(suffix))" : "确定"
+        let string = NSMutableAttributedString(string: title)
+        string.addAttribute(.font, value: doneButton.titleLabel!.font!, range: NSRange(location: 0, length: string.length))
+        string.addAttribute(.foregroundColor, value: doneButton.titleColor(for: (assets.count > 0 && assets.count >= options.minPickingCount) ? .normal : .disabled)!, range: NSRange(location: 0, length: string.length))
+        string.addAttribute(.font, value: options.isShowFileSize ? UIFont.systemFont(ofSize: 12.0, weight: .medium) : doneButton.titleLabel!.font!, range: (title as NSString).range(of: suffix))
         let maxX = doneButton.maxX
-        var width: CGFloat = (title as NSString).size(withAttributes: [.font:doneButton.titleLabel!.font!]).width
-        width = ceil(width) + 15.0
-        doneButton.width = width
+        let width = ceil(string.boundingRect(with: CGSize(width: 1000.0, height: CGFloat.greatestFiniteMagnitude), options: [.usesFontLeading, .usesLineFragmentOrigin], context: nil).size.width)
+        doneButton.width = width + 15.0
         doneButton.maxX = maxX
-        doneButton.setTitle(title, for: .normal)
+        doneButton.setAttributedTitle(string, for: .normal)
+        doneButton.setAttributedTitle(string, for: .disabled)
         clearButton.isEnabled = assets.count > 0
         previewButton.isEnabled = assets.count > 0
         doneButton.isEnabled = (assets.count > 0 && assets.count >= options.minPickingCount)
-        updateFileSize(assets)
-    }
-    
-    private func updateFileSize(_ assets: [MNAsset]) {
-        guard fileSizeLabel.isHidden == false else { return }
-        let fileSize: Int64 = assets.reduce(0) { $0 + max($1.fileSize, 0) }
-        let title = fileSize > 0 ? fileSize.fileSizeValue : "0.0M"
-        fileSizeLabel.text = title
-        fileSizeLabel.sizeToFit()
-        fileSizeLabel.height = ceil(fileSizeLabel.height)
-        fileSizeLabel.width = ceil(fileSizeLabel.width) + 10.0
-        fileSizeLabel.maxX = doneButton.minX
-        fileSizeLabel.midY = doneButton.midY
     }
 }

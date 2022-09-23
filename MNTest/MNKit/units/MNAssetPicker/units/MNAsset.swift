@@ -190,6 +190,10 @@ class MNAsset: NSObject {
         cancelDownload()
     }
     
+    /// 构造资源模型
+    /// - Parameters:
+    ///   - content: 文件内容
+    ///   - options: 资源选项
     convenience init?(content: Any, options: MNAssetPickerOptions? = nil) {
         self.init()
         isEnabled = true
@@ -239,19 +243,34 @@ class MNAsset: NSObject {
         guard let _ = self.content else { return nil }
     }
     
+    /// 依据资源内容判定资源大小
     func updateFileSize() {
         guard let content = content else { return }
+        var paths: [String] = [String]()
         switch type {
         case .video:
+            paths.append(content as! String)
+        case .livePhoto:
+            if #available(iOS 9.1, *) {
+                let livePhoto = content as! PHLivePhoto
+                if let videoURL = livePhoto.videoFileURL, let imageURL = livePhoto.imageFileURL {
+                    paths.append(videoURL.path)
+                    paths.append(imageURL.path)
+                }
+            }
+        default: break
+        }
+        var fileSize: Int64 = 0
+        for path in paths {
             do {
-                let attributes = try FileManager.default.attributesOfItem(atPath: content as! String)
-                if let fileSize = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value, fileSize >= 0 {
-                    update(fileSize: fileSize)
+                let attributes = try FileManager.default.attributesOfItem(atPath: path)
+                if let size = (attributes[FileAttributeKey.size] as? NSNumber)?.int64Value, size > 0 {
+                    fileSize += size
                 }
             } catch {}
-        case .livePhoto:
-            
-        default: break
+        }
+        if fileSize > 0 {
+            update(fileSize: fileSize)
         }
     }
 }

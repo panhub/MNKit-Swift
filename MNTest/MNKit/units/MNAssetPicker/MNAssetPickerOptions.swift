@@ -84,6 +84,10 @@ class MNAssetPickerOptions: NSObject {
      */
     @objc var isAllowsMultiplePickingLivePhoto: Bool = true
     /**
+     是否允许混合选择<'isAllowsMixPicking == false'时根据首选资源类型限制>
+     */
+    @objc var isAllowsMixPicking: Bool = true
+    /**
      #available(iOS 10.0, *)
      是否允许输出heif/heic格式图片
      */
@@ -105,10 +109,6 @@ class MNAssetPickerOptions: NSObject {
      */
     @objc var isUsingPhotoPolicyPickingLivePhoto: Bool = false
     /**
-     是否允许混合选择<'isAllowsMixPicking == false'时根据首选资源类型限制>
-     */
-    @objc var isAllowsMixPicking: Bool = true
-    /**
      当未响应退出代理方法时是否允许内部自行退出
      */
     @objc var isAllowsAutoDismiss: Bool = true
@@ -120,10 +120,6 @@ class MNAssetPickerOptions: NSObject {
      视频编辑界面是否允许调整视频尺寸
      */
     @objc var isAllowsResizingVideoSize: Bool = false
-    /**
-     显示选择索引
-     */
-    @objc var isShowPickingNumber: Bool = true
     /**
      是否允许切换相册
      */

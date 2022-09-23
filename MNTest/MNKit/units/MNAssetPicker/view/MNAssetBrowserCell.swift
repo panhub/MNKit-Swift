@@ -87,9 +87,9 @@ class MNAssetBrowserCell: UICollectionViewCell {
         playButton.minX = 7.0
         playButton.midY = (toolBar.bounds.height - MN_TAB_SAFE_HEIGHT)/2.0
         if #available(iOS 15.0, *) {
-            playButton.configurationUpdateHandler = { button in
-                
-            }
+//            playButton.configurationUpdateHandler = { button in
+//
+//            }
         } else {
             playButton.adjustsImageWhenHighlighted = false
         }
