@@ -17,7 +17,7 @@ protocol MNTailorHandlerDelegate: NSObjectProtocol {
     func tailorLeftHandlerDidDragging(_ tailorHandler: MNTailorHandler) -> Void
     /// 左滑手停止滑动
     /// - Parameter tailorHandler: 滑手
-    func tailorLeftHandlerEndDragging(_ tailorHandler: MNTailorHandler) -> Void
+    func tailorLeftHandlerDidEndDragging(_ tailorHandler: MNTailorHandler) -> Void
     /// 右滑手开始滑动
     /// - Parameter tailorHandler: 滑手
     func tailorRightHandlerBeginDragging(_ tailorHandler: MNTailorHandler) -> Void
@@ -26,7 +26,7 @@ protocol MNTailorHandlerDelegate: NSObjectProtocol {
     func tailorRightHandlerDidDragging(_ tailorHandler: MNTailorHandler) -> Void
     /// 右滑手停止滑动
     /// - Parameter tailorHandler: 滑手
-    func tailorRightHandlerEndDragging(_ tailorHandler: MNTailorHandler) -> Void
+    func tailorRightHandlerDidEndDragging(_ tailorHandler: MNTailorHandler) -> Void
 }
 
 class MNTailorHandler: UIView {
@@ -46,8 +46,6 @@ class MNTailorHandler: UIView {
     var lineColor: UIColor = .white
     /// 控件大小约束
     var contentInset: UIEdgeInsets = UIEdgeInsets(top: 3.3, left: 22.0, bottom: 3.3, right: 22.0)
-    /// 滑手触发区域
-    var handlerTouchInset: UIEdgeInsets = .zero
     /// 滑手的路径宽度
     var lineWidth: CGFloat = 3.0
     /// 左滑手
@@ -59,7 +57,7 @@ class MNTailorHandler: UIView {
     /// 底部分割线
     let bottomSeparator: UIView = UIView()
     /// 最小间隔
-    var spacing: CGFloat = 10.0
+    var spacing: CGFloat = 0.0
     /// 是否在拖拽滑手
     var isDragging: Bool = false
     /// 事件代理
@@ -72,19 +70,17 @@ class MNTailorHandler: UIView {
     private let leftHandlerHighlightedLayer: CAShapeLayer = CAShapeLayer()
     /// 右滑手高亮层
     private let rightHandlerHighlightedLayer: CAShapeLayer = CAShapeLayer()
-    /// 圆角
-    var radius: CGFloat = 5.0 {
-        didSet {
-            leftHandler.layer.mask(radius: radius, corners: [.topLeft, .bottomLeft])
-            rightHandler.layer.mask(radius: radius, corners: [.topRight, .bottomRight])
-        }
-    }
     /// 是否是高亮状态
     var isHighlighted: Bool = false {
         didSet {
             setHighlighted(isHighlighted, animated: false)
         }
     }
+    /// 内容位置
+    var contentRect: CGRect {
+        return CGRect(x: leftHandler.frame.maxX, y: topSeparator.frame.maxY, width: rightHandler.frame.minX - leftHandler.frame.maxX, height: bottomSeparator.frame.minY - topSeparator.frame.maxY)
+    }
+    
     
     override func willMove(toSuperview newSuperview: UIView?) {
         if let _ = newSuperview, subviews.count <= 0 {
@@ -150,14 +146,11 @@ class MNTailorHandler: UIView {
             bottomSeparator.backgroundColor = normalColor
             bottomSeparator.isUserInteractionEnabled = false
             addSubview(bottomSeparator)
-            
-            let radius = radius
-            self.radius = radius
         }
         super.willMove(toSuperview: newSuperview)
     }
 
-    func inspectHighlighted(animated: Bool) {
+    func adaptHighlighted(animated: Bool) {
         let isNormal = abs(leftHandler.frame.minX) <= 0.1 && abs(frame.width - rightHandler.frame.maxX) <= 0.1
         if isNormal {
             UIView.animate(withDuration: animated ? AnimationDuration : 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
@@ -195,17 +188,17 @@ class MNTailorHandler: UIView {
             self.bottomSeparator.backgroundColor = color
         }, completion: nil)
     }
+}
 
-    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        return leftHandler.frame.inset(by: handlerTouchInset).contains(point) || rightHandler.frame.inset(by: handlerTouchInset).contains(point)
-    }
+// MARK: - Touch
+extension MNTailorHandler {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let location = touches.first?.location(in: self) else { return }
-        if leftHandler.frame.inset(by: handlerTouchInset).contains(location) {
+        if leftHandler.frame.contains(location) {
             status = .left
             delegate?.tailorLeftHandlerBeginDragging(self)
-        } else if rightHandler.frame.inset(by: handlerTouchInset).contains(location) {
+        } else if rightHandler.frame.contains(location) {
             status = .right
             delegate?.tailorRightHandlerBeginDragging(self)
         } else {
@@ -240,12 +233,17 @@ class MNTailorHandler: UIView {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let status = status
         guard status != .none else { return }
-        status = .none
+        self.status = .none
         if status == .left {
-            delegate?.tailorLeftHandlerEndDragging(self)
+            delegate?.tailorLeftHandlerDidEndDragging(self)
         } else {
-            delegate?.tailorRightHandlerEndDragging(self)
+            delegate?.tailorRightHandlerDidEndDragging(self)
         }
+    }
+    
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        return leftHandler.frame.contains(point) || rightHandler.frame.contains(point)
     }
 }

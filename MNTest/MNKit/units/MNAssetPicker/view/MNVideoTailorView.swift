@@ -3,7 +3,7 @@
 //  MNTest
 //
 //  Created by 冯盼 on 2022/9/23.
-//
+//  视频裁剪控制
 
 import UIKit
 import AVFoundation
@@ -14,7 +14,7 @@ protocol MNVideoTailorViewDelegate: NSObjectProtocol {
     
     func tailorViewLoadThumbnailNotSatisfy(_ tailorView: MNVideoTailorView) -> Void
     
-    func tailorViewDidLoadThumbnail(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewDidEndLoadThumbnail(_ tailorView: MNVideoTailorView) -> Void
     
     func tailorViewLoadThumbnailsFailed(_ tailorView: MNVideoTailorView) -> Void
     
@@ -34,13 +34,13 @@ protocol MNVideoTailorViewDelegate: NSObjectProtocol {
     
     func tailorViewPointerDidDragging(_ tailorView: MNVideoTailorView) -> Void
     
-    func tailorViewPointerEndDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewPointerDidEndDragging(_ tailorView: MNVideoTailorView) -> Void
     
     func tailorViewBeginDragging(_ tailorView: MNVideoTailorView) -> Void
     
     func tailorViewDidDragging(_ tailorView: MNVideoTailorView) -> Void
     
-    func tailorViewEndDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewDidEndDragging(_ tailorView: MNVideoTailorView) -> Void
     
     func tailorViewDidEndPlaying(_ tailorView: MNVideoTailorView) -> Void
 }
@@ -48,7 +48,7 @@ protocol MNVideoTailorViewDelegate: NSObjectProtocol {
 class MNVideoTailorView: UIView {
     
     enum SeekStatus {
-        case none, scrolling, touching
+        case none, dragging, touching
     }
     
     var status: SeekStatus = .none
@@ -67,7 +67,7 @@ class MNVideoTailorView: UIView {
     
     let tailorHandler: MNTailorHandler = MNTailorHandler()
     
-    var minTailorDuration: TimeInterval = 1.0
+    var minTailorDuration: TimeInterval = 0.0
     
     var maxTailorDuration: TimeInterval = 0.0
     
@@ -79,11 +79,11 @@ class MNVideoTailorView: UIView {
     
     let AnimationDuration: TimeInterval = 0.2
     
-    let BlackColor: UIColor = UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0)
+    private let BlackColor: UIColor = UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0)
     
-    let WhiteColor: UIColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
+    private let WhiteColor: UIColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
     
-    let indicatorView: UIActivityIndicatorView = {
+    private let indicatorView: UIActivityIndicatorView = {
         var style: UIActivityIndicatorView.Style
         if #available(iOS 13.0, *) {
             style = .medium
@@ -99,10 +99,11 @@ class MNVideoTailorView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let contentInset = UIEdgeInsets(top: 3.3, left: 22.0, bottom: 3.3, right: 22.0)
+        let contentInset = UIEdgeInsets(top: 3.5, left: 23.0, bottom: 3.5, right: 23.0)
         
         scrollView.frame = bounds.inset(by: contentInset)
-        scrollView.bounces = true
+        scrollView.delegate = self
+        scrollView.bounces = false
         scrollView.clipsToBounds = true
         scrollView.backgroundColor = .black
         scrollView.showsVerticalScrollIndicator = false
@@ -113,46 +114,41 @@ class MNVideoTailorView: UIView {
         addSubview(scrollView)
         
         thumbnailView.frame = scrollView.bounds
-        thumbnailView.alpha = 0.0
         thumbnailView.clipsToBounds = true
         thumbnailView.backgroundColor = .clear
         thumbnailView.isUserInteractionEnabled = false
         scrollView.addSubview(thumbnailView)
         
-        leftMaskView.frame = CGRect(x: 0.0, y: 0.0, width: 0.0, height: scrollView.frame.height)
-        leftMaskView.alpha = 0.0
-        leftMaskView.backgroundColor = .clear
+        leftMaskView.frame = scrollView.bounds
         leftMaskView.isUserInteractionEnabled = false
         scrollView.addSubview(leftMaskView)
         
-        rightMaskView.frame = CGRect(x: scrollView.frame.width, y: 0.0, width: 0.0, height: scrollView.frame.height)
-        rightMaskView.alpha = 0.0
-        rightMaskView.backgroundColor = .clear
+        rightMaskView.frame = scrollView.bounds
         rightMaskView.isUserInteractionEnabled = false
         scrollView.addSubview(rightMaskView)
         
         tailorHandler.frame = bounds
+        tailorHandler.delegate = self
         tailorHandler.lineWidth = 3.0
         tailorHandler.lineColor = WhiteColor
         tailorHandler.normalColor = BlackColor
         tailorHandler.contentInset = contentInset
         tailorHandler.highlightedColor = WhiteColor
-        tailorHandler.backgroundColor = .clear
         addSubview(tailorHandler)
         
         pointer.frame = CGRect(x: 0.0, y: 0.0, width: 4.0, height: scrollView.frame.height)
         pointer.alpha = 0.0
-        pointer.midY = frame.height/2.0
         pointer.minX = scrollView.minX
+        pointer.midY = scrollView.midY
         pointer.clipsToBounds = true
         pointer.layer.cornerRadius = pointer.frame.width/2.0
-        pointer.layer.borderColor = BlackColor.cgColor
+        pointer.layer.borderColor = UIColor.black.cgColor
         pointer.backgroundColor = .white
         pointer.layer.borderWidth = 0.8
         pointer.isUserInteractionEnabled = false
         addSubview(pointer)
         
-        indicatorView.center = CGPoint(x: bounds.midX, y: bounds.midY)
+        indicatorView.center = scrollView.center
         indicatorView.color = WhiteColor
         addSubview(indicatorView)
     }
@@ -161,7 +157,7 @@ class MNVideoTailorView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func reloadThumbnails() {
+    func reloadData() {
         
         let videoPath: String = videoPath
         
@@ -184,27 +180,31 @@ class MNVideoTailorView: UIView {
         let minTailorDuration: TimeInterval = max(1.0, min(minTailorDuration, duration - 1.0))
         let maxTailorDuration: TimeInterval = maxTailorDuration <= 0.0 ? duration : max(minTailorDuration, min(duration, maxTailorDuration))
         let ratio: CGFloat = max(1.0, duration/maxTailorDuration)
-        contentSize.width = ceil(contentSize.width*ratio)
+        let behavior: NSDecimalNumberHandler = NSDecimalNumberHandler(roundingMode: .plain, scale: 1, raiseOnExactness: false, raiseOnOverflow: false, raiseOnUnderflow: false, raiseOnDivideByZero: false)
+        let result: NSDecimalNumber = NSDecimalNumber(value: contentSize.width*ratio).dividing(by: NSDecimalNumber(value: 1.0), withBehavior: behavior)
+        contentSize.width = CGFloat(result.floatValue)
         scrollView.contentSize = contentSize
+        scrollView.setContentOffset(.zero, animated: false)
         thumbnailView.width = contentSize.width
         thumbnailView.contentSize = contentSize
         leftMaskView.contentSize = contentSize
         rightMaskView.contentSize = contentSize
-        updateLeftMask()
         thumbnailView.alignment = .left
         leftMaskView.alignment = .left
         rightMaskView.alignment = .right
+        adaptLeftMask()
+        adaptRightMask()
         if ratio == 1.0 { scrollView.isUserInteractionEnabled = false }
         let widthByDuration: CGFloat = contentSize.width/duration
         let durationByWidth: TimeInterval = duration/contentSize.width
-        tailorHandler.spacing = ceil(minTailorDuration*widthByDuration)
+        tailorHandler.spacing = max(pointer.frame.width, ceil(minTailorDuration*widthByDuration))
         naturalSize = naturalSize.multiplyTo(height: contentSize.height)
         let thumbnailCount: Int = Int(ceil(duration/(durationByWidth*naturalSize.width)))
         naturalSize.width *= UIScreen.main.scale
         naturalSize.height *= UIScreen.main.scale
         naturalSize.width = ceil(naturalSize.width)
-        
         // 生成截图
+        thumbnailView.alpha = 0.0
         indicatorView.startAnimating()
         DispatchQueue.global().async { [weak self] in
             var thumbnails: [UIImage] = [UIImage]()
@@ -240,7 +240,7 @@ class MNVideoTailorView: UIView {
                 if let image = thumbnail {
                     // 裁剪图片
                     var thumbnailSize: CGSize = contentSize.multiplyTo(height: image.size.height)
-                    thumbnailSize.width = min(ceil(contentSize.width), image.size.width)
+                    thumbnailSize.width = min(ceil(thumbnailSize.width), image.size.width)
                     UIGraphicsBeginImageContext(thumbnailSize)
                     image.draw(in: CGRect(x: 0.0, y: 0.0, width: thumbnailSize.width, height: thumbnailSize.height))
                     thumbnail = UIGraphicsGetImageFromCurrentImageContext()
@@ -256,21 +256,19 @@ class MNVideoTailorView: UIView {
                     self.leftMaskView.image = grayImage
                     self.rightMaskView.image = grayImage
                     self.thumbnailView.image = thumbnail
-                    self.leftMaskView.alpha = 1.0
-                    self.rightMaskView.alpha = 1.0
                     UIView.animate(withDuration: self.AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                         guard let self = self else { return }
                         self.pointer.alpha = 1.0
                         self.thumbnailView.alpha = 1.0
-                        self.scrollView.backgroundColor = self.BlackColor
                     } completion: { [weak self] _ in
                         guard let self = self else { return }
-                        // 通知已加载截图
-                        self.delegate?.tailorViewDidLoadThumbnail(self)
+                        // 通知加载截图结束
+                        self.delegate?.tailorViewDidEndLoadThumbnail(self)
                     }
                 } else {
                     // 加载截图失败
-                    let thumbnailLabel = UILabel(frame: self.thumbnailView.frame)
+                    let thumbnailLabel = UILabel(frame: self.scrollView.bounds)
+                    thumbnailLabel.text = "加载截图失败"
                     thumbnailLabel.alpha = 0.0
                     thumbnailLabel.numberOfLines = 1
                     thumbnailLabel.textAlignment = .center
@@ -283,24 +281,158 @@ class MNVideoTailorView: UIView {
                         thumbnailLabel.alpha = 1.0
                     } completion: { [weak self] _ in
                         guard let self = self else { return }
-                        // 通知已加载截图
-                        self.delegate?.tailorViewDidLoadThumbnail(self)
+                        // 通知加载截图结束
+                        self.delegate?.tailorViewDidEndLoadThumbnail(self)
                     }
                 }
             }
         }
     }
     
-    func updateLeftMask() {
+    private func adaptLeftMask() {
         let contentOffset = scrollView.contentOffset
         leftMaskView.width = max(0.0, max(tailorHandler.leftHandler.maxX - scrollView.minX, 0.0) + contentOffset.x)
     }
     
-    func updateRightMask() {
+    private func adaptRightMask() {
         let contentSize = scrollView.contentSize
         let contentOffset = scrollView.contentOffset
-        let width: CGFloat = max(scrollView.frame.width, contentSize.width) - (contentOffset.x + scrollView.frame.width)
+        let width: CGFloat = contentSize.width - (contentOffset.x + scrollView.frame.width)
         rightMaskView.width = max(0.0, max(0.0, scrollView.maxX - tailorHandler.rightHandler.minX) + width)
-        rightMaskView.maxX = max(scrollView.frame.width, thumbnailView.frame.maxX)
+        rightMaskView.maxX = contentSize.width
+    }
+    
+    private func adaptPointer(location: CGPoint) {
+        pointer.midX = location.x
+        pointer.minX = max(pointer.minX, tailorHandler.leftHandler.maxX)
+        pointer.maxX = min(pointer.maxX, tailorHandler.rightHandler.minX)
+    }
+}
+
+// MARK: - UIScrollViewDelegate
+extension MNVideoTailorView: UIScrollViewDelegate {
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        status = .dragging
+        UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+            guard let self = self else { return }
+            self.pointer.alpha = 0.0
+        }, completion: nil)
+        delegate?.tailorViewBeginDragging(self)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        adaptLeftMask()
+        adaptRightMask()
+        guard status == .dragging else { return }
+        delegate?.tailorViewDidDragging(self)
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard decelerate == false else { return }
+        scrollViewDidEndDecelerating(scrollView)
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        guard scrollView.isDragging == false else { return }
+        status = .none
+        pointer.minX = tailorHandler.leftHandler.frame.maxX
+        UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+            guard let self = self else { return }
+            self.pointer.alpha = 1.0
+        }, completion: nil)
+        delegate?.tailorViewDidEndDragging(self)
+    }
+}
+
+// MARK: - MNTailorHandlerDelegate
+extension MNVideoTailorView: MNTailorHandlerDelegate {
+    
+    func tailorLeftHandlerBeginDragging(_ tailorHandler: MNTailorHandler) {
+        tailorHandler.setHighlighted(true, animated: true)
+        UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+            guard let self = self else { return }
+            self.pointer.alpha = 0.0
+        }, completion: nil)
+        delegate?.tailorViewLeftHandlerBeginDragging(self)
+    }
+    
+    func tailorLeftHandlerDidDragging(_ tailorHandler: MNTailorHandler) {
+        adaptLeftMask()
+        delegate?.tailorViewLeftHandlerDidDragging(self)
+    }
+    
+    func tailorLeftHandlerDidEndDragging(_ tailorHandler: MNTailorHandler) {
+        adaptLeftMask()
+        tailorHandler.adaptHighlighted(animated: true)
+        pointer.minX = tailorHandler.leftHandler.frame.maxX
+        UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+            guard let self = self else { return }
+            self.pointer.alpha = 1.0
+        }, completion: nil)
+        delegate?.tailorViewLeftHandlerEndDragging(self)
+    }
+    
+    func tailorRightHandlerBeginDragging(_ tailorHandler: MNTailorHandler) {
+        tailorHandler.setHighlighted(true, animated: true)
+        UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+            guard let self = self else { return }
+            self.pointer.alpha = 0.0
+        }, completion: nil)
+        delegate?.tailorViewRightHandlerBeginDragging(self)
+    }
+    
+    func tailorRightHandlerDidDragging(_ tailorHandler: MNTailorHandler) {
+        adaptRightMask()
+        delegate?.tailorViewRightHandlerDidDragging(self)
+    }
+    
+    func tailorRightHandlerDidEndDragging(_ tailorHandler: MNTailorHandler) {
+        adaptRightMask()
+        tailorHandler.adaptHighlighted(animated: true)
+        if pointer.minX < tailorHandler.leftHandler.maxX {
+            pointer.minX = tailorHandler.leftHandler.maxX
+        } else if pointer.maxX > tailorHandler.rightHandler.minX {
+            pointer.maxX = tailorHandler.rightHandler.minX
+        }
+        UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+            guard let self = self else { return }
+            self.pointer.alpha = 1.0
+        }, completion: nil)
+        delegate?.tailorViewRightHandlerEndDragging(self)
+    }
+}
+
+// MARK: - Touch
+extension MNVideoTailorView {
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let location = touches.first?.location(in: self) else { return }
+        if tailorHandler.contentRect.contains(location) {
+            status = .touching
+            delegate?.tailorViewPointerBeginDragging(self)
+            adaptPointer(location: location)
+            delegate?.tailorViewPointerDidDragging(self)
+        } else {
+            status = .none
+        }
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard status == .touching else { return }
+        guard let location = touches.first?.location(in: self) else { return }
+        adaptPointer(location: location)
+        delegate?.tailorViewPointerDidDragging(self)
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard status == .touching else { return }
+        status = .none
+        delegate?.tailorViewPointerDidEndDragging(self)
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard status == .touching else { return }
+        status = .none
     }
 }

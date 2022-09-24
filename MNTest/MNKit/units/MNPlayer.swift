@@ -139,10 +139,9 @@ class MNPlayer: NSObject {
     /**监听周期*/
     var observeTime: CMTime = .zero {
         willSet {
-            if let obj = observer {
-                player.removeTimeObserver(obj)
-                observer = nil
-            }
+            guard let observer = observer else { return }
+            player.removeTimeObserver(observer)
+            self.observer = nil
         }
         didSet {
             guard observeTime != .zero else { return }
@@ -180,11 +179,11 @@ class MNPlayer: NSObject {
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let _ = keyPath else {
+        guard let keyPath = keyPath else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
         }
-        if keyPath! == "status" {
+        if keyPath == "status" {
             let status = AVPlayerItem.Status(rawValue: change?[.newKey] as? Int ?? AVPlayerItem.Status.unknown.rawValue)
             switch status {
             case .readyToPlay:
@@ -212,11 +211,11 @@ class MNPlayer: NSObject {
             default:
                 break
             }
-        } else if keyPath! == "loadedTimeRanges" {
+        } else if keyPath == "loadedTimeRanges" {
             delegate?.player?(didLoadTimeRanges: self)
-        } else if keyPath! == "playbackBufferEmpty" {
+        } else if keyPath == "playbackBufferEmpty" {
             delegate?.player?(likelyBufferEmpty: self)
-        } else if keyPath! == "playbackLikelyToKeepUp" {
+        } else if keyPath == "playbackLikelyToKeepUp" {
             delegate?.player?(likelyToKeepUp: self)
         }
     }

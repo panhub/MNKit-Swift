@@ -63,15 +63,15 @@ extension MNAssetExporter {
         return videoTrack.naturalSizeOfVideo
     }
     
-    @objc static func thumbnail(videoAtPath path: String, seconds: TimeInterval = 0.05, maximumSize: CGSize = .zero) -> UIImage? {
+    @objc static func thumbnail(videoAtPath path: String, seconds: TimeInterval = 0.1, maximumSize: CGSize = .zero) -> UIImage? {
         guard let videoAsset = AVAsset.asset(mediaAtPath: path) else { return nil }
         let generator = AVAssetImageGenerator(asset: videoAsset)
         generator.requestedTimeToleranceAfter = .zero
         generator.requestedTimeToleranceBefore = .zero
         generator.appliesPreferredTrackTransform = true
         if maximumSize != .zero { generator.maximumSize = maximumSize }
-        var time = videoAsset.duration
-        time.value = CMTimeValue(Double(time.timescale)*seconds)
+        let time = CMTimeMultiplyByFloat64(videoAsset.duration, multiplier: max(0.01, min(0.99, Float64(seconds)/CMTimeGetSeconds(videoAsset.duration))))
+        //time.value = CMTimeValue(Double(time.timescale)*seconds)
         guard let cgImage = try?generator.copyCGImage(at: time, actualTime: nil) else { return nil }
         return UIImage(cgImage: cgImage)
     }
