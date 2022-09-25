@@ -337,7 +337,7 @@ extension MNVideoTailorController: MNTailorViewDelegate {
     
     func tailorViewRightHandlerEndDragging(_ tailorView: MNTailorView) {
         timeView.isHidden = true
-        player.seek(toProgress: Float(tailorView.end)) { [weak self] finish in
+        player.seek(toProgress: Float(tailorView.progress)) { [weak self] finish in
             guard finish, let self = self, self.tailorView.isPlaying, self.tailorView.isEnding == false else { return }
             self.player.play()
         }

@@ -197,7 +197,7 @@ class MNTailorView: UIView {
         rightMaskView.alignment = .right
         adaptLeftMask()
         adaptRightMask()
-        if ratio == 1.0 { scrollView.isUserInteractionEnabled = false }
+        scrollView.isUserInteractionEnabled = ratio != 1.0
         let widthByDuration: CGFloat = contentSize.width/duration
         let durationByWidth: TimeInterval = duration/contentSize.width
         tailorHandler.spacing = max(pointer.frame.width, ceil(minTailorDuration*widthByDuration))

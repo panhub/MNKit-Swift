@@ -41,7 +41,7 @@ class MNTailorTimeView: UIView {
         timeLabel.width = ceil(timeLabel.width)
         timeLabel.height = ceil(timeLabel.height)
         timeLabel.size = timeLabel.bounds.inset(by: UIEdgeInsets(top: -4.0, left: -8.0, bottom: -3.0, right: -8.0)).size
-        timeLabel.layer.cornerRadius = 2.0
+        timeLabel.layer.cornerRadius = 3.0
         timeLabel.clipsToBounds = true
         addSubview(timeLabel)
         
