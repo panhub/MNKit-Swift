@@ -1,5 +1,5 @@
 //
-//  MNVideoKeyfram.swift
+//  MNTailorKeyfram.swift
 //  MNTest
 //
 //  Created by 冯盼 on 2022/9/23.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MNVideoKeyfram: UIView {
+class MNTailorKeyfram: UIView {
     
     enum Alignment {
         case left, right

@@ -367,8 +367,7 @@ extension MNPlayer {
             completion?(false)
             return
         }
-        var time = currentItem.duration
-        time.value = CMTimeValue(Float(time.value)*max(0.0, min(progress, 1.0)))
+        let time = CMTimeMultiplyByFloat64(currentItem.duration, multiplier: Float64(progress))
         player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: completion ?? { _ in })
     }
     
@@ -377,8 +376,8 @@ extension MNPlayer {
             completion?(false)
             return
         }
-        var time = currentItem.duration
-        time.value = min(time.value, CMTimeValue(time.timescale*CMTimeScale(seconds)))
+        let progress = Float64(seconds)/CMTimeGetSeconds(currentItem.duration)
+        let time = CMTimeMultiplyByFloat64(currentItem.duration, multiplier: Float64(progress))
         player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: completion ?? { _ in })
     }
 }

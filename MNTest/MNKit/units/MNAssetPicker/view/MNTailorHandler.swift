@@ -59,7 +59,7 @@ class MNTailorHandler: UIView {
     /// 最小间隔
     var spacing: CGFloat = 0.0
     /// 是否在拖拽滑手
-    var isDragging: Bool = false
+    var isDragging: Bool { status != .none }
     /// 事件代理
     weak var delegate: MNTailorHandlerDelegate?
     /// 左滑手正常层

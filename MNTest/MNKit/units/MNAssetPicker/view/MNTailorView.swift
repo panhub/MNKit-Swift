@@ -1,5 +1,5 @@
 //
-//  MNVideoTailorView.swift
+//  MNTailorView.swift
 //  MNTest
 //
 //  Created by 冯盼 on 2022/9/23.
@@ -8,81 +8,84 @@
 import UIKit
 import AVFoundation
 
-protocol MNVideoTailorViewDelegate: NSObjectProtocol {
+protocol MNTailorViewDelegate: NSObjectProtocol {
     
-    func tailorViewBeginLoadThumbnail(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewBeginLoadThumbnail(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewLoadThumbnailNotSatisfy(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewLoadThumbnailNotSatisfy(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewDidEndLoadThumbnail(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewDidEndLoadThumbnail(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewLoadThumbnailsFailed(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewLoadThumbnailsFailed(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewLeftHandlerBeginDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewLeftHandlerBeginDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewLeftHandlerDidDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewLeftHandlerDidDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewLeftHandlerEndDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewLeftHandlerEndDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewRightHandlerBeginDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewRightHandlerBeginDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewRightHandlerDidDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewRightHandlerDidDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewRightHandlerEndDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewRightHandlerEndDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewPointerBeginDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewPointerBeginDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewPointerDidDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewPointerDidDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewPointerDidEndDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewPointerDidEndDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewBeginDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewBeginDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewDidDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewDidDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewDidEndDragging(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewDidEndDragging(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewDidEndPlaying(_ tailorView: MNVideoTailorView) -> Void
+    func tailorViewShouldEndPlaying(_ tailorView: MNTailorView) -> Void
 }
 
-class MNVideoTailorView: UIView {
+class MNTailorView: UIView {
     
     enum SeekStatus {
         case none, dragging, touching
     }
     
-    var status: SeekStatus = .none
-    
+    /// 当前状态
+    private(set) var status: SeekStatus = .none
+    /// 视频绝对路径
     var videoPath: String = ""
-    
+    /// 外界记录播放状态
+    var isPlaying: Bool = false
+    /// 进度指针
     let pointer: UIView = UIView()
-    
+    /// 滑动支持
     let scrollView: UIScrollView = UIScrollView()
-    
-    let leftMaskView: MNVideoKeyfram = MNVideoKeyfram()
-    
-    let rightMaskView: MNVideoKeyfram = MNVideoKeyfram()
-    
-    let thumbnailView: MNVideoKeyfram = MNVideoKeyfram()
-    
+    /// 左裁剪区域截图
+    let leftMaskView: MNTailorKeyfram = MNTailorKeyfram()
+    /// 右裁剪区域截图
+    let rightMaskView: MNTailorKeyfram = MNTailorKeyfram()
+    /// 视频截图
+    let thumbnailView: MNTailorKeyfram = MNTailorKeyfram()
+    /// 裁剪区间滑手
     let tailorHandler: MNTailorHandler = MNTailorHandler()
-    
+    /// 最短裁剪时长
     var minTailorDuration: TimeInterval = 0.0
-    
+    /// 最大裁剪时长
     var maxTailorDuration: TimeInterval = 0.0
-    
-    var isDragging: Bool = false
-    
-    var isEnding: Bool = false
-    
-    weak var delegate: MNVideoTailorViewDelegate?
-    
-    let AnimationDuration: TimeInterval = 0.2
-    
+    /// 是否在拖拽中
+    var isDragging: Bool { status != .none || tailorHandler.isDragging }
+    /// 是否已达到最大限制
+    var isEnding: Bool { abs(tailorHandler.rightHandler.frame.minX - pointer.frame.maxX) <= 0.1 }
+    /// 事件代理
+    weak var delegate: MNTailorViewDelegate?
+    /// 动画时长
+    private let AnimationDuration: TimeInterval = 0.2
+    /// 默认黑色
     private let BlackColor: UIColor = UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0)
-    
+    /// 默认白色
     private let WhiteColor: UIColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
-    
+    /// 加载指示图
     private let indicatorView: UIActivityIndicatorView = {
         var style: UIActivityIndicatorView.Style
         if #available(iOS 13.0, *) {
@@ -307,10 +310,56 @@ class MNVideoTailorView: UIView {
         pointer.minX = max(pointer.minX, tailorHandler.leftHandler.maxX)
         pointer.maxX = min(pointer.maxX, tailorHandler.rightHandler.minX)
     }
+    
+    func movePointerToBegin() {
+        pointer.minX = tailorHandler.leftHandler.frame.maxX
+    }
+    
+    func movePointerToEnd() {
+        pointer.maxX = tailorHandler.rightHandler.frame.minX
+    }
+}
+
+// MARK: - Progress
+extension MNTailorView {
+    
+    var progress: Double {
+        set {
+            let contentSize = scrollView.contentSize
+            let contentOffset = scrollView.contentOffset
+            let x: CGFloat = contentSize.width*CGFloat(newValue) - max(0.0, contentOffset.x) + scrollView.frame.minX
+            guard x > pointer.frame.minX else { return }
+            pointer.minX = x
+            pointer.maxX = min(pointer.frame.maxX, tailorHandler.rightHandler.frame.minX)
+            if x >= tailorHandler.rightHandler.frame.minX {
+                delegate?.tailorViewShouldEndPlaying(self)
+            }
+        }
+        get {
+            let contentSize = scrollView.contentSize
+            let contentOffset = scrollView.contentOffset
+            if abs(pointer.frame.minX - scrollView.frame.minX) <= 0.1, abs(contentOffset.x) <= 0.1 { return 0.0 }
+            if abs(pointer.frame.maxX - scrollView.frame.maxX) <= 0.1, (contentOffset.x + scrollView.frame.width - contentSize.width) <= 0.1 { return 1.0 }
+            if abs(pointer.frame.minX - tailorHandler.leftHandler.frame.maxX) <= 0.1 { return begin }
+            if abs(pointer.frame.maxX - tailorHandler.rightHandler.frame.minX) <= 0.1 { return end }
+            let progress = (pointer.frame.minX - scrollView.frame.minX + max(scrollView.contentOffset.x, 0.0))/scrollView.contentSize.width
+            return max(0.0, min(progress, 1.0))
+        }
+    }
+    
+    var begin: Double {
+        let progress = (tailorHandler.leftHandler.frame.maxX - scrollView.frame.minX + max(scrollView.contentOffset.x, 0.0))/scrollView.contentSize.width
+        return max(0.0, min(progress, 1.0))
+    }
+    
+    var end: Double {
+        let progress = (tailorHandler.rightHandler.frame.minX - scrollView.frame.minX + max(scrollView.contentOffset.x, 0.0))/scrollView.contentSize.width
+        return max(0.0, min(progress, 1.0))
+    }
 }
 
 // MARK: - UIScrollViewDelegate
-extension MNVideoTailorView: UIScrollViewDelegate {
+extension MNTailorView: UIScrollViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         status = .dragging
@@ -346,7 +395,7 @@ extension MNVideoTailorView: UIScrollViewDelegate {
 }
 
 // MARK: - MNTailorHandlerDelegate
-extension MNVideoTailorView: MNTailorHandlerDelegate {
+extension MNTailorView: MNTailorHandlerDelegate {
     
     func tailorLeftHandlerBeginDragging(_ tailorHandler: MNTailorHandler) {
         tailorHandler.setHighlighted(true, animated: true)
@@ -404,7 +453,7 @@ extension MNVideoTailorView: MNTailorHandlerDelegate {
 }
 
 // MARK: - Touch
-extension MNVideoTailorView {
+extension MNTailorView {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let location = touches.first?.location(in: self) else { return }

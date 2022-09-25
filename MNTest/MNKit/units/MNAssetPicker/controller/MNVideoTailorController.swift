@@ -9,45 +9,49 @@ import UIKit
 import AVFoundation
 
 class MNVideoTailorController: UIViewController {
-    
+    /// 视频绝对路径
     private var videoPath: String = ""
-    
+    /// 是否失败
     private var isFailed: Bool = false
-    
+    /// 视频截图
     private var thumbnail: UIImage!
-    
+    /// 视频时长
     private var duration: TimeInterval = 0.0
-    
+    /// 视频尺寸
     private var naturalSize: CGSize = CGSize(width: 1920.0, height: 1080.0)
-    
+    /// 最小裁剪时长
     var minTailorDuration: TimeInterval = 0.0
-    
+    /// 最大裁剪时长
     var maxTailorDuration: TimeInterval = 0.0
-    
+    /// 关闭按钮
     private let closeButton = UIButton(type: .custom)
-    
+    /// 确定按钮
     private let doneButton = UIButton(type: .custom)
-    
+    /// 时间显示
     private let timeLabel: UILabel = UILabel()
-    
+    /// 播放/暂停标记
     private let badgeView: UIImageView = UIImageView(image: MNAssetPicker.image(named: "player_play"))
-    
+    /// 视频播放视图
     private let playView: MNPlayView = MNPlayView()
-    
+    /// 时间显示
+    private let timeView: MNTailorTimeView = MNTailorTimeView()
+    /// 动画时长
+    private let AnimationDuration: TimeInterval = 0.2
+    /// 播放/暂停控制
     private let playControl: UIControl = UIControl(frame: CGRect(x: 0.0, y: 0.0, width: 48.0, height: 48.0))
-    
+    /// 默认黑色
     private let BlackColor: UIColor = UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0)
-    
+    /// 默认白色
     private let WhiteColor: UIColor = UIColor(red: 247.0/255.0, green: 247.0/255.0, blue: 247.0/255.0, alpha: 1.0)
-    
+    /// 状态栏显示
     override var prefersStatusBarHidden: Bool { false }
-
+    /// 白色状态栏
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
-    
+    /// 状态栏动态更新
     override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { .fade }
-    
-    private lazy var tailorView: MNVideoTailorView = {
-        let tailorView: MNVideoTailorView = MNVideoTailorView(frame: CGRect(x: playControl.frame.maxX + 1.5, y: playControl.frame.minY, width: doneButton.frame.maxX - playControl.frame.maxX - 1.5, height: playControl.frame.height))
+    /// 裁剪视图
+    private lazy var tailorView: MNTailorView = {
+        let tailorView: MNTailorView = MNTailorView(frame: CGRect(x: playControl.frame.maxX + 1.5, y: playControl.frame.minY, width: doneButton.frame.maxX - playControl.frame.maxX - 1.5, height: playControl.frame.height))
         tailorView.delegate = self
         tailorView.videoPath = videoPath
         tailorView.minTailorDuration = minTailorDuration
@@ -55,7 +59,7 @@ class MNVideoTailorController: UIViewController {
         tailorView.layer.mask(radius: 5.0, corners: [.topRight, .bottomRight])
         return tailorView
     }()
-    
+    /// 加载指示图
     private let indicatorView: UIActivityIndicatorView = {
         var style: UIActivityIndicatorView.Style
         if #available(iOS 13.0, *) {
@@ -68,12 +72,12 @@ class MNVideoTailorController: UIViewController {
         indicatorView.isUserInteractionEnabled = false
         return indicatorView
     }()
-    
+    /// 播放器
     private lazy var player: MNPlayer = {
         let player = MNPlayer(urls: [URL(fileURLWithPath: videoPath)])
         player.delegate = self
         player.layer = playView.layer
-        //player.observeTime = CMTime(value: 1, timescale: 60)
+        player.observeTime = CMTime(value: 1, timescale: 30)
         return player
     }()
     
@@ -128,7 +132,7 @@ class MNVideoTailorController: UIViewController {
         doneButton.setBackgroundImage(MNAssetPicker.image(named: "player_done"), for: .normal)
         doneButton.setBackgroundImage(closeButton.currentBackgroundImage, for: .highlighted)
         doneButton.setBackgroundImage(closeButton.currentBackgroundImage, for: .disabled)
-        doneButton.isEnabled = false
+        doneButton.isUserInteractionEnabled = false
         doneButton.addTarget(self, action: #selector(doneButtonTouchUpInside(_:)), for: .touchUpInside)
         view.addSubview(doneButton)
         
@@ -189,8 +193,14 @@ class MNVideoTailorController: UIViewController {
         indicatorView.color = WhiteColor
         view.addSubview(indicatorView)
         
+        timeView.isHidden = true
+        timeView.minX = tailorView.frame.minX
+        timeView.maxY = playControl.frame.minY
+        timeView.textColor = WhiteColor
+        timeView.backgroundColor = BlackColor.withAlphaComponent(0.83)
+        view.addSubview(timeView)
+        
         if duration > 0.0, let _ = thumbnail {
-            indicatorView.startAnimating()
             playView.coverView.image = thumbnail
             timeLabel.text = "00:00/\(Date(timeIntervalSince1970: ceil(duration)).timeValue)"
             tailorView.reloadData()
@@ -204,6 +214,12 @@ class MNVideoTailorController: UIViewController {
         guard isFailed else { return }
         isFailed = false
         failure("初始化视频失败")
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        guard player.isPlaying else { return }
+        player.pause()
     }
     
     private func failure(_ msg: String) {
@@ -226,101 +242,169 @@ extension MNVideoTailorController {
         
     }
     
-    //
+    /// 播放按钮点击事件
+    /// - Parameter sender: 播放/暂停按钮
     @objc func playControlTouchUpInside(_ sender: UIButton) {
-        
+        guard tailorView.isDragging == false else { return }
+        guard player.state.rawValue > MNPlayer.PlayState.failed.rawValue else { return }
+        if player.isPlaying {
+            // 暂停
+            player.pause()
+        } else if tailorView.isEnding {
+            // 结束已达到结束状态
+            UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+                guard let self = self else { return }
+                self.tailorView.pointer.alpha = 0.0
+            } completion: { [weak self] _ in
+                guard let self = self else { return }
+                self.tailorView.movePointerToBegin()
+                self.player.seek(toProgress: Float(self.tailorView.progress)) { [weak self] _ in
+                    UIView.animate(withDuration: self?.AnimationDuration ?? 0.0, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) {
+                        guard let self = self else { return }
+                        self.tailorView.pointer.alpha = 1.0
+                    } completion: { _ in
+                        guard let self = self else { return }
+                        self.player.play()
+                    }
+
+                }
+            }
+        } else {
+            // 播放
+            player.play()
+        }
     }
 }
 
-// MARK: - MNVideoTailorViewDelegate
-extension MNVideoTailorController: MNVideoTailorViewDelegate {
+// MARK: - MNTailorViewDelegate
+extension MNVideoTailorController: MNTailorViewDelegate {
     
-    func tailorViewBeginLoadThumbnail(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewBeginLoadThumbnail(_ tailorView: MNTailorView) {
+        indicatorView.startAnimating()
     }
     
-    func tailorViewLoadThumbnailNotSatisfy(_ tailorView: MNVideoTailorView) {
+    func tailorViewLoadThumbnailNotSatisfy(_ tailorView: MNTailorView) {
         indicatorView.stopAnimating()
         failure("视频不满足裁剪条件")
     }
     
-    func tailorViewDidEndLoadThumbnail(_ tailorView: MNVideoTailorView) {
-        tailorView.isUserInteractionEnabled = true
-        indicatorView.startAnimating()
-        player.play()
-    }
-    
-    func tailorViewLoadThumbnailsFailed(_ tailorView: MNVideoTailorView) {
+    func tailorViewLoadThumbnailsFailed(_ tailorView: MNTailorView) {
         indicatorView.stopAnimating()
         failure("无法加载视频截图")
     }
     
-    func tailorViewLeftHandlerBeginDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewDidEndLoadThumbnail(_ tailorView: MNTailorView) {
+        player.play()
     }
     
-    func tailorViewLeftHandlerDidDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewLeftHandlerBeginDragging(_ tailorView: MNTailorView) {
+        tailorView.isPlaying = player.isPlaying
+        player.pause()
+        timeView.isHidden = false
+        timeView.update(duration: duration*tailorView.begin)
+        timeView.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
     }
     
-    func tailorViewLeftHandlerEndDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewLeftHandlerDidDragging(_ tailorView: MNTailorView) {
+        let begin = tailorView.begin
+        player.seek(toProgress: Float(begin), completion: nil)
+        timeView.update(duration: duration*begin)
+        timeView.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
     }
     
-    func tailorViewRightHandlerBeginDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewLeftHandlerEndDragging(_ tailorView: MNTailorView) {
+        timeView.isHidden = true
+        player.seek(toProgress: Float(tailorView.begin)) { [weak self] finish in
+            guard finish, let self = self, self.tailorView.isPlaying else { return }
+            self.player.play()
+        }
     }
     
-    func tailorViewRightHandlerDidDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewRightHandlerBeginDragging(_ tailorView: MNTailorView) {
+        tailorView.isPlaying = player.isPlaying
+        player.pause()
+        timeView.isHidden = false
+        timeView.update(duration: duration*tailorView.end)
+        timeView.midX = tailorView.tailorHandler.rightHandler.frame.minX + tailorView.frame.minX
     }
     
-    func tailorViewRightHandlerEndDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewRightHandlerDidDragging(_ tailorView: MNTailorView) {
+        let end = tailorView.end
+        player.seek(toProgress: Float(end), completion: nil)
+        timeView.update(duration: duration*end)
+        timeView.midX = tailorView.tailorHandler.rightHandler.frame.minX + tailorView.frame.minX
     }
     
-    func tailorViewPointerBeginDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewRightHandlerEndDragging(_ tailorView: MNTailorView) {
+        timeView.isHidden = true
+        player.seek(toProgress: Float(tailorView.end)) { [weak self] finish in
+            guard finish, let self = self, self.tailorView.isPlaying, self.tailorView.isEnding == false else { return }
+            self.player.play()
+        }
     }
     
-    func tailorViewPointerDidDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewPointerBeginDragging(_ tailorView: MNTailorView) {
+        tailorView.isPlaying = player.isPlaying
+        player.pause()
+        timeView.isHidden = false
+        timeView.update(duration: tailorView.progress*duration)
+        timeView.midX = tailorView.pointer.frame.midX + tailorView.frame.minX
     }
     
-    func tailorViewPointerDidEndDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewPointerDidDragging(_ tailorView: MNTailorView) {
+        let progress = tailorView.progress
+        player.seek(toProgress: Float(progress), completion: nil)
+        timeView.update(duration: progress*duration)
+        timeView.midX = tailorView.pointer.frame.midX + tailorView.frame.minX
     }
     
-    func tailorViewBeginDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewPointerDidEndDragging(_ tailorView: MNTailorView) {
+        timeView.isHidden = true
+        player.seek(toProgress: Float(tailorView.progress)) { [weak self] finish in
+            guard finish, let self = self, self.tailorView.isPlaying else { return }
+            self.player.play()
+        }
     }
     
-    func tailorViewDidDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewBeginDragging(_ tailorView: MNTailorView) {
+        tailorView.isPlaying = player.isPlaying
+        player.pause()
+        timeView.isHidden = false
+        timeView.update(duration: duration*tailorView.begin)
+        timeView.midX = tailorView.tailorHandler.leftHandler.frame.maxX + tailorView.frame.minX
     }
     
-    func tailorViewDidEndDragging(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewDidDragging(_ tailorView: MNTailorView) {
+        let begin = tailorView.begin
+        player.seek(toProgress: Float(begin), completion: nil)
+        timeView.update(duration: duration*begin)
     }
     
-    func tailorViewDidEndPlaying(_ tailorView: MNVideoTailorView) {
-        
+    func tailorViewDidEndDragging(_ tailorView: MNTailorView) {
+        timeView.isHidden = true
+        player.seek(toProgress: Float(tailorView.begin)) { [weak self] finish in
+            guard finish, let self = self, self.tailorView.isPlaying else { return }
+            self.player.play()
+        }
+    }
+    
+    func tailorViewShouldEndPlaying(_ tailorView: MNTailorView) {
+        guard player.state != .finished else { return }
+        player.pause()
     }
 }
 
 // MARK: - MNPlayerDelegate
 extension MNVideoTailorController: MNPlayerDelegate {
     
-    func player(_ player: MNPlayer, didPlayFailure error: Error) {
-        indicatorView.stopAnimating()
-        failure("视频播放失败")
-    }
-    
     func player(didChangeState player: MNPlayer) {
         if player.isPlaying {
             badgeView.isHighlighted = true
             if playView.coverView.alpha == 1.0 {
                 indicatorView.stopAnimating()
+                tailorView.isUserInteractionEnabled = true
+                playControl.isUserInteractionEnabled = true
+                doneButton.isUserInteractionEnabled = true
                 UIView.animate(withDuration: 0.18, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                     guard let self = self else { return }
                     self.playView.coverView.alpha = 0.0
@@ -329,5 +413,15 @@ extension MNVideoTailorController: MNPlayerDelegate {
         } else {
             badgeView.isHighlighted = false
         }
+    }
+    
+    func player(didPlayTimeInterval player: MNPlayer) {
+        guard player.isPlaying else { return }
+        tailorView.progress = Double(player.progress)
+    }
+    
+    func player(_ player: MNPlayer, didPlayFailure error: Error) {
+        indicatorView.stopAnimating()
+        failure("视频播放失败")
     }
 }

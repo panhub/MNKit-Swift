@@ -13,6 +13,7 @@
 		3B3E02AC28B7F76B0062AB8A /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02AB28B7F76B0062AB8A /* CollectionViewCell.swift */; };
 		3B5CE56628B3674A00527F55 /* UITableViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */; };
 		3B5CE56B28B36F5700527F55 /* MNEditingObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56A28B36F5700527F55 /* MNEditingObserver.swift */; };
+		3B7FBD0528E080850057B0A4 /* MNTailorTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B7FBD0428E080850057B0A4 /* MNTailorTimeView.swift */; };
 		3BA6550428B3C48300BD54BA /* UITableView+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */; };
 		3BA6550628B3CE9300BD54BA /* MNEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550528B3CE9300BD54BA /* MNEditingView.swift */; };
 		3BA6550828B3CF3F00BD54BA /* MNEditingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */; };
@@ -20,8 +21,8 @@
 		3BC67631289A1CDA00E57BA1 /* MNComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC67630289A1CDA00E57BA1 /* MNComponents.swift */; };
 		3BC9B8D428D023F6003A6D40 /* MNButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC9B8D328D023F6003A6D40 /* MNButton.swift */; };
 		3BD0F5B128DD9E1E008C195E /* MNVideoTailorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B028DD9E1E008C195E /* MNVideoTailorController.swift */; };
-		3BD0F5B328DD9E4E008C195E /* MNVideoTailorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B228DD9E4E008C195E /* MNVideoTailorView.swift */; };
-		3BD0F5B528DD9E84008C195E /* MNVideoKeyfram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B428DD9E84008C195E /* MNVideoKeyfram.swift */; };
+		3BD0F5B328DD9E4E008C195E /* MNTailorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B228DD9E4E008C195E /* MNTailorView.swift */; };
+		3BD0F5B528DD9E84008C195E /* MNTailorKeyfram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B428DD9E84008C195E /* MNTailorKeyfram.swift */; };
 		3BD0F5B728DD9EAB008C195E /* MNTailorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B628DD9EAB008C195E /* MNTailorHandler.swift */; };
 		3BDB6D6328990C940023D5E3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6228990C940023D5E3 /* AppDelegate.swift */; };
 		3BDB6D6C28990C950023D5E3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6B28990C950023D5E3 /* Assets.xcassets */; };
@@ -219,6 +220,7 @@
 		3B3E02AB28B7F76B0062AB8A /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
 		3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+MNEditing.swift"; sourceTree = "<group>"; };
 		3B5CE56A28B36F5700527F55 /* MNEditingObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingObserver.swift; sourceTree = "<group>"; };
+		3B7FBD0428E080850057B0A4 /* MNTailorTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorTimeView.swift; sourceTree = "<group>"; };
 		3BA6550328B3C48300BD54BA /* UITableView+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+MNEditing.swift"; sourceTree = "<group>"; };
 		3BA6550528B3CE9300BD54BA /* MNEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingView.swift; sourceTree = "<group>"; };
 		3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingOptions.swift; sourceTree = "<group>"; };
@@ -226,8 +228,8 @@
 		3BC67630289A1CDA00E57BA1 /* MNComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNComponents.swift; sourceTree = "<group>"; };
 		3BC9B8D328D023F6003A6D40 /* MNButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNButton.swift; sourceTree = "<group>"; };
 		3BD0F5B028DD9E1E008C195E /* MNVideoTailorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNVideoTailorController.swift; sourceTree = "<group>"; };
-		3BD0F5B228DD9E4E008C195E /* MNVideoTailorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNVideoTailorView.swift; sourceTree = "<group>"; };
-		3BD0F5B428DD9E84008C195E /* MNVideoKeyfram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNVideoKeyfram.swift; sourceTree = "<group>"; };
+		3BD0F5B228DD9E4E008C195E /* MNTailorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorView.swift; sourceTree = "<group>"; };
+		3BD0F5B428DD9E84008C195E /* MNTailorKeyfram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorKeyfram.swift; sourceTree = "<group>"; };
 		3BD0F5B628DD9EAB008C195E /* MNTailorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorHandler.swift; sourceTree = "<group>"; };
 		3BDB6D5F28990C940023D5E3 /* MNTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MNTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BDB6D6228990C940023D5E3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -828,9 +830,10 @@
 				3BDB6FE028992DFA0023D5E3 /* MNAssetCell.swift */,
 				3BDB6FE128992DFA0023D5E3 /* MNAssetPickerNavBar.swift */,
 				3BDB6FE228992DFA0023D5E3 /* MNAssetPickerToolBar.swift */,
-				3BD0F5B228DD9E4E008C195E /* MNVideoTailorView.swift */,
-				3BD0F5B428DD9E84008C195E /* MNVideoKeyfram.swift */,
+				3BD0F5B228DD9E4E008C195E /* MNTailorView.swift */,
+				3BD0F5B428DD9E84008C195E /* MNTailorKeyfram.swift */,
 				3BD0F5B628DD9EAB008C195E /* MNTailorHandler.swift */,
+				3B7FBD0428E080850057B0A4 /* MNTailorTimeView.swift */,
 			);
 			path = view;
 			sourceTree = "<group>";
@@ -1032,6 +1035,7 @@
 				3BDB707728992DFA0023D5E3 /* Date+MNExtension.swift in Sources */,
 				3BDB701C28992DFA0023D5E3 /* MNAuthorization.swift in Sources */,
 				3BDB6F96289928E50023D5E3 /* MNEmptyView.swift in Sources */,
+				3B7FBD0528E080850057B0A4 /* MNTailorTimeView.swift in Sources */,
 				3BDB706128992DFA0023D5E3 /* DateFormatter+MNExtension.swift in Sources */,
 				3BDB705A28992DFA0023D5E3 /* AVError.swift in Sources */,
 				3BDB703C28992DFA0023D5E3 /* MNAsset.swift in Sources */,
@@ -1053,7 +1057,7 @@
 				3BDB704B28992DFA0023D5E3 /* MNStateView.swift in Sources */,
 				3BDB708128992DFA0023D5E3 /* Data+MNImageFormat.swift in Sources */,
 				3BDB701828992DFA0023D5E3 /* MNSecureOptions.swift in Sources */,
-				3BD0F5B328DD9E4E008C195E /* MNVideoTailorView.swift in Sources */,
+				3BD0F5B328DD9E4E008C195E /* MNTailorView.swift in Sources */,
 				3BDB6F6C289928E40023D5E3 /* HTTPError.swift in Sources */,
 				3BDB702128992DFA0023D5E3 /* MNAlertQueue.swift in Sources */,
 				3BDB6E4928990E410023D5E3 /* MNExtension.swift in Sources */,
@@ -1078,7 +1082,7 @@
 				3BDB6F70289928E40023D5E3 /* UserDefaultsWrapper.swift in Sources */,
 				3BDB6F67289928E40023D5E3 /* HTTPSerializer.swift in Sources */,
 				3BDB705328992DFA0023D5E3 /* MNAssetPickerToolBar.swift in Sources */,
-				3BD0F5B528DD9E84008C195E /* MNVideoKeyfram.swift in Sources */,
+				3BD0F5B528DD9E84008C195E /* MNTailorKeyfram.swift in Sources */,
 				3BDB706228992DFA0023D5E3 /* CGSize+MNExtension.swift in Sources */,
 				3BA6550828B3CF3F00BD54BA /* MNEditingOptions.swift in Sources */,
 				3BDB6F7C289928E40023D5E3 /* MNTransitionHelper.swift in Sources */,
