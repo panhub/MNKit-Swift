@@ -356,10 +356,13 @@ extension MNTailorViewController {
             view.showProgressToast("视频导出中")
             session.outputFileType = .mp4
             session.shouldOptimizeForNetworkUse = true
+            session.outputURL = URL(fileURLWithPath: exportingPath)
             session.timeRange = session.asset.timeRange(fromProgress: begin, toProgress: end)
             session.exportAsynchronously { [weak self] progress in
-                guard let self = self else { return }
-                self.view.updateToast(progress: CGFloat(progress))
+                DispatchQueue.main.async {
+                    guard let self = self else { return }
+                    self.view.updateToast(progress: CGFloat(progress))
+                }
             } completionHandler: { [weak self] status, _ in
                 DispatchQueue.main.async {
                     guard let self = self else { return }

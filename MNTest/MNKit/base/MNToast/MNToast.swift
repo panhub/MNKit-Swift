@@ -26,7 +26,7 @@ class MNToast: UIView {
     }
     /**颜色*/
     @objc enum ToastEffect: Int {
-        case dark, light, none
+        case dark, gray, none
     }
     /**显示的位置 相对于Window而言*/
     @objc enum ToastPosition: Int {
@@ -39,7 +39,7 @@ class MNToast: UIView {
     // 文字/画笔颜色
     @objc static var tintColor: UIColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
     // 弹窗颜色
-    @objc static var contentColor: UIColor = MNToast.effect == .light ? .white : (MNToast.effect == .dark ? .clear : .black)
+    @objc static var contentColor: UIColor = MNToast.effect == .gray ? .white : (MNToast.effect == .dark ? .clear : .black)
     // 背景颜色
     @objc static var backgroundColor: UIColor = .clear
     // 字体
@@ -89,6 +89,14 @@ class MNToast: UIView {
         guard let message = message, message.count > 0 else { return nil }
         return NSAttributedString(string: message, attributes: attributes)
     }
+    // 提示图案
+    let container: UIView = UIView()
+    // 提示信息
+    lazy var label: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 0
+        return label
+    }()
     // 弹窗内容
     lazy var contentView: UIView = {
         let contentView = UIView()
@@ -102,7 +110,7 @@ class MNToast: UIView {
             effect.frame = contentView.bounds
             effect.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             contentView.addSubview(effect)
-        case .light:
+        case .gray:
             let effect = UIView()
             effect.frame = contentView.bounds
             effect.backgroundColor = UIColor(white: 0.0, alpha: 0.12)
@@ -110,23 +118,8 @@ class MNToast: UIView {
             contentView.addSubview(effect)
         default: break
         }
-        addSubview(contentView)
         return contentView
     }()
-    // 提示信息
-    lazy var label: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        contentView.addSubview(label)
-        return label
-    }()
-    // 提示图案
-    lazy var container: UIView = {
-        let container = UIView()
-        contentView.addSubview(container)
-        return container
-    }()
-    
     // 禁止外部直接实例化
     private override init(frame: CGRect) {
         super.init(frame: frame)
@@ -154,12 +147,15 @@ class MNToast: UIView {
         let toast = cls.init()
         toast.style = style
         toast.message = status
-        toast.createView()
         return toast
     }
     
     // 创建子视图
-    func createView() {}
+    func createView() {
+        contentView.addSubview(container)
+        contentView.addSubview(label)
+        addSubview(contentView)
+    }
     
     // 开始动画
     func start() {}
@@ -229,7 +225,6 @@ class MNToast: UIView {
 // MARK: - 显示
 extension MNToast {
     func show(in view: UIView? = MNToast.window) {
-        if let _ = superview { return }
         guard let superview = view else { return }
         frame = superview.bounds
         superview.addSubview(self);

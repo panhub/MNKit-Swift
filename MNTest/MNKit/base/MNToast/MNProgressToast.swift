@@ -21,20 +21,19 @@ class MNProgressToast: MNToast {
         
         container.size = CGSize(width: 46.0, height: 46.0)
         
-        let percent = UILabel(frame: container.bounds)
-        percent.font = UIFont.systemFont(ofSize: 12.0, weight: .regular)
-        percent.textColor = Self.tintColor
-        percent.textAlignment = .center
+        percent = UILabel(frame: container.bounds)
         percent.text = "0%"
         percent.numberOfLines = 1
+        percent.textAlignment = .center
+        percent.textColor = Self.tintColor
+        percent.font = UIFont.systemFont(ofSize: 13.0, weight: .medium)
         container.addSubview(percent)
-        self.percent = percent
         
         let lineWidth: CGFloat = 2.0
         
         var path = UIBezierPath(arcCenter: CGPoint(x: container.bounds.width/2.0, y: container.bounds.height/2.0), radius: (container.bounds.width - lineWidth)/2.0, startAngle: -.pi/2.0, endAngle: .pi + .pi/2.0, clockwise: true)
         
-        let shape = CAShapeLayer()
+        shape = CAShapeLayer()
         shape.frame = container.bounds
         shape.contentsScale = UIScreen.main.scale
         shape.fillColor = UIColor.clear.cgColor
@@ -45,7 +44,6 @@ class MNProgressToast: MNToast {
         shape.path = path.cgPath
         shape.strokeEnd = 0.0
         container.layer.addSublayer(shape)
-        self.shape = shape
         
         // 定义对钩范围
         let rect = container.bounds.inset(by: UIEdgeInsets(top: 12.0, left: 5.0, bottom: 12.0, right: 5.0))
@@ -55,7 +53,7 @@ class MNProgressToast: MNToast {
         path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY - lineWidth/2.0))
         path.addLine(to: CGPoint(x: rect.maxX - lineWidth/2.0, y: rect.minY + lineWidth/2.0))
         
-        let complete = CAShapeLayer()
+        complete = CAShapeLayer()
         complete.frame = container.bounds
         complete.contentsScale = UIScreen.main.scale
         complete.fillColor = UIColor.clear.cgColor
@@ -68,7 +66,6 @@ class MNProgressToast: MNToast {
         complete.strokeEnd = 0.17
         complete.isHidden = true
         container.layer.addSublayer(complete)
-        self.complete = complete
     }
     
     // 更新进度
@@ -79,9 +76,11 @@ class MNProgressToast: MNToast {
         CATransaction.setDisableActions(true)
         shape.strokeEnd = pro
         CATransaction.commit()
-        percent.text = "\(NSNumber(value: Int(pro*100.0)).stringValue)%"
-        //superview?.bringSubviewToFront(self)
-        if pro >= 1.0 {
+        let behavior: NSDecimalNumberHandler = NSDecimalNumberHandler(roundingMode: .down, scale: 0, raiseOnExactness: false, raiseOnOverflow: false, raiseOnUnderflow: false, raiseOnDivideByZero: false)
+        let result: NSDecimalNumber = NSDecimalNumber(value: pro).multiplying(by: NSDecimalNumber(value: 100.0), withBehavior: behavior)
+        let value: Int = result.intValue
+        percent.text = "\(value)%"
+        if value >= 100 {
             complete.isHidden = false
             self.perform(#selector(self.success), with: nil, afterDelay: 0.5)
         }

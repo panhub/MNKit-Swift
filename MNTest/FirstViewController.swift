@@ -44,9 +44,14 @@ class FirstViewController: MNBaseViewController {
         picker.present { [weak self] _, assets in
             guard let self = self else { return }
             let vc = MNTailorViewController(videoPath: assets.first!.content as! String)
-            //vc.delegate = self
+            vc.delegate = self
             self.navigationController?.pushViewController(vc, animated: true)
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        //view.showProgressToast("测试进度", progress: 0.35)
     }
 
     /*
@@ -58,12 +63,15 @@ class FirstViewController: MNBaseViewController {
         // Pass the selected object to the new view controller.
     }
     */
-
 }
 
-//extension FirstViewController: MNTailorViewControllerDelegate {
-//
-//    func tailorControllerDidCancel() {
-//        print("--------")
-//    }
-//}
+extension FirstViewController: MNTailorControllerDelegate {
+
+    func tailorControllerDidCancel() {
+        print("--------")
+    }
+    
+    func tailorController(_ tailorController: MNTailorViewController, didTailorVideoAtPath videoPath: String) {
+        print(videoPath)
+    }
+}

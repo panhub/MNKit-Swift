@@ -13,6 +13,7 @@ class MNMsgToast: MNToast {
 
     override func createView() {
         super.createView()
+        container.isHidden = true
     }
     
     override func updateSubviews() {

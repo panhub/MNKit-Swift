@@ -39,9 +39,7 @@ class MNAssetExportSession: NSObject {
     /**系统输出使用**/
     private weak var exportSession: AVAssetExportSession?
     /**内部使用**/
-    private lazy var composition: AVMutableComposition = {
-        return AVMutableComposition()
-    }()
+    private let composition: AVMutableComposition = AVMutableComposition()
     /**错误信息**/
     private(set) var error: AVError?
     /**进度**/
@@ -192,7 +190,7 @@ class MNAssetExportSession: NSObject {
         }
         self.exportSession = exportSession
         // 监听
-        let displayLink = CADisplayLink(target: self, selector: #selector(tip(displayLink:)))
+        let displayLink = CADisplayLink(target: self, selector: #selector(tip(_:)))
         displayLink.isPaused = true
         displayLink.add(to: .main, forMode: .common)
         self.displayLink = displayLink
@@ -246,7 +244,7 @@ class MNAssetExportSession: NSObject {
         }
     }
     
-    @objc private func tip(displayLink: CADisplayLink) {
+    @objc private func tip(_ displayLink: CADisplayLink) {
         guard let exportSession = exportSession, displayLink.isPaused == false else { return }
         progress = exportSession.progress
         progressHandler?(progress)
