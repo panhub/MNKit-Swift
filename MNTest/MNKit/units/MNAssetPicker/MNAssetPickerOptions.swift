@@ -19,7 +19,7 @@ import Foundation
      @param picker 资源选择器
      @param assets 资源数组
      */
-    @objc optional func assetPicker(_ picker: MNAssetPicker, didFinishPicking assets: [MNAsset]) -> Void
+    func assetPicker(_ picker: MNAssetPicker, didFinishPicking assets: [MNAsset]) -> Void
 }
 
 /**

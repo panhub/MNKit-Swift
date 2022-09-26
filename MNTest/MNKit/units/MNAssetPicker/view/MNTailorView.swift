@@ -16,7 +16,7 @@ protocol MNTailorViewDelegate: NSObjectProtocol {
     
     func tailorViewDidEndLoadThumbnail(_ tailorView: MNTailorView) -> Void
     
-    func tailorViewLoadThumbnailsFailed(_ tailorView: MNTailorView) -> Void
+    func tailorViewLoadThumbnailFailed(_ tailorView: MNTailorView) -> Void
     
     func tailorViewLeftHandlerBeginDragging(_ tailorView: MNTailorView) -> Void
     
@@ -164,15 +164,19 @@ class MNTailorView: UIView {
         
         let videoPath: String = videoPath
         
-        let duration: TimeInterval = MNAssetExporter.duration(mediaAtPath: videoPath)
-        guard duration > minTailorDuration else {
-            delegate?.tailorViewLoadThumbnailNotSatisfy(self)
+        var naturalSize = MNAssetExporter.naturalSize(videoAtPath: videoPath)
+        guard naturalSize != .zero else {
+            delegate?.tailorViewLoadThumbnailFailed(self)
             return
         }
         
-        var naturalSize = MNAssetExporter.naturalSize(videoAtPath: videoPath)
-        guard naturalSize != .zero else {
-            delegate?.tailorViewLoadThumbnailsFailed(self)
+        let duration: TimeInterval = MNAssetExporter.duration(mediaAtPath: videoPath)
+        guard duration > 0.0 else {
+            delegate?.tailorViewLoadThumbnailFailed(self)
+            return
+        }
+        guard duration > minTailorDuration else {
+            delegate?.tailorViewLoadThumbnailNotSatisfy(self)
             return
         }
         

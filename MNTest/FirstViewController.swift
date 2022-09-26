@@ -43,7 +43,8 @@ class FirstViewController: MNBaseViewController {
         picker.options.maxPickingCount = 1
         picker.present { [weak self] _, assets in
             guard let self = self else { return }
-            let vc = MNVideoTailorController(videoPath: assets.first!.content as! String)
+            let vc = MNTailorViewController(videoPath: assets.first!.content as! String)
+            //vc.delegate = self
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -59,3 +60,10 @@ class FirstViewController: MNBaseViewController {
     */
 
 }
+
+//extension FirstViewController: MNTailorViewControllerDelegate {
+//
+//    func tailorControllerDidCancel() {
+//        print("--------")
+//    }
+//}

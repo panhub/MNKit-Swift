@@ -52,20 +52,19 @@ extension AVAsset {
         return asset.track(mediaType: type)
     }
     
-    func timeRange(fromProgress begin: Double, toProgress end: Double) -> CMTimeRange {
-        let duration: Float64 = CMTimeGetSeconds(duration)
-        return timeRange(fromSeconds: duration*begin, toSeconds: duration*end)
+    func timeRange(fromProgress from: Double, toProgress to: Double) -> CMTimeRange {
+        guard from >= 0.0, to <= 1.0, to > from else { return .zero }
+        let start = CMTimeMultiplyByFloat64(duration, multiplier: Float64(from))
+        let duration = CMTimeMultiplyByFloat64(duration, multiplier: Float64(to - from))
+        return CMTimeRange(start: start, duration: duration)
     }
     
-    func timeRange(fromSeconds: Double, toSeconds: Double) -> CMTimeRange {
+    func timeRange(fromSeconds from: Double, toSeconds to: Double) -> CMTimeRange {
         let time: CMTime = duration
         let duration: Double = Double(CMTimeGetSeconds(time))
-        let from = min(duration - 1.0, max(0.0, duration))
-        let end = max(1.0, min(toSeconds, duration))
+        let begin = min(duration, max(0.0, from))
+        let end = min(duration, max(begin, to))
         guard duration > 0.0, end > from else { return .zero }
-        var timeRange: CMTimeRange = .zero
-        timeRange.start = CMTimeAdd(.zero, CMTime(seconds: from, preferredTimescale: time.timescale))
-        timeRange.duration = CMTimeAdd(.zero, CMTime(seconds: end - from, preferredTimescale: time.timescale))
-        return timeRange
+        return CMTimeRange(start: CMTime(seconds: begin, preferredTimescale: time.timescale), duration: CMTime(seconds: end - begin, preferredTimescale: time.timescale))
     }
 }

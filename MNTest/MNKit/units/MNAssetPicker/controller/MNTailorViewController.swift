@@ -1,14 +1,28 @@
 //
-//  MNVideoTailorController.swift
+//  MNTailorViewController.swift
 //  MNTest
 //
 //  Created by 冯盼 on 2022/9/23.
-//  视频裁剪
+//  视频裁剪控制器
 
 import UIKit
 import AVFoundation
 
-class MNVideoTailorController: UIViewController {
+@objc protocol MNTailorControllerDelegate: NSObjectProtocol {
+    /// 取消裁剪控制器
+    @objc optional func tailorControllerDidCancel() -> Void
+    /// 裁剪结束回调
+    /// - Parameters:
+    ///   - tailorController: 裁剪控制器
+    ///   - videoPath: 视频路径
+    func tailorController(_ tailorController: MNTailorViewController, didTailorVideoAtPath videoPath: String) -> Void
+}
+
+class MNTailorViewController: UIViewController {
+    /// 事件代理
+    weak var delegate: MNTailorControllerDelegate?
+    /// 视频导出路径
+    var exportingPath: String?
     /// 视频绝对路径
     private var videoPath: String = ""
     /// 是否失败
@@ -122,17 +136,14 @@ class MNVideoTailorController: UIViewController {
         closeButton.minX = 15.0
         closeButton.maxY = view.frame.height - max(15.0, MN_TAB_SAFE_HEIGHT)
         closeButton.setBackgroundImage(MNAssetPicker.image(named: "player_close"), for: .normal)
-        closeButton.setBackgroundImage(closeButton.currentBackgroundImage, for: .highlighted)
         closeButton.addTarget(self, action: #selector(closeButtonTouchUpInside(_:)), for: .touchUpInside)
         view.addSubview(closeButton)
         
         doneButton.size = CGSize(width: 28.0, height: 28.0)
         doneButton.midY = closeButton.frame.midY
         doneButton.maxX = view.frame.width - closeButton.frame.minX
-        doneButton.setBackgroundImage(MNAssetPicker.image(named: "player_done"), for: .normal)
-        doneButton.setBackgroundImage(closeButton.currentBackgroundImage, for: .highlighted)
-        doneButton.setBackgroundImage(closeButton.currentBackgroundImage, for: .disabled)
         doneButton.isUserInteractionEnabled = false
+        doneButton.setBackgroundImage(MNAssetPicker.image(named: "player_done"), for: .normal)
         doneButton.addTarget(self, action: #selector(doneButtonTouchUpInside(_:)), for: .touchUpInside)
         view.addSubview(doneButton)
         
@@ -232,14 +243,16 @@ class MNVideoTailorController: UIViewController {
 }
 
 // MARK: - Event
-extension MNVideoTailorController {
+extension MNTailorViewController {
     
+    /// 关闭按钮点击事件
+    /// - Parameter sender: 按钮
     @objc func closeButtonTouchUpInside(_ sender: UIButton) {
-        pop()
-    }
-    
-    @objc func doneButtonTouchUpInside(_ sender: UIButton) {
-        
+        if let delegate = delegate, delegate.responds(to: #selector(delegate.tailorControllerDidCancel)) {
+            delegate.tailorControllerDidCancel?()
+        } else {
+            pop()
+        }
     }
     
     /// 播放按钮点击事件
@@ -266,7 +279,6 @@ extension MNVideoTailorController {
                         guard let self = self else { return }
                         self.player.play()
                     }
-
                 }
             }
         } else {
@@ -274,10 +286,97 @@ extension MNVideoTailorController {
             player.play()
         }
     }
+    
+    /// 确定按钮点击事件
+    /// - Parameter sender: 按钮
+    @objc func doneButtonTouchUpInside(_ sender: UIButton) {
+        if player.isPlaying { player.pause() }
+        let exportingPath: String = exportingPath ?? "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/video/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp4"
+        if FileManager.default.fileExists(atPath: exportingPath) {
+            do {
+                try FileManager.default.removeItem(atPath: exportingPath)
+            } catch {
+                #if DEBUG
+                print("删除原文件失败:\(error)")
+                #endif
+                view.showMsgToast("视频裁剪失败")
+                return
+            }
+        }
+        let begin = tailorView.begin
+        let end = tailorView.end
+        let videoPath = videoPath
+        if (end - begin) >= 0.99 {
+            // 原视频 拷贝视频即可
+            view.showActivityToast("视频导出中")
+            DispatchQueue.global().async { [weak self] in
+                /*
+                let url: URL = URL(fileURLWithPath: exportingPath)
+                do {
+                    try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+                } catch {
+                    #if DEBUG
+                    print("创建文件夹失败:\(error)")
+                    #endif
+                    DispatchQueue.main.async {
+                        self?.view.showMsgToast("创建文件夹失败")
+                    }
+                    return
+                }
+                do {
+                    try FileManager.default.copyItem(atPath: videoPath, toPath: exportingPath)
+                } catch {
+                    #if DEBUG
+                    print("拷贝视频失败:\(error)")
+                    #endif
+                    DispatchQueue.main.async {
+                        self?.view.showMsgToast("拷贝视频失败")
+                    }
+                    return
+                }
+                */
+                guard MNFileHandle.copyItem(atPath: videoPath, toPath: exportingPath) else {
+                    DispatchQueue.main.async {
+                        self?.view.showMsgToast("拷贝视频失败")
+                    }
+                    return
+                }
+                // 回调结果
+                DispatchQueue.main.async {
+                    guard let self = self else { return }
+                    self.view.closeToast()
+                    self.delegate?.tailorController(self, didTailorVideoAtPath: exportingPath)
+                }
+            }
+        } else {
+            guard let session = MNAssetExportSession(fileAtPath: videoPath) else {
+                view.showMsgToast("解析视频文件失败")
+                return
+            }
+            view.showProgressToast("视频导出中")
+            session.outputFileType = .mp4
+            session.shouldOptimizeForNetworkUse = true
+            session.timeRange = session.asset.timeRange(fromProgress: begin, toProgress: end)
+            session.exportAsynchronously { [weak self] progress in
+                guard let self = self else { return }
+                self.view.updateToast(progress: CGFloat(progress))
+            } completionHandler: { [weak self] status, _ in
+                DispatchQueue.main.async {
+                    guard let self = self else { return }
+                    if status == .completed {
+                        self.view.closeToast()
+                        self.delegate?.tailorController(self, didTailorVideoAtPath: exportingPath)
+                    } else {
+                        self.view.showMsgToast("视频裁剪失败")
+                    }
+                }
+            }
+        }
+    }
 }
 
 // MARK: - MNTailorViewDelegate
-extension MNVideoTailorController: MNTailorViewDelegate {
+extension MNTailorViewController: MNTailorViewDelegate {
     
     func tailorViewBeginLoadThumbnail(_ tailorView: MNTailorView) {
         indicatorView.startAnimating()
@@ -285,12 +384,12 @@ extension MNVideoTailorController: MNTailorViewDelegate {
     
     func tailorViewLoadThumbnailNotSatisfy(_ tailorView: MNTailorView) {
         indicatorView.stopAnimating()
-        failure("视频不满足裁剪条件")
+        failure("视频不满足裁剪时长")
     }
     
-    func tailorViewLoadThumbnailsFailed(_ tailorView: MNTailorView) {
+    func tailorViewLoadThumbnailFailed(_ tailorView: MNTailorView) {
         indicatorView.stopAnimating()
-        failure("无法加载视频截图")
+        failure("无法解析视频文件")
     }
     
     func tailorViewDidEndLoadThumbnail(_ tailorView: MNTailorView) {
@@ -395,7 +494,7 @@ extension MNVideoTailorController: MNTailorViewDelegate {
 }
 
 // MARK: - MNPlayerDelegate
-extension MNVideoTailorController: MNPlayerDelegate {
+extension MNTailorViewController: MNPlayerDelegate {
     
     func player(didChangeState player: MNPlayer) {
         if player.isPlaying {

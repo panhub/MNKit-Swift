@@ -20,7 +20,7 @@
 		3BA6550A28B422A000BD54BA /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550928B422A000BD54BA /* TableViewCell.swift */; };
 		3BC67631289A1CDA00E57BA1 /* MNComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC67630289A1CDA00E57BA1 /* MNComponents.swift */; };
 		3BC9B8D428D023F6003A6D40 /* MNButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC9B8D328D023F6003A6D40 /* MNButton.swift */; };
-		3BD0F5B128DD9E1E008C195E /* MNVideoTailorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B028DD9E1E008C195E /* MNVideoTailorController.swift */; };
+		3BD0F5B128DD9E1E008C195E /* MNTailorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B028DD9E1E008C195E /* MNTailorViewController.swift */; };
 		3BD0F5B328DD9E4E008C195E /* MNTailorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B228DD9E4E008C195E /* MNTailorView.swift */; };
 		3BD0F5B528DD9E84008C195E /* MNTailorKeyfram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B428DD9E84008C195E /* MNTailorKeyfram.swift */; };
 		3BD0F5B728DD9EAB008C195E /* MNTailorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B628DD9EAB008C195E /* MNTailorHandler.swift */; };
@@ -227,7 +227,7 @@
 		3BA6550928B422A000BD54BA /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		3BC67630289A1CDA00E57BA1 /* MNComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNComponents.swift; sourceTree = "<group>"; };
 		3BC9B8D328D023F6003A6D40 /* MNButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNButton.swift; sourceTree = "<group>"; };
-		3BD0F5B028DD9E1E008C195E /* MNVideoTailorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNVideoTailorController.swift; sourceTree = "<group>"; };
+		3BD0F5B028DD9E1E008C195E /* MNTailorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorViewController.swift; sourceTree = "<group>"; };
 		3BD0F5B228DD9E4E008C195E /* MNTailorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorView.swift; sourceTree = "<group>"; };
 		3BD0F5B428DD9E84008C195E /* MNTailorKeyfram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorKeyfram.swift; sourceTree = "<group>"; };
 		3BD0F5B628DD9EAB008C195E /* MNTailorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorHandler.swift; sourceTree = "<group>"; };
@@ -791,7 +791,7 @@
 				3BDB6FC428992DFA0023D5E3 /* MNCameraController.swift */,
 				3BDB6FC528992DFA0023D5E3 /* MNAssetPickerController.swift */,
 				3BDB6FC628992DFA0023D5E3 /* MNAssetPreviewController.swift */,
-				3BD0F5B028DD9E1E008C195E /* MNVideoTailorController.swift */,
+				3BD0F5B028DD9E1E008C195E /* MNTailorViewController.swift */,
 			);
 			path = controller;
 			sourceTree = "<group>";
@@ -1175,7 +1175,7 @@
 				3BDB6F5B289928E40023D5E3 /* MNInfoToast.swift in Sources */,
 				3BDB702A28992DFA0023D5E3 /* MNPageSegmentCell.swift in Sources */,
 				3BDB703428992DFA0023D5E3 /* HapticFeedback.swift in Sources */,
-				3BD0F5B128DD9E1E008C195E /* MNVideoTailorController.swift in Sources */,
+				3BD0F5B128DD9E1E008C195E /* MNTailorViewController.swift in Sources */,
 				3BDB706E28992DFA0023D5E3 /* UIImage+MNAnimated.swift in Sources */,
 				3BDB6F6D289928E40023D5E3 /* HTTPQuery.swift in Sources */,
 				3BDB701B28992DFA0023D5E3 /* MNSlider.swift in Sources */,

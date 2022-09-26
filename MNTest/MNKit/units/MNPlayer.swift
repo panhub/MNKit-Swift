@@ -362,6 +362,7 @@ extension MNPlayer {
 
 // MARK: - Seek
 extension MNPlayer {
+    
     func seek(toProgress progress: Float, completion: ((Bool)->Void)?) {
         guard let currentItem = player.currentItem, currentItem.status == .readyToPlay else {
             completion?(false)
@@ -376,8 +377,7 @@ extension MNPlayer {
             completion?(false)
             return
         }
-        let progress = Float64(seconds)/CMTimeGetSeconds(currentItem.duration)
-        let time = CMTimeMultiplyByFloat64(currentItem.duration, multiplier: Float64(progress))
+        let time = CMTime(seconds: seconds, preferredTimescale: currentItem.duration.timescale)
         player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero, completionHandler: completion ?? { _ in })
     }
 }

@@ -70,8 +70,7 @@ extension MNAssetExporter {
         generator.requestedTimeToleranceBefore = .zero
         generator.appliesPreferredTrackTransform = true
         if maximumSize != .zero { generator.maximumSize = maximumSize }
-        let time = CMTimeMultiplyByFloat64(videoAsset.duration, multiplier: max(0.01, min(0.99, Float64(seconds)/CMTimeGetSeconds(videoAsset.duration))))
-        //time.value = CMTimeValue(Double(time.timescale)*seconds)
+        let time = CMTime(seconds: seconds, preferredTimescale: videoAsset.duration.timescale)
         guard let cgImage = try?generator.copyCGImage(at: time, actualTime: nil) else { return nil }
         return UIImage(cgImage: cgImage)
     }

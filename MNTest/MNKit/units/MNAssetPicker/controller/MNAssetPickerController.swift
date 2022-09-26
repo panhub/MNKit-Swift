@@ -252,7 +252,7 @@ class MNAssetPickerController: UIViewController {
     
     private func finishPicking(assets: [MNAsset]) {
         guard let picker = navigationController as? MNAssetPicker else { return }
-        options.delegate?.assetPicker?(picker, didFinishPicking: assets)
+        options.delegate?.assetPicker(picker, didFinishPicking: assets)
     }
 }
 
