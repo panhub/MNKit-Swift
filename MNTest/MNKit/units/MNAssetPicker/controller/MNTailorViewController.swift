@@ -10,7 +10,11 @@ import AVFoundation
 
 @objc protocol MNTailorControllerDelegate: NSObjectProtocol {
     /// 取消裁剪控制器
-    @objc optional func tailorControllerDidCancel() -> Void
+    @objc optional func tailorControllerDidCancel(_ tailorController: MNTailorViewController) -> Void
+    /// 没有改变视频资源 请求复制
+    /// - Parameter tailorController: 裁剪控制器
+    /// - Returns: 是否复制视频
+    @objc optional func tailorControllerShouldCopyVideo(_ tailorController: MNTailorViewController) -> Bool
     /// 裁剪结束回调
     /// - Parameters:
     ///   - tailorController: 裁剪控制器
@@ -149,9 +153,8 @@ class MNTailorViewController: UIViewController {
         
         timeLabel.frame = CGRect(x: closeButton.frame.maxX, y: closeButton.frame.minY, width: doneButton.frame.minX - closeButton.frame.maxX, height: closeButton.frame.height)
         timeLabel.numberOfLines = 1
-        timeLabel.font = .systemFont(ofSize: 12.0, weight: .medium)
+        timeLabel.font = .systemFont(ofSize: 13.0, weight: .medium)
         timeLabel.textAlignment = .center
-        timeLabel.text = "00:00/00:00"
         timeLabel.textColor = WhiteColor
         view.addSubview(timeLabel)
         
@@ -249,7 +252,7 @@ extension MNTailorViewController {
     /// - Parameter sender: 按钮
     @objc func closeButtonTouchUpInside(_ sender: UIButton) {
         if let delegate = delegate, delegate.responds(to: #selector(delegate.tailorControllerDidCancel)) {
-            delegate.tailorControllerDidCancel?()
+            delegate.tailorControllerDidCancel?(self)
         } else {
             pop()
         }
@@ -265,6 +268,7 @@ extension MNTailorViewController {
             player.pause()
         } else if tailorView.isEnding {
             // 结束已达到结束状态
+            playControl.isUserInteractionEnabled = false
             UIView.animate(withDuration: AnimationDuration, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.tailorView.pointer.alpha = 0.0
@@ -278,6 +282,7 @@ extension MNTailorViewController {
                     } completion: { _ in
                         guard let self = self else { return }
                         self.player.play()
+                        self.playControl.isUserInteractionEnabled = true
                     }
                 }
             }
@@ -291,22 +296,13 @@ extension MNTailorViewController {
     /// - Parameter sender: 按钮
     @objc func doneButtonTouchUpInside(_ sender: UIButton) {
         if player.isPlaying { player.pause() }
-        let exportingPath: String = exportingPath ?? "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/video/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp4"
-        if FileManager.default.fileExists(atPath: exportingPath) {
-            do {
-                try FileManager.default.removeItem(atPath: exportingPath)
-            } catch {
-                #if DEBUG
-                print("删除原文件失败:\(error)")
-                #endif
-                view.showMsgToast("视频裁剪失败")
-                return
-            }
-        }
         let begin = tailorView.begin
         let end = tailorView.end
         let videoPath = videoPath
+        let exportingPath: String = exportingPath ?? "\(NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first!)/video/\(NSNumber(value: Int64(Date().timeIntervalSince1970*1000.0)).stringValue).mp4"
         if (end - begin) >= 0.99 {
+            // 询问是否可以复制视频
+            guard (delegate?.tailorControllerShouldCopyVideo?(self) ?? true) == true else { return }
             // 原视频 拷贝视频即可
             view.showActivityToast("视频导出中")
             DispatchQueue.global().async { [weak self] in
@@ -350,7 +346,7 @@ extension MNTailorViewController {
             }
         } else {
             guard let session = MNAssetExportSession(fileAtPath: videoPath) else {
-                view.showMsgToast("解析视频文件失败")
+                view.showMsgToast("解析视频失败")
                 return
             }
             view.showProgressToast("视频导出中")
@@ -520,6 +516,8 @@ extension MNTailorViewController: MNPlayerDelegate {
     func player(didPlayTimeInterval player: MNPlayer) {
         guard player.isPlaying else { return }
         tailorView.progress = Double(player.progress)
+        guard let components = timeLabel.text?.components(separatedBy: "/"), components.count == 2 else { return }
+        timeLabel.text = "\(Date(timeIntervalSince1970: ceil(player.timeInterval)).timeValue)/\(components.last!)"
     }
     
     func player(_ player: MNPlayer, didPlayFailure error: Error) {

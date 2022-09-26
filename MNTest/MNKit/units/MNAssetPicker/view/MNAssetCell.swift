@@ -24,7 +24,7 @@ class MNAssetCell: UICollectionViewCell {
     // 配置信息
     var options: MNAssetPickerOptions! {
         didSet {
-            indexLabel.backgroundColor = options?.color.withAlphaComponent(0.38)
+            indexLabel.backgroundColor = options?.color.withAlphaComponent(0.45)
         }
     }
     // 顶部阴影

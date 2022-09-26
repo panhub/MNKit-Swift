@@ -80,7 +80,7 @@ class MNPlayer: NSObject {
         return TimeInterval(CMTimeGetSeconds(currentItem.duration))
     }
     /**当前播放时长*/
-    var current: TimeInterval {
+    var timeInterval: TimeInterval {
         guard let currentItem = player.currentItem, currentItem.status == .readyToPlay else { return 0.0 }
         return TimeInterval(CMTimeGetSeconds(currentItem.currentTime()))
     }

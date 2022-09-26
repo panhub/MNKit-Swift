@@ -114,6 +114,7 @@ class MNAssetPickerController: UIViewController {
         view.addSubview(navBar)
         view.addSubview(albumView)
         view.addSubview(toolBar)
+        
         if options.maxPickingCount > 1, options.isAllowsSlidePicking, options.isAllowsMultiplePickingPhoto, options.isAllowsMultiplePickingGif, options.isAllowsMultiplePickingVideo, options.isAllowsMultiplePickingLivePhoto {
             // 滑动选择
             collectionView.bounces = false
@@ -210,6 +211,27 @@ class MNAssetPickerController: UIViewController {
                         asset.isEnabled = false
                     }
                 }
+            }
+        }
+    }
+    
+    /// 裁剪视频
+    /// - Parameter asset: 视频资源模型
+    private func tailorVideo(_ asset: MNAsset) {
+        view.showActivityToast("请稍后")
+        MNAssetHelper.content(asset: asset, progress: nil) { [weak self] ast in
+            guard let self = self else { return }
+            if let videoPath = ast.content as? String {
+                ast.content = nil
+                self.view.closeToast()
+                let vc = MNTailorViewController(videoPath: videoPath)
+                vc.delegate = self
+                vc.exportingPath = self.options.outputURL?.path
+                vc.minTailorDuration = self.options.minExportDuration
+                vc.maxTailorDuration = self.options.maxExportDuration
+                self.navigationController?.pushViewController(vc, animated: true)
+            } else {
+                self.view.showMsgToast("导出视频失败")
             }
         }
     }
@@ -334,7 +356,8 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
             if asset.type == .photo, options.isAllowsEditing {
                 // TODO 图片裁剪
             } else if asset.type == .video, options.isAllowsEditing {
-                // TODO 视频裁剪
+                // 视频裁剪
+                tailorVideo(asset)
             } else {
                 // 导出
                 export(assets: [asset])
@@ -343,6 +366,23 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
             // 更新资源状态
             update(asset: asset)
         }
+    }
+}
+
+// MARK: - MNTailorControllerDelegate
+extension MNAssetPickerController: MNTailorControllerDelegate {
+    
+    func tailorControllerDidCancel(_ tailorController: MNTailorViewController) {
+        tailorController.navigationController?.popViewController(animated: true)
+    }
+    
+    func tailorController(_ tailorController: MNTailorViewController, didTailorVideoAtPath videoPath: String) {
+        guard let asset = MNAsset(content: videoPath, options: options) else {
+            try? FileManager.default.removeItem(atPath: videoPath)
+            tailorController.view.showMsgToast("视频导出失败")
+            return
+        }
+        finishPicking(assets: [asset])
     }
 }
 

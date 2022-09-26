@@ -83,7 +83,7 @@ class MNSlider: UIView {
     }()
     /**滑块上圆点*/
     private lazy var touchView: UIView = {
-        let inset: CGFloat = floor((thumbView.bounds.height - max(trackView.bounds.height, thumbView.bounds.height/3.0))/2.0)
+        let inset: CGFloat = floor((thumbView.bounds.height - max(trackView.bounds.height, thumbView.bounds.height/3.0*1.15))/2.0)
         let touchView = UIView(frame: thumbView.bounds.inset(by: UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)))
         touchView.clipsToBounds = true
         touchView.isUserInteractionEnabled = false
@@ -221,6 +221,7 @@ extension MNSlider {
 
 // MARK: - Buid UI
 extension MNSlider {
+    
     // 修改轨迹
     var trackHeight: CGFloat {
         get { trackView.frame.height }
@@ -243,11 +244,13 @@ extension MNSlider {
         }
     }
     
+    /// 轨迹颜色
     var trackColor: UIColor? {
         get { trackView.backgroundColor }
         set { trackView.backgroundColor = newValue }
     }
     
+    /// 边框颜色
     var borderColor: UIColor? {
         get {
             guard let color = trackView.layer.borderColor else { return nil }
@@ -256,41 +259,49 @@ extension MNSlider {
         set { trackView.layer.borderColor = newValue?.cgColor }
     }
     
+    /// 变宽宽度
     var borderWidth: CGFloat {
         get { trackView.layer.borderWidth }
         set { trackView.layer.borderWidth = newValue }
     }
     
+    /// 滑块颜色
     var thumbColor: UIColor? {
         get { thumbView.backgroundColor }
         set { thumbView.backgroundColor = newValue }
     }
     
+    /// 滑块上圆点颜色
     var touchColor: UIColor? {
         get { touchView.backgroundColor }
         set { touchView.backgroundColor = newValue }
     }
     
+    /// 滑块图片
     var thumbImage: UIImage? {
         get { thumbView.image }
         set { thumbView.image = newValue }
     }
     
+    /// 缓冲颜色
     var bufferColor: UIColor? {
         get { bufferView.backgroundColor }
         set { bufferView.backgroundColor = newValue }
     }
     
+    /// 进度颜色
     var progressColor: UIColor? {
         get { progressView.backgroundColor }
         set { progressView.backgroundColor = newValue }
     }
     
+    /// 是否显示阴影
     var isShowShadow: Bool {
         get { thumbView.clipsToBounds == false }
         set { thumbView.clipsToBounds = !newValue }
     }
     
+    /// 阴影颜色
     var shadowColor: UIColor? {
         get {
             guard let color = thumbView.layer.shadowColor else { return nil }

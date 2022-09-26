@@ -37,11 +37,9 @@ class MNAssetPickerToolBar: UIView {
     
         super.init(frame: UIScreen.main.bounds.inset(by: UIEdgeInsets(top: UIScreen.main.bounds.height - options.toolBarHeight, left: 0.0, bottom: 0.0, right: 0.0)))
         
-        if options.contentInset.bottom <= 0.0 {
-            minY = UIScreen.main.bounds.height
-        }
-        
         backgroundColor = .clear
+        
+        isHidden = options.contentInset.bottom <= 0.0
         
         let effectView = UIVisualEffectView(effect: UIBlurEffect(style: options.mode == .light ? .extraLight : .dark))
         effectView.frame = bounds

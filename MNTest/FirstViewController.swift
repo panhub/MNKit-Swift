@@ -34,18 +34,19 @@ class FirstViewController: MNBaseViewController {
         //navigationController?.pushViewController(ViewController(), animated: true)
         let picker = MNAssetPicker()
         picker.options.mode = .dark
+        picker.options.isAllowsEditing = true
         picker.options.isAllowsPreview = true
         picker.options.isShowFileSize = false
         picker.options.maxPickingCount = 10
-        picker.options.isAllowsPickingGif = false
-        picker.options.isAllowsPickingPhoto = false
-        picker.options.isAllowsPickingLivePhoto = false
-        picker.options.maxPickingCount = 1
+        picker.options.isAllowsPickingGif = true
+        picker.options.isAllowsPickingPhoto = true
+        picker.options.isAllowsPickingLivePhoto = true
+        picker.options.isAllowsMultiplePickingVideo = false
         picker.present { [weak self] _, assets in
-            guard let self = self else { return }
-            let vc = MNTailorViewController(videoPath: assets.first!.content as! String)
-            vc.delegate = self
-            self.navigationController?.pushViewController(vc, animated: true)
+//            guard let self = self else { return }
+//            let vc = MNTailorViewController(videoPath: assets.first!.content as! String)
+//            vc.delegate = self
+//            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
     

@@ -146,7 +146,20 @@ class MNAssetBrowser: UIView {
             back.tag = BrowseEvent.back.rawValue
             back.frame = CGRect(x: 15.0, y: 0.0, width: 25.0, height: 25.0)
             back.midY = (navView.bounds.height - MN_STATUS_BAR_HEIGHT)/2.0 + MN_STATUS_BAR_HEIGHT
-            back.setBackgroundImage(MNAssetPicker.image(named: "back"), for: .normal)
+            let backgroundImage = MNAssetPicker.image(named: "back")
+            if #available(iOS 15.0, *) {
+                back.configuration = UIButton.Configuration.plain()
+                back.configurationUpdateHandler = { button in
+                    switch button.state {
+                    case .normal, .highlighted:
+                        button.configuration?.background.image = backgroundImage
+                    default: break
+                    }
+                }
+            } else {
+                back.adjustsImageWhenHighlighted = false
+                back.setBackgroundImage(backgroundImage, for: .normal)
+            }
             back.addTarget(self, action: #selector(back(_:)), for: .touchUpInside)
             navView.addSubview(back)
         }

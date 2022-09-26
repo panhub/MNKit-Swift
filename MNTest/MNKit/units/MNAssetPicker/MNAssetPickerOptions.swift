@@ -30,6 +30,7 @@ import Foundation
     case dark = 1 // 暗黑
 }
 
+/// 相册资源选择条件
 class MNAssetPickerOptions: NSObject {
     /**
      最多选择数量
@@ -191,7 +192,7 @@ class MNAssetPickerOptions: NSObject {
     /**
      分析文件位置及大小的队列
      */
-    @objc let queue: DispatchQueue = DispatchQueue(label: "com.mn.asset.queue", attributes: .concurrent)
+    @objc let queue: DispatchQueue = DispatchQueue(label: "com.mn.asset.picker.queue", attributes: .concurrent)
 }
 
 // MARK: - 辅助
@@ -202,7 +203,7 @@ extension MNAssetPickerOptions {
     @objc var toolBarHeight: CGFloat { max(MN_TAB_BAR_HEIGHT, 55.0) }
     /**内容布局*/
     @objc var contentInset: UIEdgeInsets {
-        UIEdgeInsets(top: topBarHeight, left: 0.0, bottom: (maxPickingCount <= 1 && isAllowsPreview == false) ? 0.0 : toolBarHeight, right: 0.0)
+        UIEdgeInsets(top: topBarHeight, left: 0.0, bottom: maxPickingCount > 1 ? toolBarHeight : 0.0, right: 0.0)
     }
     /**背景颜色*/
     @objc var backgroundColor: UIColor { mode == .light ? .white : UIColor(red: 51.0/255.0, green: 51.0/255.0, blue: 51.0/255.0, alpha: 1.0) }

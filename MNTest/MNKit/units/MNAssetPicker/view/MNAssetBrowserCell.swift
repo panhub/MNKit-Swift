@@ -51,7 +51,6 @@ class MNAssetBrowserCell: UICollectionViewCell {
         //liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage(options: [.liveOff])
         liveBadgeView.image = PHLivePhotoView.livePhotoBadgeImage()
         livePhotoView.addSubview(liveBadgeView)
-        
         return livePhotoView
     }()
     
@@ -82,19 +81,29 @@ class MNAssetBrowserCell: UICollectionViewCell {
     }()
     
     private lazy var playButton: UIButton = {
-        let playButton = UIButton(type: .custom)
-        playButton.frame = CGRect(x: 0.0, y: 0.0, width: 40.0, height: 40.0)
-        playButton.minX = 7.0
-        playButton.midY = (toolBar.bounds.height - MN_TAB_SAFE_HEIGHT)/2.0
+        var playButton: UIButton
         if #available(iOS 15.0, *) {
-//            playButton.configurationUpdateHandler = { button in
-//
-//            }
+            var configuration = UIButton.Configuration.plain()
+            configuration.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: -5.0, trailing: -5.0)
+            playButton = UIButton(configuration: configuration)
+            playButton.configurationUpdateHandler = { button in
+                switch button.state {
+                case .normal:
+                    button.configuration?.background.image = MNAssetPicker.image(named: "browser_play")
+                case .selected:
+                    button.configuration?.background.image = MNAssetPicker.image(named: "browser_pause")
+                default: break
+                }
+            }
         } else {
+            playButton = UIButton(type: .custom)
             playButton.adjustsImageWhenHighlighted = false
+            playButton.setBackgroundImage(MNAssetPicker.image(named: "browser_play"), for: .normal)
+            playButton.setBackgroundImage(MNAssetPicker.image(named: "browser_pause"), for: .selected)
         }
-        playButton.setBackgroundImage(MNAssetPicker.image(named: "browser_play"), for: .normal)
-        playButton.setBackgroundImage(MNAssetPicker.image(named: "browser_pause"), for: .selected)
+        playButton.frame = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
+        playButton.minX = 10.0
+        playButton.midY = (toolBar.bounds.height - MN_TAB_SAFE_HEIGHT)/2.0
         playButton.addTarget(self, action: #selector(playButtonTouchUpInside), for: .touchUpInside)
         return playButton
     }()
@@ -103,11 +112,11 @@ class MNAssetBrowserCell: UICollectionViewCell {
         let timeLabel = UILabel(frame: .zero)
         timeLabel.text = "00:00"
         timeLabel.textColor = .white
-        timeLabel.font = UIFont.systemFont(ofSize: 12.0)
+        timeLabel.font = UIFont.systemFont(ofSize: 12.0, weight: .medium)
         timeLabel.sizeToFit()
-        timeLabel.width += 8.0
+        timeLabel.width = ceil(timeLabel.width) + 8.0
         timeLabel.midY = playButton.midY
-        timeLabel.minX = playButton.maxX + 5.0
+        timeLabel.minX = playButton.maxX + 7.0
         return timeLabel
     }()
     
@@ -117,7 +126,7 @@ class MNAssetBrowserCell: UICollectionViewCell {
         durationLabel.font = timeLabel.font
         durationLabel.text = "00:00"
         durationLabel.sizeToFit()
-        durationLabel.width += 8.0
+        durationLabel.width = ceil(timeLabel.width) + 8.0
         durationLabel.textAlignment = .right
         durationLabel.maxX = toolBar.width - 15.0
         durationLabel.midY = playButton.midY
@@ -125,14 +134,15 @@ class MNAssetBrowserCell: UICollectionViewCell {
     }()
     
     private lazy var slider: MNSlider = {
-        let slider = MNSlider(frame: CGRect(x: timeLabel.maxX, y: 0.0, width: durationLabel.minX - timeLabel.maxX, height: 16.0))
+        let slider = MNSlider(frame: CGRect(x: timeLabel.maxX, y: 0.0, width: durationLabel.minX - timeLabel.maxX, height: 16.5))
         slider.midY = playButton.midY
-        slider.trackHeight = 3.0
+        slider.delegate = self
+        slider.trackHeight = 3.5
         slider.borderWidth = 0.0
         slider.progressColor = .white
-        slider.trackColor = .white.withAlphaComponent(0.2)
+        slider.touchColor = .white
+        slider.trackColor = .white.withAlphaComponent(0.33)
         slider.bufferColor = .white.withAlphaComponent(0.2)
-        slider.delegate = self
         return slider
     }()
     
@@ -162,11 +172,11 @@ class MNAssetBrowserCell: UICollectionViewCell {
         scrollView.contentView.addSubview(imageView)
         contentView.addSubview(progressView)
         
-        contentView.addSubview(toolBar)
         toolBar.addSubview(playButton)
         toolBar.addSubview(timeLabel)
         toolBar.addSubview(durationLabel)
         toolBar.addSubview(slider)
+        contentView.addSubview(toolBar)
     }
     
     required init?(coder: NSCoder) {
@@ -327,7 +337,7 @@ extension MNAssetBrowserCell {
 // MARK: - 播放控制
 extension MNAssetBrowserCell {
     func makePlayToolBarVisible(_ isVisible: Bool, animated: Bool) {
-        UIView.animate(withDuration: (animated ? UIApplication.shared.statusBarOrientationAnimationDuration : Double.leastNormalMagnitude), delay: 0.0, options: [.curveEaseInOut], animations: { [weak self] in
+        UIView.animate(withDuration: animated ? 0.25 : 0.0, delay: 0.0, options: [.curveEaseInOut], animations: { [weak self] in
             guard let self = self else { return }
             self.toolBar.minY = self.contentView.height - (isVisible ? self.toolBar.height : 0.0)
         }, completion: nil)
@@ -376,7 +386,7 @@ extension MNAssetBrowserCell: MNPlayerDelegate {
     
     func player(didPlayTimeInterval player: MNPlayer) {
         slider.set(progress: player.progress)
-        timeLabel.text = Date(timeIntervalSince1970: player.current).timeValue
+        timeLabel.text = Date(timeIntervalSince1970: player.timeInterval).timeValue
     }
     
     func player(_ player: MNPlayer, didPlayFailure error: Error) {
