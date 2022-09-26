@@ -15,8 +15,9 @@ class FirstViewController: MNBaseViewController {
         
         let b = MNButton(frame: CGRect(x: 0.0, y: 0.0, width: 150.0, height: 46.0))
         b.backgroundColor = .red
+        b.spacing = 5.0
         b.imageView.image = UIImage(named: "clean_icon")
-        b.imageView.width = 18.0
+        b.imageView.width = 15.0
         b.imageView.sizeFitToWidth()
         b.titleLabel.font = .systemFont(ofSize: 16.0, weight: .medium)
         b.titleLabel.text = "测试删除表格"
@@ -24,7 +25,7 @@ class FirstViewController: MNBaseViewController {
         b.layer.cornerRadius = 5.0
         b.clipsToBounds = true
         b.center = contentView.Center
-        b.distribution = .firstImage
+        b.imagePlacement = .leading
         b.alignment = .center
         b.addTarget(self, action: #selector(pick), for: .touchUpInside)
         contentView.addSubview(b)

@@ -122,6 +122,8 @@ class MNPlayer: NSObject {
     var isAllowsUsingCache: Bool = false
     /**是否支持后台播放*/
     var isPlaybackEnabled: Bool = false
+    /**开始播放的起始位置 只可使用一次*/
+    var beginTimeInterval: TimeInterval = 0.0
     /**是否应该恢复播放*/
     private var isShouldResume: Bool = false
     /**文件资源*/
@@ -179,15 +181,13 @@ class MNPlayer: NSObject {
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        guard let keyPath = keyPath else {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-            return
-        }
+        guard let keyPath = keyPath else { return }
         if keyPath == "status" {
             let status = AVPlayerItem.Status(rawValue: change?[.newKey] as? Int ?? AVPlayerItem.Status.unknown.rawValue)
             switch status {
             case .readyToPlay:
                 guard state == .unknown else { return }
+                isShouldResume = false
                 delegate?.player?(didEndDecode: self)
                 let play: Bool = delegate?.player?(shouldStartPlaying: self) ?? true
                 if play {
@@ -195,16 +195,22 @@ class MNPlayer: NSObject {
                         fail(reason: .notActive(sessionCategory))
                         return
                     }
+                    let seconds = beginTimeInterval
+                    if seconds > 0.0 {
+                        beginTimeInterval = 0.0
+                        seek(toSeconds: seconds) { [weak self] _ in
+                            guard let self = self else { return }
+                            self.player.play()
+                            self.state = .playing
+                        }
+                        return
+                    }
                     player.play()
                     state = .playing
-                    isShouldResume = false
                 } else {
                     player.pause()
                     state = .pause
                 }
-            case .unknown:
-                player.pause()
-                fail(reason: .statusError(.unknown))
             case .failed:
                 player.pause()
                 fail(reason: .statusError(.failed))
@@ -433,11 +439,9 @@ private extension MNPlayer {
                 pause()
                 isShouldResume = true
             }
-        } else {
-            if isShouldResume {
-                play()
-                isShouldResume = false
-            }
+        } else if isShouldResume {
+            play()
+            isShouldResume = false
         }
     }
     

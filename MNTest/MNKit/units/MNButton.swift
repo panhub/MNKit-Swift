@@ -15,8 +15,8 @@ class MNButton: UIControl {
     }
     
     // 布局方式
-    enum Distribution: Int {
-        case firstImage, firstLabel
+    enum Placement: Int {
+        case leading, trailing
     }
     
     // 对齐方式
@@ -48,8 +48,8 @@ class MNButton: UIControl {
             setNeedsLayout()
         }
     }
-    // 布局方式
-    var distribution: MNButton.Distribution = .firstImage {
+    // 图片位置
+    var imagePlacement: Placement = .leading {
         didSet {
             setNeedsLayout()
         }
@@ -129,12 +129,12 @@ class MNButton: UIControl {
                 x = (frame.width - titleLabel.frame.width - imageView.frame.width - spacing)/2.0
             default: break
             }
-            if distribution == .firstLabel {
-                titleLabel.minX = x
-                imageView.minX = titleLabel.maxX + spacing
-            } else {
+            if imagePlacement == .leading {
                 imageView.minX = x
                 titleLabel.minX = imageView.maxX + spacing
+            } else {
+                titleLabel.minX = x
+                imageView.minX = titleLabel.maxX + spacing
             }
             titleLabel.midY = frame.height/2.0
             imageView.midY = frame.height/2.0
@@ -148,12 +148,12 @@ class MNButton: UIControl {
                 y = (frame.height - titleLabel.frame.height - imageView.frame.height - spacing)/2.0
             default: break
             }
-            if distribution == .firstLabel {
-                titleLabel.minY = y
-                imageView.minY = titleLabel.maxY + spacing
-            } else {
+            if imagePlacement == .leading {
                 imageView.minY = y
                 titleLabel.minY = imageView.maxY + spacing
+            } else {
+                titleLabel.minY = y
+                imageView.minY = titleLabel.maxY + spacing
             }
             titleLabel.midX = frame.width/2.0
             imageView.midX = frame.width/2.0
