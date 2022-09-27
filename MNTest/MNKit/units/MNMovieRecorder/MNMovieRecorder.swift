@@ -71,7 +71,7 @@ class MNMovieRecorder: NSObject {
     var duration: TimeInterval {
         guard let url = url, FileManager.default.fileExists(atPath: url.path) else { return 0.0 }
         let asset = AVURLAsset(url: url, options: [AVURLAssetPreferPreciseDurationAndTimingKey:true])
-        return asset.duration.seconds
+        return max(0.0, asset.duration.seconds)
     }
     /**预设比率*/
     var presetSizeRatio: MovieSizeRatio {
@@ -134,7 +134,7 @@ class MNMovieRecorder: NSObject {
     /**会话*/
     private lazy var session: AVCaptureSession = {
         let session = AVCaptureSession()
-        session.usesApplicationAudioSession = true
+        session.usesApplicationAudioSession = false
         if (session.canSetSessionPreset(sessionPreset)) {
             session.sessionPreset = sessionPreset
         }

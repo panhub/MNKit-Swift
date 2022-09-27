@@ -96,6 +96,7 @@ enum AVError: Swift.Error {
     }
     
     enum PlayErrorReason {
+        case playFailed
         case notActive(AVAudioSession.Category)
         case statusError(AVPlayer.Status)
         case custom(Int, String)
@@ -356,6 +357,8 @@ extension AVError.PlayErrorReason {
     
     var errMsg: String {
         switch self {
+        case .playFailed:
+            return "播放失败"
         case .notActive(_):
             return "设置会话模式失败"
         case .statusError(_):

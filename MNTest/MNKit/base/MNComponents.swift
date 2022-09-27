@@ -167,19 +167,19 @@ public extension CALayer {
     /// 暂停动画
     func pauseAnimation() {
         guard speed == 1.0 else { return }
-        let pausedTime = convertTime(CACurrentMediaTime(), from: nil)
+        let pauseTime = convertTime(CACurrentMediaTime(), from: nil)
         speed = 0.0
-        timeOffset = pausedTime
+        timeOffset = pauseTime
     }
     
     /// 继续动画
     func resumeAnimation() {
         guard speed == 0.0 else { return }
-        let pausedTime = timeOffset
+        let pauseTime = timeOffset
         speed = 1.0
         timeOffset = 0.0
         beginTime = 0.0
-        let timeSincePause = convertTime(CACurrentMediaTime(), from: nil) - pausedTime
+        let timeSincePause = convertTime(CACurrentMediaTime(), from: nil) - pauseTime
         beginTime = timeSincePause
     }
     

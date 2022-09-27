@@ -3,7 +3,7 @@
 //  MNFoundation
 //
 //  Created by 冯盼 on 2021/10/25.
-//  播放器
+//  本地文件播放器
 
 import UIKit
 import Foundation
@@ -23,6 +23,7 @@ import ObjectiveC.runtime
     @objc optional func player(_ player: MNPlayer, didPlayFailure error: Error) -> Void
     @objc optional func player(shouldPlayNextItem player: MNPlayer) -> Bool
     @objc optional func player(shouldStartPlaying player: MNPlayer) -> Bool
+    @objc optional func player(shouldPlayToBeginTime player: MNPlayer) -> TimeInterval
 }
 
 class MNPlayer: NSObject {
@@ -77,12 +78,12 @@ class MNPlayer: NSObject {
     /**文件时长*/
     var duration: TimeInterval {
         guard let currentItem = player.currentItem, currentItem.status == .readyToPlay else { return 0.0 }
-        return TimeInterval(CMTimeGetSeconds(currentItem.duration))
+        return TimeInterval(max(0.0, CMTimeGetSeconds(currentItem.duration)))
     }
     /**当前播放时长*/
     var timeInterval: TimeInterval {
         guard let currentItem = player.currentItem, currentItem.status == .readyToPlay else { return 0.0 }
-        return TimeInterval(CMTimeGetSeconds(currentItem.currentTime()))
+        return TimeInterval(max(0.0, CMTimeGetSeconds(currentItem.currentTime())))
     }
     /**播放进度*/
     var progress: Float {
@@ -122,8 +123,6 @@ class MNPlayer: NSObject {
     var isAllowsUsingCache: Bool = false
     /**是否支持后台播放*/
     var isPlaybackEnabled: Bool = false
-    /**开始播放的起始位置 只可使用一次*/
-    var beginTimeInterval: TimeInterval = 0.0
     /**是否应该恢复播放*/
     private var isShouldResume: Bool = false
     /**文件资源*/
@@ -195,18 +194,17 @@ class MNPlayer: NSObject {
                         fail(reason: .notActive(sessionCategory))
                         return
                     }
-                    let seconds = beginTimeInterval
-                    if seconds > 0.0 {
-                        beginTimeInterval = 0.0
-                        seek(toSeconds: seconds) { [weak self] _ in
-                            guard let self = self else { return }
+                    let begin = delegate?.player?(shouldPlayToBeginTime: self) ?? 0.0
+                    seek(toSeconds: begin) { [weak self] finish in
+                        guard let self = self else { return }
+                        if finish {
                             self.player.play()
                             self.state = .playing
+                        } else {
+                            self.player.pause()
+                            self.fail(reason: .playFailed)
                         }
-                        return
                     }
-                    player.play()
-                    state = .playing
                 } else {
                     player.pause()
                     state = .pause
@@ -275,7 +273,9 @@ extension MNPlayer {
         guard currentItem.status == .readyToPlay else { return }
         isShouldResume = false
         if state == .finished {
-            seek(toProgress: 0.0) { [weak self] finish in
+            // 跳转开始部分
+            let begin = delegate?.player?(shouldPlayToBeginTime: self) ?? 0.0
+            seek(toSeconds: begin) { [weak self] finish in
                 guard finish, let self = self else { return }
                 self.player.play()
                 self.state = .playing
@@ -315,8 +315,9 @@ extension MNPlayer {
         }
         isShouldResume = false
         if state == .playing { pause() }
-        seek(toProgress: 0.0) { [weak self] finish in
-            guard finish, let self = self else { return }
+        let begin = delegate?.player?(shouldPlayToBeginTime: self) ?? 0.0
+        seek(toSeconds: begin) { [weak self] _ in
+            guard let self = self else { return }
             self.player.play()
             self.state = .playing
         }
@@ -396,15 +397,15 @@ private extension MNPlayer {
         guard object == currentItem else { return }
         let next: Bool = delegate?.player?(shouldPlayNextItem: self) ?? false
         if next {
+            let begin = delegate?.player?(shouldPlayToBeginTime: self) ?? 0.0
             if playIndex >= (urls.count - 1) {
                 // 不支持播放下一曲
-                seek(toProgress: 0.0) { [weak self] finish in
+                seek(toSeconds: begin) { [weak self] finish in
                     guard let self = self else { return }
                     self.player.play()
                 }
             } else {
                 // 进度调整为开始部分, 避免播放上一曲时直接就是结束位置
-                seek(toProgress: 0.0, completion: nil)
                 playNext()
             }
         } else {
@@ -417,18 +418,21 @@ private extension MNPlayer {
         guard let object = notify.object as? AVPlayerItem, let currentItem = player.currentItem else { return }
         guard object == currentItem else { return }
         isShouldResume = false
-        if let error = notify.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error {
-            fail(error: .playError(.underlyingError(error)))
-        } else {
-            fail(reason: .custom(AVErrorUnknown, "播放失败"))
-        }
+        player.pause()
+        state = .failed
+        guard let error = notify.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error else { return }
+        fail(error: .playError(.underlyingError(error)))
     }
     
     @objc func errorLogEntry(notify: Notification) {
         guard let object = notify.object as? AVPlayerItem, let currentItem = player.currentItem else { return }
         guard object == currentItem else { return }
         isShouldResume = false
-        fail(reason: .custom(AVErrorUnknown, "播放失败"))
+        #if DEBUG
+        if let error = currentItem.error {
+            print(error)
+        }
+        #endif
     }
     
     // 其他App独占事件
@@ -461,6 +465,7 @@ private extension MNPlayer {
     }
     
     // 中断事件
+    // https://www.jianshu.com/p/13274ee362f3
     @objc func sessionInterruption(notify: Notification) {
         guard let userInfo = notify.userInfo, let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt, let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
         if type == .began {
@@ -481,6 +486,7 @@ private extension MNPlayer {
 
 // MARK: - Private
 private extension MNPlayer {
+    
     func fail(msg: String) {
         fail(reason: .custom(AVErrorUnknown, msg))
     }
@@ -492,23 +498,6 @@ private extension MNPlayer {
     func fail(error: AVError) {
         state = .failed
         delegate?.player?(self, didPlayFailure: error)
-    }
-    
-    private func sessionActive() -> Bool {
-        let category: AVAudioSession.Category = .playAndRecord//isPlaybackEnabled ? .playback : .ambient
-        if AVAudioSession.sharedInstance().category != category {
-            do {
-                try AVAudioSession.sharedInstance().setCategory(category)
-            } catch {
-                return false
-            }
-        }
-        do {
-            try AVAudioSession.sharedInstance().setActive(true, options: [.notifyOthersOnDeactivation])
-        } catch {
-            return false
-        }
-        return true
     }
     
     func replaceCurrentItemWithNil() {
@@ -537,26 +526,27 @@ private extension MNPlayer {
         item.removeObserver(self, forKeyPath: "playbackBufferEmpty")
         item.removeObserver(self, forKeyPath: "playbackLikelyToKeepUp")
     }
+    
+    private func sessionActive() -> Bool {
+        let category: AVAudioSession.Category = .playAndRecord//isPlaybackEnabled ? .playback : .ambient
+        if AVAudioSession.sharedInstance().category != category {
+            do {
+                try AVAudioSession.sharedInstance().setCategory(category)
+            } catch {
+                return false
+            }
+        }
+        do {
+            try AVAudioSession.sharedInstance().setActive(true, options: [.notifyOthersOnDeactivation])
+        } catch {
+            return false
+        }
+        return true
+    }
 }
 
 // MARK: - 音效
-extension MNPlayer {
-    @objc static func playSound(path: String, shake: Bool) {
-        guard FileManager.default.fileExists(atPath: path) else { return }
-        var id: SystemSoundID = 0
-        guard AudioServicesCreateSystemSoundID(URL(fileURLWithPath: path) as CFURL, &id) == noErr else { return }
-        playSound(id: id, shake: shake)
-    }
-    
-    @objc static func playSound(id: UInt32, shake: Bool) {
-        guard AudioServicesAddSystemSoundCompletion(id, nil, nil, { _, _ in }, nil) == noErr else { return }
-        if shake {
-            AudioServicesPlayAlertSound(id)
-        } else {
-            AudioServicesPlaySystemSound(id)
-        }
-    }
-}
+extension MNPlayer: AudioServicesPlayAble {}
 
 private extension AVPlayerItem {
     struct AssociatedKey {
@@ -569,6 +559,27 @@ private extension AVPlayerItem {
         }
         set {
             objc_setAssociatedObject(self, AVPlayerItem.AssociatedKey.isObserved, newValue, .OBJC_ASSOCIATION_ASSIGN)
+        }
+    }
+}
+
+// MARK: - 播放音效
+protocol AudioServicesPlayAble {}
+extension AudioServicesPlayAble {
+    
+    func playSound(path: String, shake: Bool) {
+        guard FileManager.default.fileExists(atPath: path) else { return }
+        var id: SystemSoundID = 0
+        guard AudioServicesCreateSystemSoundID(URL(fileURLWithPath: path) as CFURL, &id) == noErr else { return }
+        playSound(id: id, shake: shake)
+    }
+    
+    func playSound(id: UInt32, shake: Bool) {
+        guard AudioServicesAddSystemSoundCompletion(id, nil, nil, { _, _ in }, nil) == noErr else { return }
+        if shake {
+            AudioServicesPlayAlertSound(id)
+        } else {
+            AudioServicesPlaySystemSound(id)
         }
     }
 }
