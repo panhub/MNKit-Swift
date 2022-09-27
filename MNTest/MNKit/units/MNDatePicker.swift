@@ -325,6 +325,15 @@ class MNDatePicker: UIView {
         calendar.timeZone = TimeZone.current
         return calendar
     }()
+    /// 日期显示
+    private var rowLabel: UILabel {
+        let label = UILabel()
+        label.numberOfLines = 1
+        label.textColor = textColor ?? .black
+        label.textAlignment = .center
+        label.font = font ?? .systemFont(ofSize: 16.0, weight: .medium)
+        return label
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -784,11 +793,7 @@ extension MNDatePicker: UIPickerViewDelegate, UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat { rowHeight }
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
-        let label: UILabel = (view as? UILabel) ?? UILabel()
-        label.numberOfLines = 1
-        label.textColor = textColor ?? .black
-        label.textAlignment = .center
-        label.font = font ?? .systemFont(ofSize: 16.0, weight: .medium)
+        let label: UILabel = (view as? UILabel) ?? rowLabel
         label.text = components[component].rows[row]
         label.sizeToFit()
         return label

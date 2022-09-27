@@ -9,57 +9,57 @@ import UIKit
 
 class MNButton: UIControl {
     
-    // 布局方向
+    /// 布局方向
     enum Axis: Int {
         case horizontal, vertical
     }
     
-    // 布局方式
+    /// 布局方式
     enum Placement: Int {
         case leading, trailing
     }
     
-    // 对齐方式
+    /// 对齐方式
     enum Alignment: Int {
         case center, leading, trailing, top, bottom
     }
     
-    // 标题
+    /// 标题
     let titleLabel: UILabel = UILabel()
-    // 图片
+    /// 图片
     let imageView: UIImageView = UIImageView()
-    // 背景图
+    /// 背景图
     private let backgroundView: UIImageView = UIImageView()
-    // 图片与标题间隔
+    /// 图片与标题间隔
     var spacing: CGFloat = 3.0 {
         didSet {
             setNeedsLayout()
         }
     }
-    // 对齐方式
-    var alignment: MNButton.Alignment = .center {
+    /// 对齐方式
+    var alignment: Alignment = .center {
         didSet {
             setNeedsLayout()
         }
     }
-    // 布局方向
-    var axis: MNButton.Axis = .horizontal {
+    /// 布局方向
+    var axis: Axis = .horizontal {
         didSet {
             setNeedsLayout()
         }
     }
-    // 图片位置
+    /// 图片位置
     var imagePlacement: Placement = .leading {
         didSet {
             setNeedsLayout()
         }
     }
-    // 背景图片
+    /// 背景图片
     var backgroundImage: UIImage? {
         get { backgroundView.image }
         set { backgroundView.image = newValue }
     }
-    // 背景缩放方式
+    /// 背景缩放方式
     override var contentMode: UIView.ContentMode {
         get { backgroundView.contentMode }
         set { backgroundView.contentMode = newValue }
@@ -109,7 +109,6 @@ class MNButton: UIControl {
         }
         
         setNeedsLayout()
-        layoutIfNeeded()
     }
     
     override func layoutSubviews() {

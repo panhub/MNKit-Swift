@@ -24,6 +24,7 @@
 		3BD0F5B328DD9E4E008C195E /* MNTailorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B228DD9E4E008C195E /* MNTailorView.swift */; };
 		3BD0F5B528DD9E84008C195E /* MNTailorKeyfram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B428DD9E84008C195E /* MNTailorKeyfram.swift */; };
 		3BD0F5B728DD9EAB008C195E /* MNTailorHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B628DD9EAB008C195E /* MNTailorHandler.swift */; };
+		3BD8F82C28E2D18400CDC2D7 /* MNPageControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD8F82B28E2D18400CDC2D7 /* MNPageControl.swift */; };
 		3BDB6D6328990C940023D5E3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6228990C940023D5E3 /* AppDelegate.swift */; };
 		3BDB6D6C28990C950023D5E3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6B28990C950023D5E3 /* Assets.xcassets */; };
 		3BDB6D6F28990C950023D5E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3BDB6D6D28990C950023D5E3 /* LaunchScreen.storyboard */; };
@@ -231,6 +232,7 @@
 		3BD0F5B228DD9E4E008C195E /* MNTailorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorView.swift; sourceTree = "<group>"; };
 		3BD0F5B428DD9E84008C195E /* MNTailorKeyfram.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorKeyfram.swift; sourceTree = "<group>"; };
 		3BD0F5B628DD9EAB008C195E /* MNTailorHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorHandler.swift; sourceTree = "<group>"; };
+		3BD8F82B28E2D18400CDC2D7 /* MNPageControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNPageControl.swift; sourceTree = "<group>"; };
 		3BDB6D5F28990C940023D5E3 /* MNTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MNTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3BDB6D6228990C940023D5E3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3BDB6D6B28990C950023D5E3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -697,6 +699,8 @@
 			children = (
 				3BEF3BAC28BA7D7A005F65A3 /* MNSwitch.swift */,
 				3BC9B8D328D023F6003A6D40 /* MNButton.swift */,
+				3BD8F82B28E2D18400CDC2D7 /* MNPageControl.swift */,
+				3B01165328D4506300408903 /* MNDatePicker.swift */,
 				3B5CE56728B36CFC00527F55 /* MNEditingView */,
 				3BDB6F26289928E40023D5E3 /* MNCollectionViewLayout */,
 				3BDB6F9D28992DFA0023D5E3 /* MNSecureView */,
@@ -718,7 +722,6 @@
 				3BDB6FE528992DFA0023D5E3 /* MNScanView.swift */,
 				3BDB6FE628992DFA0023D5E3 /* MNAssetExporter */,
 				3BDB6FEE28992DFA0023D5E3 /* MNMotionManager.swift */,
-				3B01165328D4506300408903 /* MNDatePicker.swift */,
 			);
 			path = units;
 			sourceTree = "<group>";
@@ -1157,6 +1160,7 @@
 				3BDB703128992DFA0023D5E3 /* UIScrollView+MNSubpageAssociated.swift in Sources */,
 				3BDB707028992DFA0023D5E3 /* UIDevice+MNExtension.swift in Sources */,
 				3B3E02A728B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift in Sources */,
+				3BD8F82C28E2D18400CDC2D7 /* MNPageControl.swift in Sources */,
 				3BDB706528992DFA0023D5E3 /* UIColor+MNExtension.swift in Sources */,
 				3BDB704D28992DFA0023D5E3 /* MNAssetProgressView.swift in Sources */,
 				3BDB6F8D289928E40023D5E3 /* HTTPDownloadRequest.swift in Sources */,

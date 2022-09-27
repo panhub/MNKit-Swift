@@ -244,6 +244,9 @@ extension MNTailorHandler {
     }
     
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        return leftHandler.frame.contains(point) || rightHandler.frame.contains(point)
+        if let event = event, event.type == .touches {
+            return leftHandler.frame.contains(point) || rightHandler.frame.contains(point)
+        }
+        return super.point(inside: point, with: event)
     }
 }

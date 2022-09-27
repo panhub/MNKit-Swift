@@ -29,6 +29,16 @@ class FirstViewController: MNBaseViewController {
         b.alignment = .center
         b.addTarget(self, action: #selector(pick), for: .touchUpInside)
         contentView.addSubview(b)
+        
+        let pageControl = MNPageControl()
+        pageControl.spacing = 10.0
+        pageControl.numberOfPages = 5
+        //pageControl.pageIndicatorTintColor = .red
+        pageControl.backgroundColor = UIColor(all: 245.0)
+        contentView.addSubview(pageControl)
+        pageControl.midX = b.midX
+        pageControl.minY = b.maxY + 20.0
+        pageControl.layer.cornerRadius = pageControl.height/2.0
     }
     
     @objc func pick() {
