@@ -267,9 +267,9 @@ class MNDatePicker: UIView {
     }
     
     /// 字体
-    var font: UIFont = .systemFont(ofSize: 16.0, weight: .medium)
+    var font: UIFont?
     /// 字体颜色
-    var textColor: UIColor = .black
+    var textColor: UIColor?
     /// 组件集合
     var modules: [Module] = [.year(abbr: false, suffix: "-"), .month(abbr: false, lang: .arabic, suffix: "-"), .day(abbr: false, suffix: " "), .hour(abbr: false, lang: .arabic, clock12: false, suffix: ":"), .minute(abbr: false, suffix: ":"), .second(abbr: false, suffix: "")]
     /// 最早的时间
@@ -552,6 +552,8 @@ extension MNDatePicker {
         time.minute = times[4]
         time.second = times[5]
         
+        let font: UIFont = font ?? .systemFont(ofSize: 16.0, weight: .medium)
+        
         // 年
         components.removeAll()
         if let module = modules.year {
@@ -691,7 +693,7 @@ extension MNDatePicker {
         var month: String = time.month
         if let index = components.indexOfMonth {
             let row = picker.selectedRow(inComponent: index)
-            month = "\(row)"
+            month = "\(row + 1)"
             if month.count == 1 {
                 month.insert("0", at: month.startIndex)
             }
@@ -728,7 +730,7 @@ extension MNDatePicker {
         guard suffix.count > 0 else { return }
         let component = Component(module: .spacing(suffix))
         component.rows.append(suffix)
-        component.widthToFit(using: font, append: 0.0)
+        component.widthToFit(using: font ?? .systemFont(ofSize: 16.0, weight: .medium), append: 0.0)
         components.append(component)
     }
     
@@ -783,10 +785,10 @@ extension MNDatePicker: UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
         let label: UILabel = (view as? UILabel) ?? UILabel()
-        label.font = font
         label.numberOfLines = 1
-        label.textColor = textColor
+        label.textColor = textColor ?? .black
         label.textAlignment = .center
+        label.font = font ?? .systemFont(ofSize: 16.0, weight: .medium)
         label.text = components[component].rows[row]
         label.sizeToFit()
         return label
