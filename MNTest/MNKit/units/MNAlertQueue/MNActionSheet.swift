@@ -116,7 +116,7 @@ class MNActionSheet: MNAlertQueue {
                 
                 let separator = UIView()
                 separator.minY = y
-                separator.height = 8.0
+                separator.height = 10.0
                 separator.width = contentView.width
                 separator.backgroundColor = separatorColor
                 contentView.addSubview(separator)

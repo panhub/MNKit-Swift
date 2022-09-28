@@ -72,6 +72,9 @@ struct MNAlertAction {
     }
 }
 
+/// 关闭弹窗通知
+let MNAlertCloseNotification: Notification.Name = Notification.Name(rawValue: "com.mn.alert.view.close")
+
 class MNAlertQueue: UIView {
     /// 标题
     let title: MNAlertStringConvertible?
@@ -87,8 +90,6 @@ class MNAlertQueue: UIView {
     private(set) var actions: [MNAlertAction] = [MNAlertAction]()
     /// 暂存弹窗
     fileprivate static var pool: [MNAlertQueue] = [MNAlertQueue]()
-    /// 关闭弹窗通知
-    static let closeAlertViewNotification: Notification.Name = Notification.Name(rawValue: "com.mn.alert.view.close")
     
     /// 构造弹窗
     /// - Parameters:
@@ -104,7 +105,7 @@ class MNAlertQueue: UIView {
         tap.numberOfTapsRequired = 1
         addGestureRecognizer(tap)
         // 注册关闭弹窗通知
-        NotificationCenter.default.addObserver(self, selector: #selector(close), name: MNAlertQueue.closeAlertViewNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(close), name: MNAlertCloseNotification, object: nil)
     }
     
     /// 快捷构造
@@ -264,7 +265,7 @@ extension MNAlertQueue {
     
     /// 关闭所有弹窗
     final class func closeAll() {
-        NotificationCenter.default.post(name: MNAlertQueue.closeAlertViewNotification, object: nil, userInfo: nil)
+        NotificationCenter.default.post(name: MNAlertCloseNotification, object: nil, userInfo: nil)
     }
 }
 

@@ -207,7 +207,7 @@ class MNAssetBrowser: UIView {
     
     private override init(frame: CGRect) {
         super.init(frame: UIScreen.main.bounds)
-        NotificationCenter.default.addObserver(self, selector: #selector(removeFromSuperview), name: MNAlertQueue.closeAlertViewNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(removeFromSuperview), name: MNAlertCloseNotification, object: nil)
     }
     
     required init?(coder: NSCoder) {
