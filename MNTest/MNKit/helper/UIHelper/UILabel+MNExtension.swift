@@ -17,8 +17,9 @@ extension UILabel {
             let size = attributedText.boundingRect(with: CGSize(width: frame.size.width, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil).size
             frame.size.height = size.height
             self.frame = frame
-        } else if let font = font, let text = text {
+        } else if let text = text {
             // 文字
+            let font = font ?? .systemFont(ofSize: 17.0, weight: .regular)
             var frame = frame
             let size = NSAttributedString(string: text, attributes: [.font:font]).boundingRect(with: CGSize(width: frame.size.width, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil).size
             frame.size.height = size.height
@@ -33,8 +34,9 @@ extension UILabel {
             let size = attributedText.boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: frame.size.height), options: .usesLineFragmentOrigin, context: nil).size
             frame.size.width = size.width
             self.frame = frame
-        } else if let font = font, let text = text {
+        } else if let text = text {
             // 文字
+            let font = font ?? .systemFont(ofSize: 17.0, weight: .regular)
             var frame = frame
             let size = NSAttributedString(string: text, attributes: [.font:font]).boundingRect(with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: frame.size.height), options: .usesLineFragmentOrigin, context: nil).size
             frame.size.width = size.width

@@ -22,11 +22,12 @@ class FirstViewController: MNBaseViewController {
         b.titleLabel.font = .systemFont(ofSize: 16.0, weight: .medium)
         b.titleLabel.text = "测试删除表格"
         b.titleLabel.textColor = .white
-        b.layer.cornerRadius = 5.0
+        //b.layer.cornerRadius = 5.0
         b.clipsToBounds = true
         b.center = contentView.Center
         b.imagePlacement = .leading
-        b.alignment = .center
+        b.contentInset = UIEdgeInsets(top: 13.0, left: 15.0, bottom: 13.0, right: 15.0)
+        b.sizeToFit()
         b.addTarget(self, action: #selector(pick), for: .touchUpInside)
         contentView.addSubview(b)
         

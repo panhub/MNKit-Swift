@@ -14,14 +14,9 @@ class MNButton: UIControl {
         case horizontal, vertical
     }
     
-    /// 布局方式
+    /// 布局位置
     enum Placement: Int {
         case leading, trailing
-    }
-    
-    /// 对齐方式
-    enum Alignment: Int {
-        case center, leading, trailing, top, bottom
     }
     
     /// 标题
@@ -30,30 +25,14 @@ class MNButton: UIControl {
     let imageView: UIImageView = UIImageView()
     /// 背景图
     private let backgroundView: UIImageView = UIImageView()
+    /// 边距约束
+    var contentInset: UIEdgeInsets = .zero
     /// 图片与标题间隔
-    var spacing: CGFloat = 3.0 {
-        didSet {
-            setNeedsLayout()
-        }
-    }
-    /// 对齐方式
-    var alignment: Alignment = .center {
-        didSet {
-            setNeedsLayout()
-        }
-    }
+    var spacing: CGFloat = 3.0
     /// 布局方向
-    var axis: Axis = .horizontal {
-        didSet {
-            setNeedsLayout()
-        }
-    }
+    var axis: Axis = .horizontal
     /// 图片位置
-    var imagePlacement: Placement = .leading {
-        didSet {
-            setNeedsLayout()
-        }
-    }
+    var imagePlacement: Placement = .leading
     /// 背景图片
     var backgroundImage: UIImage? {
         get { backgroundView.image }
@@ -98,64 +77,53 @@ class MNButton: UIControl {
         titleLabel.width = ceil(titleLabel.width)
         titleLabel.height = ceil(titleLabel.height)
         
-        if axis == .horizontal {
-            // 横向布局
-            height = max(titleLabel.frame.height, imageView.frame.height)
-            width = titleLabel.frame.width + imageView.frame.width + spacing
-        } else {
-            // 纵向布局
-            width = max(titleLabel.frame.width, imageView.frame.width)
-            height = titleLabel.frame.height + imageView.frame.height + spacing
+        // 以背景约束
+        if (imageView.width <= 0.0 || imageView.height <= 0.0) && (titleLabel.width <= 0.0 || titleLabel.height <= 0.0) {
+            if let image = backgroundView.image {
+                var rect = frame
+                if rect.width > 0.0 {
+                    rect.size.height = ceil(image.size.height/image.size.width*rect.width)
+                } else if rect.height > 0.0 {
+                    rect.size.width = ceil(image.size.width/image.size.height*rect.height)
+                }
+                frame = rect
+            }
+            return
         }
         
-        setNeedsLayout()
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        titleLabel.sizeToFit()
-        titleLabel.width = ceil(titleLabel.width)
-        titleLabel.height = ceil(titleLabel.height)
-        
+        // 约束自身及图片, 标题
         if axis == .horizontal {
             // 横向布局
-            var x: CGFloat = 0.0
-            switch alignment {
-            case .trailing:
-                x = frame.width - titleLabel.frame.width - imageView.frame.width - spacing
-            case .center:
-                x = (frame.width - titleLabel.frame.width - imageView.frame.width - spacing)/2.0
-            default: break
-            }
+            let spacing = (titleLabel.width + imageView.width) > max(titleLabel.width, imageView.width) ? spacing : 0.0
+            height = max(titleLabel.height, imageView.height) + contentInset.top + contentInset.bottom
+            width = titleLabel.width + imageView.width + spacing + contentInset.left + contentInset.right
+            titleLabel.midY = max(titleLabel.height, imageView.height)/2.0 + contentInset.top
+            imageView.midY = titleLabel.midY
             if imagePlacement == .leading {
-                imageView.minX = x
+                // 图片在前
+                imageView.minX = contentInset.left
                 titleLabel.minX = imageView.maxX + spacing
             } else {
-                titleLabel.minX = x
+                // 标题在前
+                titleLabel.minX = contentInset.left
                 imageView.minX = titleLabel.maxX + spacing
             }
-            titleLabel.midY = frame.height/2.0
-            imageView.midY = frame.height/2.0
         } else {
             // 纵向布局
-            var y: CGFloat = 0.0
-            switch alignment {
-            case .bottom:
-                y = frame.height - titleLabel.frame.height - imageView.frame.height - spacing
-            case .center:
-                y = (frame.height - titleLabel.frame.height - imageView.frame.height - spacing)/2.0
-            default: break
-            }
+            let spacing = (titleLabel.height + imageView.height) > max(titleLabel.height, imageView.height) ? spacing : 0.0
+            width = max(titleLabel.width, imageView.width) + contentInset.left + contentInset.right
+            height = titleLabel.height + imageView.height + spacing + contentInset.top + contentInset.bottom
+            titleLabel.midX = max(titleLabel.width, imageView.width)/2.0 + contentInset.left
+            imageView.midX = titleLabel.midX
             if imagePlacement == .leading {
-                imageView.minY = y
+                // 图片在上
+                imageView.minY = contentInset.top
                 titleLabel.minY = imageView.maxY + spacing
             } else {
-                titleLabel.minY = y
+                // 标题在上
+                titleLabel.minY = contentInset.top
                 imageView.minY = titleLabel.maxY + spacing
             }
-            titleLabel.midX = frame.width/2.0
-            imageView.midX = frame.width/2.0
         }
     }
 }
