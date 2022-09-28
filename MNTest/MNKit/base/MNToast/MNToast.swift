@@ -169,15 +169,11 @@ class MNToast: UIView {
     // 更新提示信息
     func update(status msg: String?) {
         message = msg
-        updateSubviews()
-    }
-    
-    func update() {
-        contentView.frame = current
+        sizeToFit()
     }
     
     // 约束子视图
-    func updateSubviews() {
+    override func sizeToFit() {
         label.attributedText = string
         if let attributedText = label.attributedText {
             container.minY = Self.contentInset.top
@@ -198,7 +194,7 @@ class MNToast: UIView {
         }
         label.midX = contentView.width/2.0
         container.midX = contentView.width/2.0
-        update()
+        contentView.frame = contentRect
     }
     
     class func duration(status: String?) -> CGFloat {
@@ -229,14 +225,15 @@ extension MNToast {
         frame = superview.bounds
         superview.addSubview(self);
         createView()
-        updateSubviews()
+        sizeToFit()
         start()
     }
 }
 
 // MARK: - 获取当前状态位置
-private extension MNToast {
-    var current: CGRect {
+extension MNToast {
+    
+    var contentRect: CGRect {
         var rect = contentView.bounds
         rect.origin.x = (bounds.width - rect.width)/2.0
         switch Self.position {
@@ -264,7 +261,7 @@ extension MNToast {
         guard let frame = userInfo[UIWindow.keyboardFrameEndUserInfoKey] as? CGRect else { return }
         keyboardFrame = frame
         guard let _ = window else { return }
-        let contentRect = current
+        let contentRect = contentRect
         guard contentView.frame != contentRect else { return }
         let duration: TimeInterval = userInfo[UIWindow.keyboardAnimationDurationUserInfoKey] as? TimeInterval ?? 0.25
         /*

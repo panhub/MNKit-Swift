@@ -96,6 +96,9 @@ extension UIView {
         }
         if let dialog = MNToast.toast(style: .progress, status: status) {
             dialog.show(in: self)
+            if progress > 0.0 {
+                (dialog as! MNProgressToast).update(progress: progress)
+            }
         }
     }
     

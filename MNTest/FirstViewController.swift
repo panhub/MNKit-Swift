@@ -45,14 +45,14 @@ class FirstViewController: MNBaseViewController {
     @objc func pick() {
         
         let alert = MNActionSheet(title: "测试操作表单", message: "测试操作表单哦哦哦")
-        alert.addAction(title: "确定", style: .cancel) { _ in
-            
+        alert.addAction(title: "确定", style: .cancel) { [weak self] action in
+            self?.view.showMsgToast(action.attributedTitle.string)
         }
-        alert.addAction(title: "取消", style: .default) { _ in
-            
+        alert.addAction(title: "取消", style: .default) { [weak self] action in
+            self?.view.showMsgToast(action.attributedTitle.string)
         }
-        alert.addAction(title: "取消", style: .destructive) { _ in
-            
+        alert.addAction(title: "取消", style: .destructive) { [weak self] action in
+            self?.view.showMsgToast(action.attributedTitle.string)
         }
         alert.show()
         return

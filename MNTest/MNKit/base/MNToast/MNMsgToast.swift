@@ -16,7 +16,7 @@ class MNMsgToast: MNToast {
         container.isHidden = true
     }
     
-    override func updateSubviews() {
+    override func sizeToFit() {
         label.attributedText = string
         var size = label.attributedText!.boundingRect(with: CGSize(width: 200.0, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, context: nil).size
         size.width = ceil(size.width)
@@ -25,7 +25,7 @@ class MNMsgToast: MNToast {
         contentView.width = ceil(label.width + min(Self.contentInset.left, Self.contentInset.right)*2.0)
         contentView.height = ceil(label.height + min(Self.contentInset.top, Self.contentInset.bottom)*2.0)
         label.center = CGPoint(x: contentView.bounds.midX, y: contentView.bounds.midY)
-        update()
+        contentView.frame = contentRect
     }
     
     override func start() {
