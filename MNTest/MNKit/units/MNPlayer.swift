@@ -72,9 +72,7 @@ class MNPlayer: NSObject {
     /**当前播放的实例*/
     var playItem: AVPlayerItem? { player.currentItem }
     /**语音会话类型*/
-    var sessionCategory: AVAudioSession.Category {
-        isPlaybackEnabled ? .playback : .ambient
-    }
+    var sessionCategory: AVAudioSession.Category = .playAndRecord
     /**文件时长*/
     var duration: TimeInterval {
         guard let currentItem = player.currentItem, currentItem.status == .readyToPlay else { return 0.0 }
@@ -121,10 +119,6 @@ class MNPlayer: NSObject {
     }
     /**是否允许使用缓存*/
     var isAllowsUsingCache: Bool = false
-    /**是否支持后台播放*/
-    var isPlaybackEnabled: Bool = false
-    /**是否应该恢复播放*/
-    private var isShouldResume: Bool = false
     /**文件资源*/
     private var urls: [URL] = [URL]()
     /**当前播放器有多少条资源*/
@@ -186,7 +180,6 @@ class MNPlayer: NSObject {
             switch status {
             case .readyToPlay:
                 guard state == .unknown else { return }
-                isShouldResume = false
                 delegate?.player?(didEndDecode: self)
                 let play: Bool = delegate?.player?(shouldStartPlaying: self) ?? true
                 if play {
@@ -229,7 +222,6 @@ class MNPlayer: NSObject {
 extension MNPlayer {
     func prepare() {
         guard playIndex < urls.count else { return }
-        isShouldResume = false
         replaceCurrentItemWithNil()
         objc_sync_enter(self)
         let playerItem = playerItem(for: urls[playIndex])
@@ -271,7 +263,6 @@ extension MNPlayer {
             return
         }
         guard currentItem.status == .readyToPlay else { return }
-        isShouldResume = false
         if state == .finished {
             // 跳转开始部分
             let begin = delegate?.player?(shouldPlayToBeginTime: self) ?? 0.0
@@ -313,7 +304,6 @@ extension MNPlayer {
             fail(reason: .notActive(sessionCategory))
             return
         }
-        isShouldResume = false
         if state == .playing { pause() }
         let begin = delegate?.player?(shouldPlayToBeginTime: self) ?? 0.0
         seek(toSeconds: begin) { [weak self] _ in
@@ -417,7 +407,6 @@ private extension MNPlayer {
     @objc func failedToEndTime(notify: Notification) {
         guard let object = notify.object as? AVPlayerItem, let currentItem = player.currentItem else { return }
         guard object == currentItem else { return }
-        isShouldResume = false
         player.pause()
         state = .failed
         guard let error = notify.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error else { return }
@@ -427,7 +416,6 @@ private extension MNPlayer {
     @objc func errorLogEntry(notify: Notification) {
         guard let object = notify.object as? AVPlayerItem, let currentItem = player.currentItem else { return }
         guard object == currentItem else { return }
-        isShouldResume = false
         #if DEBUG
         if let error = currentItem.error {
             print(error)
@@ -439,13 +427,7 @@ private extension MNPlayer {
     @objc func silenceSecondaryAudioHint(notify: Notification) {
         guard let userInfo = notify.userInfo, let typeValue = userInfo[AVAudioSessionSilenceSecondaryAudioHintTypeKey] as? UInt, let type = AVAudioSession.SilenceSecondaryAudioHintType(rawValue: typeValue) else { return }
         if type == .begin {
-            if state == .playing {
-                pause()
-                isShouldResume = true
-            }
-        } else if isShouldResume {
-            play()
-            isShouldResume = false
+            pause()
         }
     }
     
@@ -457,9 +439,7 @@ private extension MNPlayer {
             guard let route = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription, route.outputs.count > 0, let output = route.outputs.first else { return }
             if output.portType == .headphones {
                 // 暂停播放
-                if state == .playing {
-                    pause()
-                }
+                pause()
             }
         }
     }
@@ -468,18 +448,46 @@ private extension MNPlayer {
     // https://www.jianshu.com/p/13274ee362f3
     @objc func sessionInterruption(notify: Notification) {
         guard let userInfo = notify.userInfo, let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt, let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
-        if type == .began {
+        switch type {
+        case .began:
+            #if DEBUG
+            if #available(iOS 14.5, *) {
+                if let reasonValue = userInfo[AVAudioSessionInterruptionReasonKey] as? UInt, let reason = AVAudioSession.InterruptionReason(rawValue: reasonValue) {
+                    switch reason {
+                    case .default:
+                        print("因另一个会话被激活, 音/视频中断")
+                    case .appWasSuspended:
+                        print("因App被系统挂起, 音/视频中断")
+                    case .builtInMicMuted:
+                        print("因内置麦克风静音而中断 (例如iPad智能关闭套iPad's Smart Folio关闭)")
+                    default: break
+                    }
+                }
+            } else if #available(iOS 10.3, *) {
+                if let suspended = userInfo[AVAudioSessionInterruptionWasSuspendedKey] as? Bool {
+                    if suspended {
+                        print("因App被系统挂起, 音/视频中断")
+                    } else {
+                        print("因另一个会话被激活, 音/视频中断")
+                    }
+                }
+            }
+            #endif
             if state == .playing {
                 pause()
-                isShouldResume = true
             }
-        } else if isShouldResume {
-            guard let optionValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt else { return }
-            let options = AVAudioSession.InterruptionOptions(rawValue: optionValue)
-            if options == .shouldResume {
-                play()
-                isShouldResume = false
+        case .ended:
+            if let optionValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt {
+                let options = AVAudioSession.InterruptionOptions(rawValue: optionValue)
+                if options == .shouldResume {
+                    player.play()
+                    state = .playing
+                    #if DEBUG
+                    print("中断结束, 音/视频恢复播放")
+                    #endif
+                }
             }
+        default: break
         }
     }
 }
