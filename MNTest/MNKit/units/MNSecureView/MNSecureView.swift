@@ -55,9 +55,9 @@ class MNSecureView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func willMove(toSuperview newSuperview: UIView?) {
-        super.willMove(toSuperview: newSuperview)
-        guard let _ = newSuperview, options.capacity > 0 else { return }
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        guard let _ = superview, options.capacity > 0 else { return }
         if options.capacity == labels.count { return }
         reloadSublabels()
     }

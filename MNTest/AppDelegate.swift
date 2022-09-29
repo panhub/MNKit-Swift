@@ -21,7 +21,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window.rootViewController = MNNavigationController(rootViewController: FirstViewController())
         self.window = window
         
+        let s: [Int] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        print(s.scrambleArray())
+        
         return true
+    }
+    
+    
+    func shuffleArray(arr:[Int]) -> [Int] {
+        var data:[Int] = arr
+        for i in 1..<arr.count {
+            let index:Int = Int(arc4random()) % i
+            print(index)
+            if index != i {
+                data.swapAt(i, index)
+            }
+        }
+        return data
     }
 }
 

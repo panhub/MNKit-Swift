@@ -553,9 +553,7 @@ private extension MNPlayer {
     }
 }
 
-// MARK: - 音效
-extension MNPlayer: AudioServicesPlayAble {}
-
+// MARK: - 检测AVPlayerItem
 private extension AVPlayerItem {
     struct AssociatedKey {
         static var isObserved = "com.mn.player.item.observed"
@@ -571,18 +569,21 @@ private extension AVPlayerItem {
     }
 }
 
-// MARK: - 播放音效
-protocol AudioServicesPlayAble {}
-extension AudioServicesPlayAble {
+// MARK: - 音效
+extension MNPlayer: AudioServicesPlayCapable {}
+
+// MARK: - 播放音效支持
+protocol AudioServicesPlayCapable {}
+extension AudioServicesPlayCapable {
     
-    func playSound(path: String, shake: Bool) {
+    static func playSound(path: String, shake: Bool) {
         guard FileManager.default.fileExists(atPath: path) else { return }
         var id: SystemSoundID = 0
         guard AudioServicesCreateSystemSoundID(URL(fileURLWithPath: path) as CFURL, &id) == noErr else { return }
         playSound(id: id, shake: shake)
     }
     
-    func playSound(id: UInt32, shake: Bool) {
+    static func playSound(id: UInt32, shake: Bool) {
         guard AudioServicesAddSystemSoundCompletion(id, nil, nil, { _, _ in }, nil) == noErr else { return }
         if shake {
             AudioServicesPlayAlertSound(id)

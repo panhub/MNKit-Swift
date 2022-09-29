@@ -19,15 +19,36 @@ extension Array {
             guard stop == false else { break }
         }
     }
+    
+    /// 乱序数组
+    mutating func scrambled() {
+        guard count > 1 else { return }
+        for index in 1..<count {
+            let random = Int(arc4random_uniform(100000)) % index
+            if random != index {
+                swapAt(index, random)
+            }
+        }
+    }
+    
+    /// 乱序数组
+    /// - Returns: 乱序后的数组
+    func scrambleArray() -> Array {
+        var array = self
+        array.scrambled()
+        return array
+    }
 }
 
-/// 删除数组内重复元素
 extension Array where Element: Equatable {
     
+    /// 删除数组内相同元素
+    /// - Returns: 删除相同元素后的数组
     func removeSameElement() -> [Element] {
         return reduce([Element]()) { $0.contains($1) ? $0: $0 + [$1] }
     }
     
+    /// 删除数组内相同元素
     mutating func removeSame() {
         let result: [Element] = removeSameElement()
         removeAll()
@@ -35,18 +56,16 @@ extension Array where Element: Equatable {
     }
 }
 
-/// 删除数组内重复元素
 extension Array where Element: NSObject {
     
-    func makeObjectsPerform(_ aSelector: Selector, with anArgument: Any? = nil) {
-        if let arg = anArgument {
-            for element in self {
-                let _ = element.perform(aSelector, with: arg)
-            }
-        } else {
-            for element in self {
-                let _ = element.perform(aSelector)
-            }
+    /// 元素调用函数
+    /// - Parameters:
+    ///   - aSelector: 函数
+    ///   - object1: 参数1
+    ///   - object2: 参数2
+    func makeObjectsPerform(_ aSelector: Selector, with object1: Any! = nil, with object2: Any! = nil) {
+        for element in self {
+            let _ = element.perform(aSelector, with: object1, with: object2)
         }
     }
 }

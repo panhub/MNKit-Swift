@@ -119,10 +119,10 @@ class MNPageControl: UIView {
     }
     
     override func didMoveToSuperview() {
+        super.didMoveToSuperview()
         if let _ = superview, contentView.subviews.count <= 0 {
             reloadData()
         }
-        super.didMoveToSuperview()
     }
     
     /// 刷新指示器

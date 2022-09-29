@@ -365,6 +365,8 @@ class MNDatePicker: UIView {
 
 extension MNDatePicker {
     
+    /// let dateString = Date.now.formatted(.iso8601.year().month().day().dateSeparator(.dash).dateTimeSeparator(.space).time(includingFractionalSeconds: false) .timeSeparator(.colon))
+    
     /// 获取选择器最佳尺寸
     var contentSize: CGSize {
         if components.count <= 0 {

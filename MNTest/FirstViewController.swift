@@ -10,6 +10,16 @@ import UIKit
 class FirstViewController: MNBaseViewController {
     
     let pageControl = MNPageControl()
+    
+    var keyboard: MNNumberKeyboard {
+        let p = MNNumberKeyboard()
+        p.delegate = self
+        p.decimalCapable = false
+        p.leftKeyType = .done
+        p.rightKeyType = .none
+        p.isScramble = true
+        return p
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,6 +53,17 @@ class FirstViewController: MNBaseViewController {
         pageControl.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
         pageControl.layer.cornerRadius = pageControl.height/2.0
         contentView.addSubview(pageControl)
+        
+        let textField = UITextField(frame: CGRect(x: 0.0, y: 0.0, width: contentView.width - 50.0, height: 55.0))
+        textField.minY = pageControl.maxY + 20.0
+        textField.midX = pageControl.midX
+        textField.backgroundColor = UIColor(all: 245.0)
+        textField.borderStyle = .none
+        textField.layer.cornerRadius = 5.0
+        textField.clipsToBounds = true
+        textField.inputView = keyboard
+        textField.reloadInputViews()
+        contentView.addSubview(textField)
     }
     
     @objc func pick() {
@@ -97,5 +118,12 @@ class FirstViewController: MNBaseViewController {
         pageControl.currentPageIndex = 100
         pageControl.numberOfPages = 7
         pageControl.reloadData()
+    }
+}
+
+extension FirstViewController: MNNumberKeyboardDelegate {
+    
+    func numberKeyboardTextDidChange(_ keyboard: MNNumberKeyboard) {
+        print(keyboard.text)
     }
 }
