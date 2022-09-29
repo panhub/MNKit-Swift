@@ -8,6 +8,8 @@
 import UIKit
 
 class FirstViewController: MNBaseViewController {
+    
+    let pageControl = MNPageControl()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,15 +33,16 @@ class FirstViewController: MNBaseViewController {
         b.addTarget(self, action: #selector(pick), for: .touchUpInside)
         contentView.addSubview(b)
         
-        let pageControl = MNPageControl()
         pageControl.spacing = 10.0
         pageControl.numberOfPages = 5
         //pageControl.pageIndicatorTintColor = .red
         pageControl.backgroundColor = UIColor(all: 245.0)
-        contentView.addSubview(pageControl)
+        pageControl.reloadData()
         pageControl.midX = b.midX
         pageControl.minY = b.maxY + 20.0
+        pageControl.autoresizingMask = [.flexibleTopMargin, .flexibleBottomMargin, .flexibleLeftMargin, .flexibleRightMargin]
         pageControl.layer.cornerRadius = pageControl.height/2.0
+        contentView.addSubview(pageControl)
     }
     
     @objc func pick() {
@@ -89,15 +92,10 @@ class FirstViewController: MNBaseViewController {
         // Pass the selected object to the new view controller.
     }
     */
-}
-
-extension FirstViewController: MNTailorControllerDelegate {
-
-    func tailorControllerDidCancel() {
-        print("--------")
-    }
     
-    func tailorController(_ tailorController: MNTailorViewController, didTailorVideoAtPath videoPath: String) {
-        print(videoPath)
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        pageControl.currentPageIndex = 100
+        pageControl.numberOfPages = 7
+        pageControl.reloadData()
     }
 }

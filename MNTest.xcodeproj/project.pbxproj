@@ -11,6 +11,7 @@
 		3B3E02A528B7E9310062AB8A /* UICollectionView+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02A428B7E9310062AB8A /* UICollectionView+MNEditing.swift */; };
 		3B3E02A728B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02A628B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift */; };
 		3B3E02AC28B7F76B0062AB8A /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B3E02AB28B7F76B0062AB8A /* CollectionViewCell.swift */; };
+		3B47DA2928E470E200020291 /* MNNumberKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B47DA2828E470E200020291 /* MNNumberKeyboard.swift */; };
 		3B5CE56628B3674A00527F55 /* UITableViewCell+MNEditing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */; };
 		3B5CE56B28B36F5700527F55 /* MNEditingObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B5CE56A28B36F5700527F55 /* MNEditingObserver.swift */; };
 		3B7FBD0528E080850057B0A4 /* MNTailorTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B7FBD0428E080850057B0A4 /* MNTailorTimeView.swift */; };
@@ -221,6 +222,7 @@
 		3B3E02A428B7E9310062AB8A /* UICollectionView+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+MNEditing.swift"; sourceTree = "<group>"; };
 		3B3E02A628B7E9930062AB8A /* UICollectionViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewCell+MNEditing.swift"; sourceTree = "<group>"; };
 		3B3E02AB28B7F76B0062AB8A /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
+		3B47DA2828E470E200020291 /* MNNumberKeyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNNumberKeyboard.swift; sourceTree = "<group>"; };
 		3B5CE56528B3674A00527F55 /* UITableViewCell+MNEditing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+MNEditing.swift"; sourceTree = "<group>"; };
 		3B5CE56A28B36F5700527F55 /* MNEditingObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingObserver.swift; sourceTree = "<group>"; };
 		3B7FBD0428E080850057B0A4 /* MNTailorTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorTimeView.swift; sourceTree = "<group>"; };
@@ -708,6 +710,7 @@
 				3BC9B8D328D023F6003A6D40 /* MNButton.swift */,
 				3BD8F82B28E2D18400CDC2D7 /* MNPageControl.swift */,
 				3B01165328D4506300408903 /* MNDatePicker.swift */,
+				3B47DA2828E470E200020291 /* MNNumberKeyboard.swift */,
 				3B5CE56728B36CFC00527F55 /* MNEditingView */,
 				3BDB6F26289928E40023D5E3 /* MNCollectionViewLayout */,
 				3BDB6F9D28992DFA0023D5E3 /* MNSecureView */,
@@ -1053,6 +1056,7 @@
 				3BDB6F8F289928E40023D5E3 /* HTTPBodyAdaptor.swift in Sources */,
 				3BDB707728992DFA0023D5E3 /* Date+MNExtension.swift in Sources */,
 				3BDB701C28992DFA0023D5E3 /* MNAuthorization.swift in Sources */,
+				3B47DA2928E470E200020291 /* MNNumberKeyboard.swift in Sources */,
 				3BDB6F96289928E50023D5E3 /* MNEmptyView.swift in Sources */,
 				3B7FBD0528E080850057B0A4 /* MNTailorTimeView.swift in Sources */,
 				3BDB706128992DFA0023D5E3 /* DateFormatter+MNExtension.swift in Sources */,

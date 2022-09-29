@@ -32,6 +32,12 @@ import UIKit
     ///   - indicator: 指示器视图
     ///   - index: 页码索引
     @objc optional func pageControl(_ pageControl: MNPageControl, shouldUpdate indicator: UIView, forPageAt index: Int) -> Void
+    /// 告知即将展示指示器
+    /// - Parameters:
+    ///   - pageControl: 指示器
+    ///   - indicator: 指示器视图
+    ///   - index: 页码索引
+    @objc optional func pageControl(_ pageControl: MNPageControl, willDisplay indicator: UIView, forPageAt index: Int) -> Void
     /// 告知已加载指示器视图
     /// - Parameters:
     ///   - pageControl: 指示器
@@ -62,11 +68,6 @@ class MNPageControl: UIView {
     var indicatorTouchInset: UIEdgeInsets = .zero
     /// 页码数量 代理优先
     var numberOfPages: Int = 0
-    /// 当前选中的页码索引
-    var currentPageIndex: Int = 0 {
-        willSet { updateIndicator(index: currentPageIndex, selected: false) }
-        didSet { updateIndicator(index: currentPageIndex, selected: true) }
-    }
     /// 指示器颜色
     var pageIndicatorTintColor: UIColor? = UIColor(red: 215.0/255.0, green: 215.0/255.0, blue: 215.0/255.0, alpha: 1.0)
     /// 当前指示器颜色
@@ -79,6 +80,27 @@ class MNPageControl: UIView {
     private var cache: [Int:UIView] = [Int:UIView]()
     /// 放置指示器
     private let contentView: UIView = UIView()
+    /// 记录当前页码索引
+    private var currentIndex: Int = 0
+    /// 当前选中的页码索引
+    var currentPageIndex: Int {
+        get { currentIndex }
+        set {
+            let subviews = contentView.subviews
+            guard newValue != currentIndex, newValue < subviews.count else { return }
+            let oldIndex = currentIndex
+            currentIndex = newValue
+            let indicator = subviews[newValue]
+            let oldIndicator = subviews[oldIndex]
+            if let delegate = delegate, delegate.responds(to: #selector(delegate.pageControl(_:shouldUpdate:forPageAt:))) {
+                delegate.pageControl?(self, shouldUpdate: oldIndicator, forPageAt: oldIndex)
+                delegate.pageControl?(self, shouldUpdate: indicator, forPageAt: newValue)
+            } else {
+                oldIndicator.backgroundColor = pageIndicatorTintColor
+                indicator.backgroundColor = currentPageIndicatorTintColor
+            }
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -97,7 +119,7 @@ class MNPageControl: UIView {
     }
     
     override func didMoveToSuperview() {
-        if let _ = superview {
+        if let _ = superview, contentView.subviews.count <= 0 {
             reloadData()
         }
         super.didMoveToSuperview()
@@ -107,8 +129,9 @@ class MNPageControl: UIView {
     func reloadData() {
         
         // 删除指示器
-        for subview in contentView.subviews {
+        for (index, subview) in contentView.subviews.enumerated() {
             subview.removeFromSuperview()
+            delegate?.pageControl?(self, didEndDisplaying: subview, forPageAt: index)
         }
         
         // 指示器数量
@@ -116,6 +139,10 @@ class MNPageControl: UIView {
         
         // 更新位置
         var rect: CGRect = frame
+        let maxX = rect.maxX
+        let maxY = rect.maxY
+        let midX = rect.midX
+        let midY = rect.midY
         if axis == .horizontal {
             rect.size.height = contentInset.top + contentInset.bottom + pageIndicatorSize.height*CGFloat(count > 0 ? 1 : 0)
             rect.size.width = contentInset.left + contentInset.right + pageIndicatorSize.width*CGFloat(count) + spacing*CGFloat(max(0, count - 1))
@@ -123,7 +150,26 @@ class MNPageControl: UIView {
             rect.size.width = contentInset.left + contentInset.right + pageIndicatorSize.width*CGFloat(count > 0 ? 1 : 0)
             rect.size.height = contentInset.top + contentInset.bottom + pageIndicatorSize.height*CGFloat(count) + spacing*CGFloat(max(0, count - 1))
         }
+        var resizingMask: UIView.AutoresizingMask = autoresizingMask
+        if resizingMask.contains(.flexibleWidth) {
+            resizingMask.remove(.flexibleWidth)
+        }
+        if resizingMask.contains(.flexibleHeight) {
+            resizingMask.remove(.flexibleHeight)
+        }
+        autoresizingMask = []
+        if resizingMask.contains(.flexibleLeftMargin), resizingMask.contains(.flexibleRightMargin) {
+            rect.origin.x = midX - rect.width/2.0
+        } else if resizingMask.contains(.flexibleLeftMargin) {
+            rect.origin.x = maxX - rect.width
+        }
+        if resizingMask.contains(.flexibleTopMargin), resizingMask.contains(.flexibleBottomMargin) {
+            rect.origin.y = midY - rect.height/2.0
+        } else if resizingMask.contains(.flexibleTopMargin) {
+            rect.origin.y = maxY - rect.height
+        }
         frame = rect
+        autoresizingMask = resizingMask
         
         // 添加指示器
         guard count > 0 else { return }
@@ -139,12 +185,14 @@ class MNPageControl: UIView {
             let rect = CGRect(x: x, y: y, width: pageIndicatorSize.width, height: pageIndicatorSize.height)
             
             let indicator = indicator(index: index)
-            indicator.frame = rect
+            indicator.frame = CGRect(x: 0.0, y: 0.0, width: rect.width, height: rect.height)
             indicator.backgroundColor = index == currentPageIndex ? currentPageIndicatorTintColor : pageIndicatorTintColor
-            contentView.addSubview(indicator)
-            delegate?.pageControl?(self, didEndDisplaying: indicator, forPageAt: index)
+            delegate?.pageControl?(self, willDisplay: indicator, forPageAt: index)
+            indicator.autoresizingMask = []
+            indicator.frame = rect
             indicator.clipsToBounds = true
             indicator.layer.cornerRadius = min(pageIndicatorSize.width, pageIndicatorSize.height)/2.0
+            contentView.addSubview(indicator)
         }
     }
     
@@ -153,16 +201,6 @@ class MNPageControl: UIView {
         let indicator: UIView = dataSource?.pageControl?(self, viewForPageIndicator: index) ?? UIView()
         cache[index] = indicator
         return indicator
-    }
-    
-    private func updateIndicator(index: Int, selected: Bool) -> Void {
-        guard index < contentView.subviews.count else { return }
-        let indicator: UIView = contentView.subviews[index]
-        if let delegate = delegate, delegate.responds(to: #selector(delegate.pageControl(_:shouldUpdate:forPageAt:))) {
-            delegate.pageControl?(self, didEndDisplaying: indicator, forPageAt: index)
-        } else {
-            indicator.backgroundColor = selected ? currentPageIndicatorTintColor : pageIndicatorTintColor
-        }
     }
     
     private func update(touches: Set<UITouch>, with event: UIEvent?) {
