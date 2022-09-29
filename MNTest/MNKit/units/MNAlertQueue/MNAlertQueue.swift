@@ -31,6 +31,7 @@ struct MNAlertAction {
         // 删除
         case destructive = 2
     }
+    
     /// 样式
     let style: MNAlertAction.Style
     /// 事件回调
@@ -116,7 +117,7 @@ class MNAlertQueue: UIView {
     ///   - destructiveButtonTitle: 删除按钮标题
     ///   - otherButtonTitles: 其它按钮标题
     ///   - clickedHandler: 事件回调
-    convenience init(title: MNAlertStringConvertible? = nil, message: MNAlertStringConvertible? = nil, cancelButtonTitle: MNAlertStringConvertible? = nil, destructiveButtonTitle: MNAlertStringConvertible? = nil, otherButtonTitles: MNAlertStringConvertible?..., clicked clickedHandler: ((Int) -> Void)? = nil) {
+    convenience init(title: MNAlertStringConvertible? = nil, message: MNAlertStringConvertible? = nil, cancelButtonTitle: MNAlertStringConvertible? = nil, destructiveButtonTitle: MNAlertStringConvertible? = nil, otherButtonTitles: MNAlertStringConvertible?..., handler clickedHandler: ((Int) -> Void)? = nil) {
         self.init(title: title, message: message)
         var elements: [(MNAlertAction.Style, MNAlertStringConvertible)] = [(MNAlertAction.Style, MNAlertStringConvertible)]()
         for otherButtonTitle in otherButtonTitles {
@@ -179,7 +180,7 @@ class MNAlertQueue: UIView {
     
     /// 结束动画
     /// - Parameter action: 点击的按钮
-    final func dismiss(clicked action: MNAlertAction? = nil) {
+    final func dismiss(action: MNAlertAction? = nil) {
         dismissAnimation { [weak self] _ in
             if let self = self {
                 self.close()
@@ -205,7 +206,7 @@ extension MNAlertQueue {
     /// - Parameter sender: 按钮
     @objc final func actionButtonTouchUpInside(_ sender: UIView) {
         let action: MNAlertAction? = (actions.count > 0 && sender.tag < actions.count) ? actions[sender.tag] : nil
-        dismiss(clicked: action)
+        dismiss(action: action)
     }
     
     /// 背景点击事件

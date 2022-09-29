@@ -83,16 +83,20 @@ class MNActionSheet: MNAlertQueue {
         let groups: [[MNAlertAction]] = [others, destructives]
         
         // 创建按钮
+        var tag: Int = 0
         for (index, group) in groups.enumerated() {
             for (idx, action) in group.enumerated() {
                 
                 let button: UIButton = UIButton(type: .custom)
+                button.tag = tag
                 button.minY = y
                 button.height = actionHeight
                 button.width = contentView.width
                 button.setAttributedTitle(action.attributedTitle, for: .normal)
                 button.addTarget(self, action: #selector(actionButtonTouchUpInside(_:)), for: .touchUpInside)
                 contentView.addSubview(button)
+                
+                tag += 1
                 
                 if idx < (group.count - 1) {
                     
