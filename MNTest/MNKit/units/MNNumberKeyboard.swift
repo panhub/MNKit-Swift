@@ -8,87 +8,82 @@
 import UIKit
 
 @objc protocol MNNumberKeyboardDelegate: NSObjectProtocol {
-    
-    @objc optional func numberKeyboard(_ keyboard: MNNumberKeyboard, shouldClick key: MNNumberKeyboard.Key) -> Bool
-    //
+    /// 询问是否响应数字按键
+    /// - Parameters:
+    ///   - keyboard: 数字键盘
+    ///   - key: 按键标记
+    /// - Returns: 是否响应按键
+    @objc optional func numberKeyboard(_ keyboard: MNNumberKeyboard, shouldRespond key: MNNumberKeyboard.Key) -> Bool
+    /// 键盘文本变化
+    /// - Parameter keyboard: 数字键盘
     @objc optional func numberKeyboardTextDidChange(_ keyboard: MNNumberKeyboard) -> Void
-    
-    @objc optional func numberKeyboardReturnButtonClicked(_ keyboard: MNNumberKeyboard) -> Void
+    /// 数字键盘确定按钮触发
+    /// - Parameter keyboard: 数字键盘
+    @objc optional func numberKeyboardDoneButtonClicked(_ keyboard: MNNumberKeyboard) -> Void
 }
 
 class MNNumberKeyboard: UIView {
     
+    /// 数字键盘按键标记
     @objc enum Key: Int {
-        case zero, one, two, three, four, five, six, seven, eight, nine, decimal, done, delete, space
+        case zero, one, two, three, four, five, six, seven, eight, nine, decimal, delete, clear, done, none
     }
     
+    /// 数字键盘配置类型
     enum KeyType {
-        case none, decimal, done, delete
+        case none, decimal, delete, clear, done
+    }
+    
+    /// 数字键盘配置
+    struct Configuration {
+        /// 按键间隔
+        var spacing: CGFloat = 1.5
+        /// 是否可以输入小数点
+        var decimalCapable: Bool = true
+        /// 按键高度
+        var keyButtonHeight: CGFloat = 55.0
+        /// 按键标题字体
+        var titleFont: UIFont?
+        /// 是否乱序排列数字
+        var isScramble: Bool = false
+        /// 左键类型
+        var leftKeyType: KeyType = .none
+        /// 右键类型
+        var rightKeyType: KeyType = .none
+        /// 按键标题颜色
+        var titleColor: UIColor?
+        /// 按键背景颜色
+        var keyBackgroundColor: UIColor?
+        /// 按键高亮颜色
+        var keyHighlightedColor: UIColor?
     }
     
     /// 输入结果
     private(set) var text: String = ""
-    /// 按键间隔
-    var spacing: CGFloat = 1.5
-    /// 是否可以输入小数点
-    var decimalCapable: Bool = true
-    /// 按键标题字体
-    var titleFont: UIFont?
-    /// 是否乱序排列数字
-    var isScramble: Bool = false
-    /// 左键类型
-    var leftKeyType: KeyType = .decimal
-    /// 右键类型
-    var rightKeyType: KeyType = .done
-    /// 按键标题颜色
-    var titleColor: UIColor?
-    /// 按键背景颜色
-    var keyBackgroundColor: UIColor?
-    /// 按键高亮颜色
-    var keyHighlightedColor: UIColor?
     /// 事件代理
     weak var delegate: MNNumberKeyboardDelegate?
     
-    override init(frame: CGRect) {
-        super.init(frame: CGRect(x: 0.0, y: 0.0, width: UIScreen.main.bounds.width, height: 1.0))
+    override convenience init(frame: CGRect) {
+        self.init(configuration: Configuration())
+    }
+    
+    /// 构造数字键盘
+    /// - Parameter configuration: 数字键盘配置
+    required init(configuration: Configuration) {
+        super.init(frame: CGRect(x: 0.0, y: 0.0, width: UIScreen.main.bounds.width, height: 0.0))
         
         backgroundColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func willMove(toSuperview newSuperview: UIView?) {
-        if let _ = newSuperview, subviews.count <= 0 {
-            reloadKeys()
-        }
-        super.willMove(toSuperview: newSuperview)
-    }
-    
-    override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        if let _ = superview, subviews.count <= 0 {
-            reloadKeys()
-        }
-    }
-    
-    func reloadKeys() {
-        
-        for subview in subviews {
-            subview.removeFromSuperview()
-        }
         
         let columns: Int = 3
         let height: CGFloat = 55.0
-        let spacing: CGFloat = max(spacing, 0.0)
+        let spacing: CGFloat = max(configuration.spacing, 0.0)
         let width: CGFloat = ceil((frame.width - spacing*CGFloat(columns - 1))/CGFloat(columns))
-        let titleFont = titleFont ?? .systemFont(ofSize: 20.0, weight: .medium)
-        let titleColor = titleColor ?? .black
-        let backgroundImage = UIImage(color: keyBackgroundColor ?? .white)
-        let highlightedImage = UIImage(color: keyHighlightedColor ?? UIColor(red: 169.0/255.0, green: 169.0/255.0, blue: 169.0/255.0, alpha: 1.0))
+        let titleFont = configuration.titleFont ?? .systemFont(ofSize: 20.0, weight: .medium)
+        let titleColor = configuration.titleColor ?? .black
+        let backgroundImage = UIImage(color: configuration.keyBackgroundColor ?? .white)
+        let highlightedImage = UIImage(color: configuration.keyHighlightedColor ?? UIColor(red: 169.0/255.0, green: 169.0/255.0, blue: 169.0/255.0, alpha: 1.0))
         var keys: [MNNumberKeyboard.Key] = [.one, .two, .three, .four, .five, .six, .seven, .eight, .nine]
-        if isScramble {
+        if configuration.isScramble {
             for index in 1..<keys.count {
                 let random = Int(arc4random_uniform(100000)) % index
                 if random != index {
@@ -96,14 +91,14 @@ class MNNumberKeyboard: UIView {
                 }
             }
         }
-        keys.appendKey(type: leftKeyType)
+        keys.appendKey(type: configuration.leftKeyType)
         keys.append(.zero)
-        keys.appendKey(type: rightKeyType)
+        keys.appendKey(type: configuration.rightKeyType)
         
         CGRect(x: 0.0, y: spacing, width: width, height: height).grid(offset: UIOffset(horizontal: spacing, vertical: spacing), count: keys.count, column: columns) { idx, rect, _ in
             
             let key = keys[idx]
-            guard key != .space else { return }
+            guard key != .none else { return }
             
             var button: UIButton
             if #available(iOS 15.0, *) {
@@ -142,13 +137,17 @@ class MNNumberKeyboard: UIView {
         self.height = (height + spacing)*ceil(CGFloat(keys.count)/CGFloat(columns)) + MN_TAB_SAFE_HEIGHT
     }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     @objc private func keyButtonTouchUpInside(_ sender: UIButton) {
         UIDevice.current.playInputClick()
         guard let key = MNNumberKeyboard.Key(rawValue: sender.tag) else { return }
-        guard (delegate?.numberKeyboard?(self, shouldClick: key) ?? true) == true else { return }
+        guard (delegate?.numberKeyboard?(self, shouldRespond: key) ?? true) == true else { return }
         // 确定按钮
         if key == .done {
-            delegate?.numberKeyboardReturnButtonClicked?(self)
+            delegate?.numberKeyboardDoneButtonClicked?(self)
             return
         }
         // 删除
@@ -159,12 +158,20 @@ class MNNumberKeyboard: UIView {
             }
             return
         }
+        // 清除
+        if key == .clear {
+            if text.count > 0 {
+                text.removeAll()
+                delegate?.numberKeyboardTextDidChange?(self)
+            }
+            return
+        }
         // 不可直接输入小数点或重复输入小数点
         if key == .decimal {
             guard text.count > 0, text.contains(".") == false else { return }
         }
         // 追加字符
-        let string = key.desc
+        let string = key.stringValue
         text.append(string)
         delegate?.numberKeyboardTextDidChange?(self)
     }
@@ -221,11 +228,11 @@ extension MNNumberKeyboard: UIInputViewAudioFeedback {
 extension MNNumberKeyboard.Key {
     
     var title: String {
-        guard self == .decimal else { return desc }
+        guard self == .decimal else { return stringValue }
         return "·"
     }
     
-    var desc: String {
+    var stringValue: String {
         switch self {
         case .zero: return "0"
         case .one: return "1"
@@ -240,7 +247,8 @@ extension MNNumberKeyboard.Key {
         case .decimal: return "."
         case .done: return "done"
         case .delete: return "delete"
-        case .space: return ""
+        case .clear: return "clear"
+        case .none: return ""
         }
     }
 }
@@ -249,14 +257,16 @@ fileprivate extension Array where Element == MNNumberKeyboard.Key {
     
     mutating func appendKey(type: MNNumberKeyboard.KeyType) {
         switch type {
+        case .none:
+            append(.none)
         case .decimal:
             append(.decimal)
         case .delete:
             append(.delete)
+        case .clear:
+            append(.clear)
         case .done:
             append(.done)
-        case .none:
-            append(.space)
         }
     }
 }

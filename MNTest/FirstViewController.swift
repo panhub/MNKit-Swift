@@ -14,10 +14,6 @@ class FirstViewController: MNBaseViewController {
     var keyboard: MNNumberKeyboard {
         let p = MNNumberKeyboard()
         p.delegate = self
-        p.decimalCapable = false
-        p.leftKeyType = .done
-        p.rightKeyType = .none
-        p.isScramble = true
         return p
     }
 
@@ -68,14 +64,19 @@ class FirstViewController: MNBaseViewController {
     
     @objc func pick() {
         
+        
+        
         let alert = MNActionSheet(title: "测试操作表单", message: "测试操作表单哦哦哦")
-        alert.addAction(title: "确定", style: .cancel) { [weak self] action in
+        alert.addAction(title: "取消", style: .cancel) { [weak self] action in
+            print(action.id)
             self?.view.showMsgToast(action.attributedTitle.string)
         }
-        alert.addAction(title: "取消", style: .default) { [weak self] action in
+        alert.addAction(title: "默认", style: .default) { [weak self] action in
+            print(action.id)
             self?.view.showMsgToast(action.attributedTitle.string)
         }
-        alert.addAction(title: "取消", style: .destructive) { [weak self] action in
+        alert.addAction(title: "删除", style: .destructive) { [weak self] action in
+            print(action.id)
             self?.view.showMsgToast(action.attributedTitle.string)
         }
         alert.show()
@@ -118,6 +119,7 @@ class FirstViewController: MNBaseViewController {
         pageControl.currentPageIndex = 100
         pageControl.numberOfPages = 7
         pageControl.reloadData()
+        view.endEditing(true)
     }
 }
 
