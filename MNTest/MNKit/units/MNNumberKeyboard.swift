@@ -75,7 +75,7 @@ class MNNumberKeyboard: UIView {
         backgroundColor = UIColor(red: 245.0/255.0, green: 245.0/255.0, blue: 245.0/255.0, alpha: 1.0)
         
         let columns: Int = 3
-        let height: CGFloat = 55.0
+        let height: CGFloat = configuration.keyButtonHeight
         let spacing: CGFloat = max(configuration.spacing, 0.0)
         let width: CGFloat = ceil((frame.width - spacing*CGFloat(columns - 1))/CGFloat(columns))
         let titleFont = configuration.titleFont ?? .systemFont(ofSize: 20.0, weight: .medium)

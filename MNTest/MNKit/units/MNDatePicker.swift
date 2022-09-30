@@ -26,7 +26,7 @@ fileprivate extension MNDatePicker.Module {
     /// 后缀
     var suffix: String {
         switch self {
-        case .spacing(let suffix): return suffix
+        case .space(let suffix): return suffix
         case .year(abbr: _, suffix: let suffix): return suffix
         case .month(abbr: _, lang: _, suffix: let suffix): return suffix
         case .day(abbr: _, suffix: let suffix): return suffix
@@ -229,12 +229,12 @@ class MNDatePicker: UIView {
         /// 午段（上午/下午）
         case stage
         /// 间隔（后缀）
-        case spacing(String)
+        case space(String)
         /// 年（是否简写 后缀）
         case year(abbr: Bool, suffix: String)
         /// 月（是否简写 语言 后缀）
         case month(abbr: Bool, lang: MNDatePicker.Language, suffix: String)
-        /// 天（是否简写 后缀）
+        /// 日（是否简写 后缀）
         case day(abbr: Bool, suffix: String)
         /// 时（是否简写 语言 是否12时制 后缀）
         case hour(abbr: Bool, lang: MNDatePicker.Language, clock12: Bool, suffix: String)
@@ -257,12 +257,16 @@ class MNDatePicker: UIView {
             self.module = module
         }
         
-        func widthToFit(using font: UIFont, append adding: CGFloat) {
+        /// 找出最宽的项并追加宽度作为配件宽度
+        /// - Parameters:
+        ///   - font: 字体限制
+        ///   - padding: 追加宽度
+        func widthToFit(font: UIFont, padding: CGFloat) {
             let width = rows.reduce(0.0, { partialResult, string in
                 let w = (string as NSString).size(withAttributes: [.font:font]).width
                 return max(w, partialResult)
             })
-            self.width = ceil(width) + adding
+            self.width = ceil(width) + padding
         }
     }
     
@@ -365,7 +369,7 @@ class MNDatePicker: UIView {
 
 extension MNDatePicker {
     
-    /// let dateString = Date.now.formatted(.iso8601.year().month().day().dateSeparator(.dash).dateTimeSeparator(.space).time(includingFractionalSeconds: false) .timeSeparator(.colon))
+    ///let dateString = Date.now.formatted(.iso8601.year().month().day().dateSeparator(.dash).dateTimeSeparator(.space).time(includingFractionalSeconds: false) .timeSeparator(.colon))
     
     /// 获取选择器最佳尺寸
     var contentSize: CGSize {
@@ -585,7 +589,7 @@ extension MNDatePicker {
                 }
                 component.rows.append(string)
             }
-            component.widthToFit(using: font, append: spacing)
+            component.widthToFit(font: font, padding: spacing)
             components.append(component)
             
             append(spacing: module.suffix)
@@ -595,7 +599,7 @@ extension MNDatePicker {
         if let module = modules.month {
             let component = Component(module: module)
             component.rows = months(of: module.language, abbr: module.isAbbr)
-            component.widthToFit(using: font, append: spacing)
+            component.widthToFit(font: font, padding: spacing)
             components.append(component)
             
             append(spacing: module.suffix)
@@ -629,7 +633,7 @@ extension MNDatePicker {
                 // 时段
                 let component = Component(module: .stage)
                 component.rows = stages(of: module.language, abbr: isAbbr)
-                component.widthToFit(using: font, append: 10.0)
+                component.widthToFit(font: font, padding: 10.0)
                 components.append(component)
             }
             
@@ -739,9 +743,9 @@ extension MNDatePicker {
     /// - Parameter suffix: 后缀内容
     private func append(spacing suffix: String) {
         guard suffix.count > 0 else { return }
-        let component = Component(module: .spacing(suffix))
+        let component = Component(module: .space(suffix))
         component.rows.append(suffix)
-        component.widthToFit(using: font ?? .systemFont(ofSize: 16.0, weight: .medium), append: 0.0)
+        component.widthToFit(font: font ?? .systemFont(ofSize: 16.0, weight: .medium), padding: 0.0)
         components.append(component)
     }
     

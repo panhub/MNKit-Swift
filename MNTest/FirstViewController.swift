@@ -64,20 +64,8 @@ class FirstViewController: MNBaseViewController {
     
     @objc func pick() {
         
-        
-        
-        let alert = MNActionSheet(title: "测试操作表单", message: "测试操作表单哦哦哦")
-        alert.addAction(title: "取消", style: .cancel) { [weak self] action in
-            print(action.id)
-            self?.view.showMsgToast(action.attributedTitle.string)
-        }
-        alert.addAction(title: "默认", style: .default) { [weak self] action in
-            print(action.id)
-            self?.view.showMsgToast(action.attributedTitle.string)
-        }
-        alert.addAction(title: "删除", style: .destructive) { [weak self] action in
-            print(action.id)
-            self?.view.showMsgToast(action.attributedTitle.string)
+        let alert = MNActionSheet(title: "测试弹窗", message: "正在测试弹窗信息?", cancelButtonTitle: "取消", destructiveButtonTitle: "删除", otherButtonTitles: "确定") { idx in
+            print(idx)
         }
         alert.show()
         return
