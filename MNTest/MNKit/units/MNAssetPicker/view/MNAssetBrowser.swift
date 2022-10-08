@@ -48,9 +48,9 @@ class MNAssetBrowser: UIView {
     /**是否在销毁时删除本地资源文件*/
     var isCleanWhenDeinit: Bool = false
     /**是否在点击时退出*/
-    var isAllowsDismissWhenTapped: Bool = false
+    var dismissWhenTapped: Bool = false
     /**是否在下拉时退出*/
-    var isAllowsDismissWhenPulled: Bool = true
+    var dismissWhenPulled: Bool = true
     /**指定状态栏样式*/
     var statusBarStyle: UIStatusBarStyle = .lightContent
     /**状态栏更新回调*/
@@ -248,14 +248,14 @@ class MNAssetBrowser: UIView {
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(double(recognizer:)))
         doubleTap.numberOfTapsRequired = 2
         addGestureRecognizer(doubleTap)
-        if isAllowsDismissWhenTapped {
+        if dismissWhenTapped {
             let singleTap = UITapGestureRecognizer(target: self, action: #selector(single(recognizer:)))
             singleTap.delegate = self
             singleTap.numberOfTapsRequired = 1
             singleTap.require(toFail: doubleTap)
             addGestureRecognizer(singleTap)
         }
-        if isAllowsDismissWhenPulled {
+        if dismissWhenPulled {
             let pan = UIPanGestureRecognizer(target: self, action: #selector(pan(recognizer:)))
             addGestureRecognizer(pan)
         }
