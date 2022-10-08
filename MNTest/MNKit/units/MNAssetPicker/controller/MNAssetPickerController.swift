@@ -399,7 +399,7 @@ extension MNAssetPickerController: MNAssetCellDelegate {
         browser.backgroundColor = .black
         browser.isCleanWhenDeinit = true
         browser.statusBarStyle = .lightContent
-        browser.isAllowsDismissWhenPulled = true
+        browser.dismissWhenPulled = true
         browser.statusBarUpdateHandler = { [weak self] style, hidden, animated in
             self?.statusBarStyle = style
             self?.statusBarHidden = hidden

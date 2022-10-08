@@ -19,26 +19,23 @@ fileprivate extension MNDatePicker.Module {
         case .hour(abbr: let flag, lang: _, clock12: _, suffix: _): return flag
         case .minute(abbr: let flag, suffix: _): return flag
         case .second(abbr: let flag, suffix: _): return flag
-        default: return false
         }
     }
     
     /// 后缀
     var suffix: String {
         switch self {
-        case .space(let suffix): return suffix
         case .year(abbr: _, suffix: let suffix): return suffix
         case .month(abbr: _, lang: _, suffix: let suffix): return suffix
         case .day(abbr: _, suffix: let suffix): return suffix
         case .hour(abbr: _, lang: _, clock12: _, suffix: let suffix): return suffix
         case .minute(abbr: _, suffix: let suffix): return suffix
         case .second(abbr: _, suffix: let suffix): return suffix
-        default: return ""
         }
     }
     
     /// 语言
-    var language: MNDatePicker.Language {
+    var lang: MNDatePicker.Language {
         switch self {
         case .month(abbr: _, lang: let lang, suffix: _): return lang
         case .hour(abbr: _, lang: let lang, clock12: _, suffix: _): return lang
@@ -131,7 +128,7 @@ fileprivate extension Array where Element: MNDatePicker.Component {
     /// 获取时间段的配件索引
     var indexOfStage: Int? {
         for (index, element) in self.enumerated() {
-            switch element.module {
+            switch element.style {
             case .stage: return index
             default: break
             }
@@ -142,8 +139,8 @@ fileprivate extension Array where Element: MNDatePicker.Component {
     /// 获取年的配件索引
     var indexOfYear: Int? {
         for (index, element) in self.enumerated() {
-            switch element.module {
-            case .year(abbr: _, suffix: _): return index
+            switch element.style {
+            case .year: return index
             default: break
             }
         }
@@ -153,8 +150,8 @@ fileprivate extension Array where Element: MNDatePicker.Component {
     /// 获取月的配件索引
     var indexOfMonth: Int? {
         for (index, element) in self.enumerated() {
-            switch element.module {
-            case .month(abbr: _, lang: _, suffix: _): return index
+            switch element.style {
+            case .month: return index
             default: break
             }
         }
@@ -164,8 +161,8 @@ fileprivate extension Array where Element: MNDatePicker.Component {
     /// 获取日的配件索引
     var indexOfDay: Int? {
         for (index, element) in self.enumerated() {
-            switch element.module {
-            case .day(abbr: _, suffix: _): return index
+            switch element.style {
+            case .day: return index
             default: break
             }
         }
@@ -175,8 +172,8 @@ fileprivate extension Array where Element: MNDatePicker.Component {
     /// 获取时的配件索引
     var indexOfHour: Int? {
         for (index, element) in self.enumerated() {
-            switch element.module {
-            case .hour(abbr: _, lang: _, clock12: _, suffix: _): return index
+            switch element.style {
+            case .hour: return index
             default: break
             }
         }
@@ -186,8 +183,8 @@ fileprivate extension Array where Element: MNDatePicker.Component {
     /// 获取分的配件索引
     var indexOfMinute: Int? {
         for (index, element) in self.enumerated() {
-            switch element.module {
-            case .minute(abbr: _, suffix: _): return index
+            switch element.style {
+            case .minute: return index
             default: break
             }
         }
@@ -197,8 +194,8 @@ fileprivate extension Array where Element: MNDatePicker.Component {
     /// 获取秒的配件索引
     var indexOfSecond: Int? {
         for (index, element) in self.enumerated() {
-            switch element.module {
-            case .second(abbr: _, suffix: _): return index
+            switch element.style {
+            case .month: return index
             default: break
             }
         }
@@ -226,10 +223,6 @@ class MNDatePicker: UIView {
     
     /// 日期组件
     enum Module {
-        /// 午段（上午/下午）
-        case stage
-        /// 间隔（后缀）
-        case space(String)
         /// 年（是否简写 后缀）
         case year(abbr: Bool, suffix: String)
         /// 月（是否简写 语言 后缀）
@@ -246,15 +239,20 @@ class MNDatePicker: UIView {
     
     /// 日期配件模型
     fileprivate class Component {
+        
+        enum Style {
+            case year, month, day, hour, minute, second, stage, suffix
+        }
+        
         /// 配件类型
-        let module: MNDatePicker.Module
+        let style: MNDatePicker.Component.Style
         /// 行数
         var rows: [String] = [String]()
         /// 配件宽度
         var width: CGFloat = 0.0
         
-        init(module: MNDatePicker.Module) {
-            self.module = module
+        init(style: Style) {
+            self.style = style
         }
         
         /// 找出最宽的项并追加宽度作为配件宽度
@@ -297,11 +295,12 @@ class MNDatePicker: UIView {
         get { picker.tintColor }
         set { picker.tintColor = newValue }
     }
+    /// 适配选择器位置
     override var frame: CGRect {
         get { super.frame }
         set {
             super.frame = newValue
-            picker.frame = CGRect(x: 0.0, y: 0.0, width: frame.width, height: frame.height)
+            picker.frame = bounds
         }
     }
     /// 记录当前时间
@@ -411,11 +410,11 @@ extension MNDatePicker {
         }
         // 时
         var hour: String = time.hour
-        if let index = components.indexOfHour {
+        if let index = components.indexOfHour, let module = modules.hour {
             let component = components[index]
             let row = picker.selectedRow(inComponent: index)
             var value: Int = NSDecimalNumber(string: component.rows[row]).intValue
-            if component.module.is12HourClock {
+            if module.is12HourClock {
                 // 需要转换为24时制
                 if value == 12 { value = 0 }
                 if let section = components.indexOfStage, picker.selectedRow(inComponent: section) == 1 {
@@ -471,11 +470,12 @@ extension MNDatePicker {
         let time: Time = Time(year: times[0], month: times[1], day: times[2], hour: times[3], minute: times[4], second: times[5])
         
         for (index, component) in components.enumerated() {
-            switch component.module {
-            case .year(abbr: let isAbbr, suffix: _):
+            switch component.style {
+            case .year:
                 // 年
+                guard let module = modules.year else { continue }
                 var string: String = time.year
-                if isAbbr {
+                if module.isAbbr {
                     let begin = string.startIndex
                     let end = string.index(string.startIndex, offsetBy: 1)
                     string.removeSubrange(begin...end)
@@ -483,25 +483,29 @@ extension MNDatePicker {
                 if let idx = component.rows.firstIndex(of: string) {
                     picker.selectRow(idx, inComponent: index, animated: animated)
                 }
-            case .month(abbr: let isAbbr, lang: let lang, suffix: _):
+            case .month:
                 // 月
+                guard let module = modules.month else { continue }
                 let month: Int = NSDecimalNumber(string: time.month).intValue
-                let months: [String] = months(of: lang, abbr: isAbbr)
+                let months: [String] = months(of: module.lang, abbr: module.isAbbr)
                 let string: String = months[month - 1]
                 if let idx = component.rows.firstIndex(of: string) {
                     picker.selectRow(idx, inComponent: index, animated: animated)
                 }
-            case .day(abbr: let isAbbr, suffix: _):
+            case .day:
                 // 天
+                guard let module = modules.day else { continue }
                 var string: String = time.day
-                if isAbbr == false, string.count == 1 {
+                if module.isAbbr == false, string.count == 1 {
                     string.insert("0", at: string.startIndex)
                 }
                 if let idx = component.rows.firstIndex(of: string) {
                     picker.selectRow(idx, inComponent: index, animated: animated)
                 }
-            case .hour(abbr: let isAbbr, lang: _, clock12: let is12HourClock, suffix: _):
+            case .hour:
                 // 时段
+                guard let module = modules.hour else { continue }
+                let is12HourClock = module.is12HourClock
                 let hour: Int = NSDecimalNumber(string: time.hour).intValue
                 if is12HourClock, let section = components.indexOfStage {
                     let idx = hour < 12 ? 0 : 1
@@ -516,25 +520,27 @@ extension MNDatePicker {
                         string = array[3]
                     }
                 }
-                if isAbbr == false, string.count == 1 {
+                if module.isAbbr == false, string.count == 1 {
                     string.insert("0", at: string.startIndex)
                 }
                 if let idx = component.rows.firstIndex(of: string) {
                     picker.selectRow(idx, inComponent: index, animated: animated)
                 }
-            case .minute(abbr: let isAbbr, suffix: _):
+            case .minute:
                 // 分
+                guard let module = modules.minute else { continue }
                 var string: String = time.minute
-                if isAbbr == false, string.count == 1 {
+                if module.isAbbr == false, string.count == 1 {
                     string.insert("0", at: string.startIndex)
                 }
                 if let idx = component.rows.firstIndex(of: string) {
                     picker.selectRow(idx, inComponent: index, animated: animated)
                 }
-            case .second(abbr: let isAbbr, suffix: _):
+            case .second:
                 // 秒
+                guard let module = modules.second else { continue }
                 var string: String = time.second
-                if isAbbr == false, string.count == 1 {
+                if module.isAbbr == false, string.count == 1 {
                     string.insert("0", at: string.startIndex)
                 }
                 if let idx = component.rows.firstIndex(of: string) {
@@ -579,7 +585,7 @@ extension MNDatePicker {
             let maxYear: Int = NSDecimalNumber(string: formatter.string(from: maximumDate)).intValue
             
             let isAbbr: Bool = module.isAbbr
-            let component = Component(module: module)
+            let component = Component(style: .year)
             for year in minYear...maxYear {
                 var string: String = "\(year)"
                 if isAbbr {
@@ -592,24 +598,24 @@ extension MNDatePicker {
             component.widthToFit(font: font, padding: spacing)
             components.append(component)
             
-            append(spacing: module.suffix)
+            append(suffix: module.suffix)
         }
         
         // 月
         if let module = modules.month {
-            let component = Component(module: module)
-            component.rows = months(of: module.language, abbr: module.isAbbr)
+            let component = Component(style: .month)
+            component.rows = months(of: module.lang, abbr: module.isAbbr)
             component.widthToFit(font: font, padding: spacing)
             components.append(component)
             
-            append(spacing: module.suffix)
+            append(suffix: module.suffix)
         }
         
         // 日
         if let module = modules.day {
             
             let isAbbr: Bool = module.isAbbr
-            let component = Component(module: module)
+            let component = Component(style: .day)
             for day in 1..<32 {
                 var string: String = "\(day)"
                 if isAbbr == false, string.count == 1 {
@@ -620,7 +626,7 @@ extension MNDatePicker {
             component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + spacing
             components.append(component)
             
-            append(spacing: module.suffix)
+            append(suffix: module.suffix)
         }
         
         // 时
@@ -631,13 +637,13 @@ extension MNDatePicker {
             
             if is12HourClock {
                 // 时段
-                let component = Component(module: .stage)
-                component.rows = stages(of: module.language, abbr: isAbbr)
+                let component = Component(style: .stage)
+                component.rows = stages(of: module.lang, abbr: isAbbr)
                 component.widthToFit(font: font, padding: 10.0)
                 components.append(component)
             }
             
-            let component = Component(module: module)
+            let component = Component(style: .hour)
             let begin: Int = is12HourClock ? 1 : 0
             let end: Int = is12HourClock ? 13 : 24
             for hour in begin..<end {
@@ -650,14 +656,14 @@ extension MNDatePicker {
             component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + max(10.0, spacing - 3.0)
             components.append(component)
             
-            append(spacing: module.suffix)
+            append(suffix: module.suffix)
         }
         
         // 分
         if let module = modules.minute {
             
             let isAbbr: Bool = module.isAbbr
-            let component = Component(module: module)
+            let component = Component(style: .minute)
             for minute in 0..<60 {
                 var string: String = "\(minute)"
                 if isAbbr == false, string.count == 1 {
@@ -668,14 +674,14 @@ extension MNDatePicker {
             component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + max(10.0, spacing - 3.0)
             components.append(component)
             
-            append(spacing: module.suffix)
+            append(suffix: module.suffix)
         }
         
         // 秒
         if let module = modules.second {
             
             let isAbbr: Bool = module.isAbbr
-            let component = Component(module: module)
+            let component = Component(style: .second)
             for second in 0..<60 {
                 var string: String = "\(second)"
                 if isAbbr == false, string.count == 1 {
@@ -686,7 +692,7 @@ extension MNDatePicker {
             component.width = ceil(("00" as NSString).size(withAttributes: [.font:font]).width) + max(10.0, spacing - 3.0)
             components.append(component)
             
-            append(spacing: module.suffix)
+            append(suffix: module.suffix)
         }
         
         // 刷新选择器
@@ -741,9 +747,9 @@ extension MNDatePicker {
     
     /// 追加后缀(间隔)
     /// - Parameter suffix: 后缀内容
-    private func append(spacing suffix: String) {
+    private func append(suffix: String) {
         guard suffix.count > 0 else { return }
-        let component = Component(module: .space(suffix))
+        let component = Component(style: .suffix)
         component.rows.append(suffix)
         component.widthToFit(font: font ?? .systemFont(ofSize: 16.0, weight: .medium), padding: 0.0)
         components.append(component)
@@ -806,10 +812,10 @@ extension MNDatePicker: UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        switch components[component].module {
-        case .year(abbr: _, suffix: _):
+        switch components[component].style {
+        case .year:
             reloadDayComponent()
-        case .month(abbr: _, lang: _, suffix: _):
+        case .month:
             reloadDayComponent()
         default: break
         }

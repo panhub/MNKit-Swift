@@ -32,12 +32,17 @@ class FirstViewController: MNBaseViewController {
         b.titleLabel.textColor = .white
         //b.layer.cornerRadius = 5.0
         b.clipsToBounds = true
-        b.center = contentView.Center
         b.imagePlacement = .leading
         b.contentInset = UIEdgeInsets(top: 13.0, left: 15.0, bottom: 13.0, right: 15.0)
         b.sizeToFit()
+        b.center = contentView.Center
         b.addTarget(self, action: #selector(pick(_:)), for: .touchUpInside)
         contentView.addSubview(b)
+        
+        let picker = MNDatePicker(frame: CGRect(x: 0.0, y: 0.0, width: contentView.width, height: 230.0))
+        picker.midX = contentView.width/2.0
+        picker.maxY = b.minY
+        contentView.addSubview(picker)
         
         pageControl.spacing = 10.0
         pageControl.numberOfPages = 5

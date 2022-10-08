@@ -50,12 +50,7 @@ import UIKit
 class MNPageControl: UIView {
     
     /// 布局方向
-    enum Axis: Int {
-        case horizontal, vertical
-    }
-    
-    /// 布局方向
-    var axis: Axis = .horizontal
+    var axis: NSLayoutConstraint.Axis = .horizontal
     /// 页码间隔
     var spacing: CGFloat = 10.0
     /// 指示器大小

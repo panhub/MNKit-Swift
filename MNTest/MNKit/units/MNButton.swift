@@ -9,11 +9,6 @@ import UIKit
 
 class MNButton: UIControl {
     
-    /// 布局方向
-    enum Axis: Int {
-        case horizontal, vertical
-    }
-    
     /// 布局位置
     enum Placement: Int {
         case leading, trailing
@@ -30,7 +25,7 @@ class MNButton: UIControl {
     /// 图片与标题间隔
     var spacing: CGFloat = 3.0
     /// 布局方向
-    var axis: Axis = .horizontal
+    var axis: NSLayoutConstraint.Axis = .horizontal
     /// 图片位置
     var imagePlacement: Placement = .leading
     /// 背景图片
