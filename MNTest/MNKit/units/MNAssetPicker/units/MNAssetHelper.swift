@@ -195,11 +195,9 @@ extension MNAssetHelper {
                     isClould = (resource.value(forKey: "locallyAvailable") as? Bool ?? false) == false
                 }
                 asset.update(source: isClould ? .cloud : .local)
-                
                 if let options = options, options.isShowFileSize, asset.fileSize <= 0, isClould == false {
                     // 获取大小
                     var fileSize: Int64 = 0
-                    let resources = PHAssetResource.assetResources(for: phAsset)
                     for resource in resources {
                         fileSize += (resource.value(forKey: "fileSize") as? Int64 ?? 0)
                     }

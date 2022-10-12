@@ -155,6 +155,7 @@ class MNAssetPickerController: UIViewController {
     // 更新资源
     func update(asset: MNAsset) {
         if asset.isSelected {
+            asset.index = 0
             asset.isSelected = false
             if let index = selecteds.firstIndex(of: asset) {
                 selecteds.remove(at: index)
@@ -446,6 +447,7 @@ extension MNAssetPickerController: MNAssetPickerToolDelegate {
             guard let self = self else { return }
             for album in self.albumView.albums {
                 for asset in album.assets.filter({ $0.isSelected || $0.isEnabled == false }) {
+                    asset.index = 0
                     asset.isEnabled = true
                     asset.isSelected = false
                 }
