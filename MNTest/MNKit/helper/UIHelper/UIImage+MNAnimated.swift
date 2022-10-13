@@ -20,7 +20,7 @@ extension UIImage {
     
     // MARK: - 转换图片至数据流
     @objc var gifData: Data? {
-        return Data.data(image: self)
+        return Data(image: self)
     }
     
     // MARK: - 依据情况实例化动图
@@ -72,38 +72,42 @@ extension UIImage {
 // MARK: - 获取图片数据流
 extension Data {
     
-    /// UIImage -> Data
+    /// 依据图片实例化Data
     /// - Parameters:
-    ///   - conImage: 待转化的图片
-    ///   - quality: 压缩质量
-    /// - Returns: Data或nil
-    static func data(image conImage: UIImage?, compression quality: CGFloat = 0.65) -> Data? {
-        guard let image = conImage else { return nil }
-        guard let images = image.images, images.count > 1, image.duration > 0.0, image.isAnimatedImage else {
-            guard let jpegData = image.jpegData(compressionQuality: quality) else { return image.pngData() }
-            return jpegData
+    ///   - image: 图片集合
+    ///   - quality: jpeg时的压缩系数
+    init?(image: UIImage?, compression quality: CGFloat = 0.65) {
+        guard let image = image else { return nil }
+        var imageData: Data = Data()
+        if let images = image.images, images.count > 1, image.duration > 0.0, image.isAnimatedImage {
+            // GIF
+            let count = images.count
+            let delay: TimeInterval = image.duration/TimeInterval(count)
+            let frameProperties: [CFString:[CFString:Any]] = [kCGImagePropertyGIFDictionary:[kCGImagePropertyGIFDelayTime :delay]]
+            var identifier: CFString
+            if #available(iOS 15.0, *) {
+                identifier = UTType.gif.identifier as CFString
+            } else {
+                identifier = kUTTypeGIF
+            }
+            guard let destination = CGImageDestinationCreateWithData(imageData as! CFMutableData, identifier, count, nil) else { return nil }
+            let imageProperties: [CFString:[CFString:Any]] = [kCGImagePropertyGIFDictionary:[kCGImagePropertyGIFLoopCount:0]]
+            CGImageDestinationSetProperties(destination, imageProperties as CFDictionary)
+            for index in 0..<count {
+                guard let cgImage = images[index].cgImage else { continue }
+                CGImageDestinationAddImage(destination, cgImage, frameProperties as CFDictionary)
+            }
+            guard CGImageDestinationFinalize(destination) else { return nil }
+        } else if let jpegData = image.jpegData(compressionQuality: quality) {
+            // JPEG
+            imageData.append(jpegData)
+        } else if let pngData = image.pngData() {
+            // PNG
+            imageData.append(pngData)
         }
-        // GIF
-        let count = images.count
-        let delay: TimeInterval = image.duration/TimeInterval(count)
-        let frameProperties: [CFString:[CFString:Any]] = [kCGImagePropertyGIFDictionary:[kCGImagePropertyGIFDelayTime :delay]]
-        let gifData: NSMutableData = NSMutableData()
-        var identifier: CFString
-        if #available(iOS 15.0, *) {
-            identifier = UTType.gif.identifier as CFString
-        } else {
-            identifier = kUTTypeGIF
-        }
-        guard let destination = CGImageDestinationCreateWithData(gifData as CFMutableData, identifier, count, nil) else { return nil }
-        let imageProperties: [CFString:[CFString:Any]] = [kCGImagePropertyGIFDictionary:[kCGImagePropertyGIFLoopCount:0]]
-        CGImageDestinationSetProperties(destination, imageProperties as CFDictionary)
-        for index in 0..<count {
-            guard let cgImage = images[index].cgImage else { continue }
-            CGImageDestinationAddImage(destination, cgImage, frameProperties as CFDictionary)
-        }
-        guard CGImageDestinationFinalize(destination) else { return nil }
-        let imageData = gifData as Data
+        //
         guard imageData.count > 0 else { return nil }
-        return imageData
+        let bytes = [UInt8](imageData)
+        self.init(bytes: bytes, count: bytes.count)
     }
 }
