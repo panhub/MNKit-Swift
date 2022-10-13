@@ -69,6 +69,22 @@ class FirstViewController: MNBaseViewController {
     
     @objc func pick(_ sender: UIView) {
         
+        let picker = MNAssetPicker()
+        picker.options.mode = .dark
+        picker.options.isAllowsEditing = false
+        picker.options.isAllowsPreview = true
+        picker.options.isShowFileSize = false
+        picker.options.maxPickingCount = 1
+        picker.options.isAllowsPickingGif = false
+        picker.options.isAllowsPickingPhoto = false
+        picker.options.isAllowsPickingLivePhoto = false
+        picker.options.isAllowsMultiplePickingVideo = true
+        picker.present { [weak self] _, assets in
+            guard let self = self else { return }
+            self.exp(path: assets.first!.content! as! String)
+        }
+        return
+        
         let menu = MNMenuView(titles: "删除   ", "   取消   ", "   下次购买", axis: .horizontal)
         menu.arrowDirection = .bottom
         menu.targetView = sender
@@ -88,24 +104,12 @@ class FirstViewController: MNBaseViewController {
             print(idx)
         }
         alert.show()
-        return
-        //navigationController?.pushViewController(ViewController(), animated: true)
-        let picker = MNAssetPicker()
-        picker.options.mode = .dark
-        picker.options.isAllowsEditing = true
-        picker.options.isAllowsPreview = true
-        picker.options.isShowFileSize = false
-        picker.options.maxPickingCount = 10
-        picker.options.isAllowsPickingGif = true
-        picker.options.isAllowsPickingPhoto = true
-        picker.options.isAllowsPickingLivePhoto = true
-        picker.options.isAllowsMultiplePickingVideo = false
-        picker.present { [weak self] _, assets in
-//            guard let self = self else { return }
-//            let vc = MNTailorViewController(videoPath: assets.first!.content as! String)
-//            vc.delegate = self
-//            self.navigationController?.pushViewController(vc, animated: true)
-        }
+    }
+    
+    func exp(path: String) {
+        let vc = MNTailorViewController(videoPath: path)
+        vc.delegate = self
+        present(vc, animated: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -135,5 +139,31 @@ extension FirstViewController: MNNumberKeyboardDelegate {
     
     func numberKeyboardTextDidChange(_ keyboard: MNNumberKeyboard) {
         print(keyboard.text)
+    }
+}
+
+extension FirstViewController: MNTailorViewControllerDelegate {
+    
+    func tailorController(_ tailorController: MNTailorViewController, didTailorVideoAtPath videoPath: String) {
+        let out = MNCachesAppending("ext.m4a")
+        let session = MNAssetExportSession(fileAtPath: videoPath)
+        session?.isExportVideoTrack = false
+        session?.outputFileType = .m4a
+        session?.outputURL = URL(fileURLWithPath: out)
+        view.showProgressToast("请稍后")
+        session?.exportAsynchronously(progressHandler: { [weak self] pro in
+            DispatchQueue.main.async {
+                self?.view.updateToast(progress: CGFloat(pro))
+            }
+        }, completionHandler: { [weak self] status, _ in
+            DispatchQueue.main.async {
+                if status == .completed {
+                    self?.view.showCompleteToast("音频已导出")
+                    print(out)
+                } else {
+                    self?.view.showErrorToast("音频导出失败")
+                }
+            }
+        })
     }
 }

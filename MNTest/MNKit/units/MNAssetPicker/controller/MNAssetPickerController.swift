@@ -370,8 +370,8 @@ extension MNAssetPickerController: UICollectionViewDelegate, UICollectionViewDat
     }
 }
 
-// MARK: - MNTailorControllerDelegate
-extension MNAssetPickerController: MNTailorControllerDelegate {
+// MARK: - MNTailorViewControllerDelegate
+extension MNAssetPickerController: MNTailorViewControllerDelegate {
     
     func tailorControllerDidCancel(_ tailorController: MNTailorViewController) {
         tailorController.navigationController?.popViewController(animated: true)

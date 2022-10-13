@@ -8,7 +8,7 @@
 import UIKit
 import AVFoundation
 
-@objc protocol MNTailorControllerDelegate: NSObjectProtocol {
+@objc protocol MNTailorViewControllerDelegate: NSObjectProtocol {
     /// 取消裁剪控制器
     @objc optional func tailorControllerDidCancel(_ tailorController: MNTailorViewController) -> Void
     /// 没有改变视频资源 请求复制
@@ -24,7 +24,7 @@ import AVFoundation
 
 class MNTailorViewController: UIViewController {
     /// 事件代理
-    weak var delegate: MNTailorControllerDelegate?
+    weak var delegate: MNTailorViewControllerDelegate?
     /// 视频导出路径
     var exportingPath: String?
     /// 视频绝对路径
@@ -106,6 +106,7 @@ class MNTailorViewController: UIViewController {
     convenience init(videoPath: String) {
         self.init(nibName: nil, bundle: nil)
         self.videoPath = videoPath
+        modalPresentationStyle = .fullScreen
         self.duration = MNAssetExporter.duration(mediaAtPath: videoPath)
         self.thumbnail = MNAssetExporter.thumbnail(videoAtPath: videoPath)
         let naturalSize = MNAssetExporter.naturalSize(videoAtPath: videoPath)
