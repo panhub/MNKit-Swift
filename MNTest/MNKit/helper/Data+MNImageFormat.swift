@@ -9,8 +9,7 @@ import UIKit
 import Foundation
 
 @objc enum MNImageFormat: Int {
-    case undefined = -1
-    case jpeg, png, gif, tiff, webp, heic
+    case undefined, jpeg, png, gif, tiff, webp, heic
 }
 
 extension Data {
@@ -40,28 +39,8 @@ extension Data {
                     return .heic
                 }
             }
-        default:
-            return .undefined
+        default: break
         }
         return .undefined
-    }
-    
-    /// 获取图片格式
-    /// - Parameter data: 图片数据流
-    /// - Returns: 图片格式
-    static func imageFormat(data: Data?) -> MNImageFormat {
-        guard let imageData = data else { return .undefined }
-        return imageData.imageFormat
-    }
-}
-
-extension UIImage {
-    
-    /// 判断图片格式
-    /// - Parameter imagePath: 图片路径
-    /// - Returns: 图片格式
-    func imageFormat(atPath imagePath: String) -> MNImageFormat {
-        guard FileManager.default.fileExists(atPath: imagePath), let imageData = try? Data(contentsOf: URL(fileURLWithPath: imagePath)) else { return .undefined }
-        return imageData.imageFormat
     }
 }

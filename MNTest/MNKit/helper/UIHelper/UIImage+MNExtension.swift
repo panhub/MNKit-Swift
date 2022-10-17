@@ -156,3 +156,31 @@ extension UIImage {
         self.init(cgImage: cgImage)
     }
 }
+
+extension UIImage {
+    
+    /// 将图片写入本地
+    /// - Parameter filePath: 本地路径
+    /// - Returns: 是否写入成功
+    @objc func write(toFile filePath: String) -> Bool {
+        let url = URL(fileURLWithPath: filePath)
+        do {
+            try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        } catch {
+            #if DEBUG
+            print(error)
+            #endif
+            return false
+        }
+        guard let imageData = Data(image: self) else { return false }
+        do {
+            try imageData.write(to: url)
+        } catch {
+            #if DEBUG
+            print(error)
+            #endif
+            return false
+        }
+        return true
+    }
+}
