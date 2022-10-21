@@ -16,9 +16,8 @@ extension Data {
     
     /// 图片格式
     var imageFormat: MNImageFormat {
-        let bytes = [UInt8](self)
-        guard bytes.count > 0 else { return .undefined }
-        switch bytes.first {
+        guard let first = first else { return .undefined }
+        switch first {
         case 0xFF:
             return .jpeg
         case 0x89:

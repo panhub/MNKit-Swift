@@ -13,24 +13,29 @@ import UniformTypeIdentifiers.UTType
 
 extension UIImage {
     
-    // MARK: - 是否是动态图
+    /// 是否是动态图
     @objc var isAnimatedImage: Bool {
         return NSStringFromClass(Self.self).contains("UIAnimatedImage")
     }
     
-    // MARK: - 转换图片至数据流
-    @objc var gifData: Data? {
+    /// 图片=>数据流
+    @objc var contentData: Data? {
         return Data(image: self)
     }
     
-    // MARK: - 依据情况实例化动图
+    /// 获取制定路径的图片
+    /// - Parameter filePath: 图片本地路径
+    /// - Returns: image对象
     @objc static func image(contentsAtFile filePath: String?) -> UIImage? {
         guard let path = filePath, FileManager.default.fileExists(atPath: path) else { return nil }
         return image(contentsOfData: try? Data(contentsOf: URL(fileURLWithPath: path)))
     }
     
-    @objc static func image(contentsOfData data: Data?) -> UIImage? {
-        guard let imageData = data, imageData.count > 0  else { return nil }
+    /// 将图片数据流转换为image对象
+    /// - Parameter imageData: 图片数据流
+    /// - Returns: image对象
+    @objc static func image(contentsOfData imageData: Data?) -> UIImage? {
+        guard let imageData = imageData, imageData.count > 0  else { return nil }
         var identifier: CFString
         if #available(iOS 15.0, *) {
             identifier = UTType.gif.identifier as CFString
@@ -76,7 +81,7 @@ extension Data {
     /// - Parameters:
     ///   - image: 图片集合
     ///   - quality: jpeg时的压缩系数
-    init?(image: UIImage?, compression quality: CGFloat = 0.65) {
+    init?(image: UIImage?, compression quality: CGFloat = 0.7) {
         guard let image = image else { return nil }
         var imageData: Data = Data()
         if let images = image.images, images.count > 1, image.duration > 0.0, image.isAnimatedImage {
