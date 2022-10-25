@@ -64,9 +64,9 @@ public class MNTabBar: UIView {
             item.removeFromSuperview()
         }
         items.removeAll()
-        guard let _ = viewControllers else { return }
-        for idx in 0..<viewControllers!.count {
-            var vc: UIViewController? = viewControllers?[idx]
+        guard let viewControllers = viewControllers else { return }
+        for idx in 0..<viewControllers.count {
+            var vc: UIViewController? = viewControllers[idx]
             repeat {
                 if vc is UINavigationController {
                     vc = (vc as! UINavigationController).viewControllers.first
@@ -76,20 +76,20 @@ public class MNTabBar: UIView {
                     break
                 }
             } while vc != nil
-            guard let _ = vc else { continue }
-            let itemSize = vc!.tabBarItemSize
+            guard let vc = vc else { continue }
+            let itemSize = vc.tabBarItemSize
             let item = MNTabBarItem(frame: CGRect(x: 0.0, y: 0.0, width: itemSize.width, height: itemSize.height))
             item.tag = idx
             item.isSelected = idx == selectedIndex
-            item.title = vc?.tabBarItemTitle ?? ""
-            item.selectedTitle = vc?.tabBarItemTitle ?? ""
-            item.image = vc?.tabBarItemImage
-            item.selectedImage = vc?.tabBarItemSelectedImage
-            item.titleColor = vc!.tabBarItemTitleColor
-            item.selectedTitleColor = vc!.tabBarItemSelectedTitleColor
-            item.titleFont = vc!.tabBarItemTitleFont
-            item.titleImageInterval = vc!.tabBarItemTitleImageInterval
-            item.addTarget(self, action: #selector(barItemTouchUpInside(_:)), for: .touchUpInside)
+            item.title = vc.tabBarItemTitle ?? ""
+            item.selectedTitle = vc.tabBarItemTitle ?? ""
+            item.image = vc.tabBarItemImage
+            item.selectedImage = vc.tabBarItemSelectedImage
+            item.titleColor = vc.tabBarItemTitleColor
+            item.selectedTitleColor = vc.tabBarItemSelectedTitleColor
+            item.titleFont = vc.tabBarItemTitleFont
+            item.titleImageInterval = vc.tabBarItemTitleImageInterval
+            item.addTarget(self, action: #selector(itemButtonTouchUpInside(_:)), for: .touchUpInside)
             addSubview(item)
             items.append(item)
         }
@@ -97,11 +97,9 @@ public class MNTabBar: UIView {
     }
     
     public override func layoutSubviews() {
+        let items: [MNTabBarItem] = self.items.filter { $0.isHidden == false }
         guard items.count > 0 else { return }
-        var width: CGFloat = 0.0
-        for item in items {
-            width += item.bounds.width
-        }
+        let width: CGFloat = items.reduce(0.0) { $0 + $1.frame.width }
         let m: CGFloat = ceil((bounds.width - width)/CGFloat(items.count + 1))
         var x: CGFloat = m + itemOffset.horizontal
         for item in items {
@@ -116,11 +114,11 @@ public class MNTabBar: UIView {
     }
     
     /**点击事件*/
-    @objc private func barItemTouchUpInside(_ item: MNTabBarItem) -> Void {
+    @objc private func itemButtonTouchUpInside(_ item: MNTabBarItem) -> Void {
         if item.tag == selectedIndex {
             delegate?.tabBar?(self, repeatSelectItemOf: item.tag)
         } else {
-            if let result = delegate?.tabBar?(self, shouldSelectItemOf: item.tag), result == false { return }
+            guard (delegate?.tabBar?(self, shouldSelectItemOf: item.tag) ?? true) else { return }
             delegate?.tabBar(self, selectItemOf: item.tag)
         }
     }
