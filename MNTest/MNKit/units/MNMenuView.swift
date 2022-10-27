@@ -46,11 +46,17 @@ class MNMenuView: UIView {
     var targetView: UIView!
     /// 点击背景取消
     var dismissWhenTapped: Bool = true
-    /// 展示视图
+    /// 内容视图
     private let contentView: UIView = UIView()
+    /// 动画视图
+    private let animatedView: UIView = UIView()
     /// 子菜单按钮集合
     private let arrangedView: UIView = UIView()
     
+    /// 构造菜单视图
+    /// - Parameters:
+    ///   - views: 子视图集合
+    ///   - axis: 布局方向
     init(arrangedViews views: [UIView], axis: NSLayoutConstraint.Axis) {
         super.init(frame: .zero)
         let maxWidth: CGFloat = views.reduce(0.0) { max($0, $1.frame.width) }
@@ -84,11 +90,19 @@ class MNMenuView: UIView {
         addGestureRecognizer(tap)
     }
     
+    /// 构造菜单视图
+    /// - Parameters:
+    ///   - titles: 标题集合
+    ///   - axis: 布局方向
     convenience init(titles: String..., axis: NSLayoutConstraint.Axis) {
         let elements: [String] = titles.reduce(into: [String]()) { $0.append($1) }
         self.init(titles: elements, axis: axis)
     }
     
+    /// 构造菜单视图
+    /// - Parameters:
+    ///   - titles: 标题集合
+    ///   - axis: 布局方向
     convenience init(titles: [String], axis: NSLayoutConstraint.Axis) {
         let font: UIFont = .systemFont(ofSize: 16.0, weight: .medium)
         let width: CGFloat = titles.reduce(0.0) { max($0, ceil(($1 as NSString).size(withAttributes: [.font:font]).width)) }
@@ -120,12 +134,17 @@ class MNMenuView: UIView {
 
 extension MNMenuView {
     
+    /// 显示菜单视图
+    /// - Parameters:
+    ///   - superview: 展示的父视图
+    ///   - animated: 是否使用动画
+    ///   - touchHandler: 按钮点击回调
     func show(in superview: UIView? = nil, animated: Bool = true, handler touchHandler: ((UIControl) -> Void)? = nil) {
         guard self.superview == nil else { return }
         guard arrangedView.frame.width > 0.0, arrangedView.frame.height > 0.0 else { return }
         guard let targetView = targetView else { return }
         guard let superview = superview ?? UIWindow.current else { return }
-        guard let rect = targetView.superview?.convert(targetView.frame, to: superview), rect.size != .zero else { return }
+        guard let rect = targetView.superview?.convert(targetView.frame, to: superview) else { return }
         
         frame = superview.bounds
         superview.addSubview(self)

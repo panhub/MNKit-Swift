@@ -87,6 +87,14 @@ extension String {
     /// 倒叙字符串
     var reversed: String { String(reversed()) }
     
+    /// 倒叙
+    /// - Parameter separator: 分割符
+    /// - Returns: 倒叙结果
+    func reversed(separatedBy separator: String) -> String {
+        let components = components(separatedBy: separator)
+        return components.reversed().joined(separator: separator)
+    }
+    
     /// 可用的路径
     var pathAvailable: String {
         guard FileManager.default.fileExists(atPath: self) else { return self }
@@ -101,7 +109,7 @@ extension String {
         scanner.charactersToBeSkipped = CharacterSet()
         if scanner.scanInt64(nil) {
             if scanner.isAtEnd {
-                name = String((Int64(name) ?? 0) + 1)
+                name = String(NSDecimalNumber(string: name).int64Value + 1)
             } else {
                 var index: String.Index = string.startIndex
                 if #available(iOS 13.0, *) {
@@ -117,7 +125,7 @@ extension String {
                 } else {
                     endstring = String(string[index..<string.endIndex])
                 }
-                name = endstring.reversed + String((Int64(substring.reversed) ?? 0) + 1)
+                name = endstring.reversed + String(NSDecimalNumber(string: substring.reversed).int64Value + 1)
             }
         } else {
             name.append("2")
