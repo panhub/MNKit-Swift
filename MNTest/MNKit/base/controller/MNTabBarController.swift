@@ -7,7 +7,7 @@
 
 import UIKit
 
-@objc protocol MNTabBarItemRepeatSelects: NSObjectProtocol {
+@objc protocol MNTabBarItemRepeatSelected: NSObjectProtocol {
     
     func tabBarController(_ tabBarController: MNTabBarController, repeatSelectItem index: Int) -> Void
 }
@@ -82,8 +82,8 @@ class MNTabBarController: UITabBarController {
     }
     
     /**获取指定索引导航控制器的类*/
-    @objc func shouldMove(viewController vc: UIViewController, to index: Int) -> UIViewController? {
-        MNNavigationController(rootViewController: vc)
+    @objc func shouldMoveChild(_ viewController: UIViewController, to index: Int) -> UIViewController? {
+        MNNavigationController(rootViewController: viewController)
     }
     
     /**添加子控制器*/
@@ -96,7 +96,7 @@ class MNTabBarController: UITabBarController {
             let cls: AnyClass? = NSClassFromString("\(nameSpage).\(childs[idx])")
             guard let type = cls as? UIViewController.Type else { continue }
             var vc = type.init()
-            if let obj = shouldMove(viewController: vc, to: idx) { vc = obj }
+            if let obj = shouldMoveChild(vc, to: idx) { vc = obj }
             viewControllers.append(vc)
         }
         self.viewControllers = viewControllers
@@ -106,23 +106,25 @@ class MNTabBarController: UITabBarController {
 // MARK: - 标签栏按钮点击事件
 extension MNTabBarController: MNTabBarDelegate {
     
-    func tabBar(_ tabBar: MNTabBar, shouldSelectItemOf index: Int) -> Bool { true }
+    func tabBar(_ tabBar: MNTabBar, shouldSelectItem index: Int) -> Bool { true }
     
-    func tabBar(_ tabBar: MNTabBar, selectItemOf index: Int) {
-        selectedIndex = index
-    }
-    
-    func tabBar(_ tabBar: MNTabBar, repeatSelectItemOf index: Int) {
-        var viewController = viewControllers?[index]
-        while let vc = viewController {
-            if vc is UINavigationController {
-                viewController = (vc as! UINavigationController).viewControllers.last
-            } else if vc is UITabBarController {
-                viewController = (vc as! UITabBarController).selectedViewController
-            } else { break }
+    func tabBar(_ tabBar: MNTabBar, selectedItem index: Int) {
+        if selectedIndex == index {
+            // 再次选中
+            var viewController = selectedViewController
+            while let vc = viewController {
+                if vc is UINavigationController {
+                    viewController = (vc as! UINavigationController).viewControllers.last
+                } else if vc is UITabBarController {
+                    viewController = (vc as! UITabBarController).selectedViewController
+                } else { break }
+            }
+            guard let delegate = viewController as? MNTabBarItemRepeatSelected else { return }
+            delegate.tabBarController(self, repeatSelectItem: index)
+        } else {
+            // 修改当前选中状态
+            selectedIndex = index
         }
-        guard let delegate = viewController as? MNTabBarItemRepeatSelects else { return }
-        delegate.tabBarController(self, repeatSelectItem: index)
     }
 }
 

@@ -8,9 +8,8 @@
 import UIKit
 
 @objc public protocol MNTabBarDelegate: NSObjectProtocol {
-    @objc optional func tabBar(_ tabBar: MNTabBar, shouldSelectItemOf index: Int) -> Bool
-    @objc func tabBar(_ tabBar: MNTabBar, selectItemOf index: Int) -> Void
-    @objc optional func tabBar(_ tabBar: MNTabBar, repeatSelectItemOf index: Int) -> Void
+    @objc optional func tabBar(_ tabBar: MNTabBar, shouldSelectItem index: Int) -> Bool
+    @objc func tabBar(_ tabBar: MNTabBar, selectedItem index: Int) -> Void
 }
 
 public class MNTabBar: UIView {
@@ -115,12 +114,8 @@ public class MNTabBar: UIView {
     
     /**点击事件*/
     @objc private func itemButtonTouchUpInside(_ item: MNTabBarItem) -> Void {
-        if item.tag == selectedIndex {
-            delegate?.tabBar?(self, repeatSelectItemOf: item.tag)
-        } else {
-            guard (delegate?.tabBar?(self, shouldSelectItemOf: item.tag) ?? true) else { return }
-            delegate?.tabBar(self, selectItemOf: item.tag)
-        }
+        guard (delegate?.tabBar?(self, shouldSelectItem: item.tag) ?? true) else { return }
+        delegate?.tabBar(self, selectedItem: item.tag)
     }
 }
 

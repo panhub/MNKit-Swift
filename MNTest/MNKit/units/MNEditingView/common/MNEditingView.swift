@@ -121,7 +121,7 @@ class MNEditingView: UIView {
             }
         }
         // 更新宽度
-        sum = actions.reduce(0, { $0 + $1.frame.width })
+        sum = actions.reduce(0.0, { $0 + $1.frame.width })
         // 添加子视图
         let subviews: [UIView] = subviews
         for (index, action) in actions.enumerated() {

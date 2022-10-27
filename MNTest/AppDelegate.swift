@@ -23,18 +23,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return true
     }
-    
-    
-    func shuffleArray(arr:[Int]) -> [Int] {
-        var data:[Int] = arr
-        for i in 1..<arr.count {
-            let index:Int = Int(arc4random()) % i
-            print(index)
-            if index != i {
-                data.swapAt(i, index)
-            }
-        }
-        return data
-    }
 }
 

@@ -175,7 +175,7 @@ class MNPageSegmentView: UIView {
         }
         // 判断是否充足
         if segments.count > 0, options.contentMode != .normal {
-            let total: CGFloat = segments.reduce(0) { $0 + $1.size.width }
+            let total: CGFloat = segments.reduce(0.0) { $0 + $1.size.width }
             let contentWidth: CGFloat = bounds.inset(by: collectionView.contentInset).width
             if contentWidth > total {
                 // 不足

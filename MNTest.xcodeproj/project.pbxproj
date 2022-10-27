@@ -20,6 +20,7 @@
 		3BA6550628B3CE9300BD54BA /* MNEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550528B3CE9300BD54BA /* MNEditingView.swift */; };
 		3BA6550828B3CF3F00BD54BA /* MNEditingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */; };
 		3BA6550A28B422A000BD54BA /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550928B422A000BD54BA /* TableViewCell.swift */; };
+		3BAED3CD290A157F00AFFA4B /* URL+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BAED3CC290A157F00AFFA4B /* URL+MNExtension.swift */; };
 		3BC67631289A1CDA00E57BA1 /* MNComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC67630289A1CDA00E57BA1 /* MNComponents.swift */; };
 		3BC9B8D428D023F6003A6D40 /* MNButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC9B8D328D023F6003A6D40 /* MNButton.swift */; };
 		3BD0F5B128DD9E1E008C195E /* MNTailorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B028DD9E1E008C195E /* MNTailorViewController.swift */; };
@@ -232,6 +233,7 @@
 		3BA6550528B3CE9300BD54BA /* MNEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingView.swift; sourceTree = "<group>"; };
 		3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingOptions.swift; sourceTree = "<group>"; };
 		3BA6550928B422A000BD54BA /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
+		3BAED3CC290A157F00AFFA4B /* URL+MNExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+MNExtension.swift"; sourceTree = "<group>"; };
 		3BC67630289A1CDA00E57BA1 /* MNComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNComponents.swift; sourceTree = "<group>"; };
 		3BC9B8D328D023F6003A6D40 /* MNButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNButton.swift; sourceTree = "<group>"; };
 		3BD0F5B028DD9E1E008C195E /* MNTailorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorViewController.swift; sourceTree = "<group>"; };
@@ -887,6 +889,7 @@
 				3BDB701328992DFA0023D5E3 /* MNPathUtilities.swift */,
 				3BDB701428992DFA0023D5E3 /* String+MNEncrypt.swift */,
 				3BDB701528992DFA0023D5E3 /* Data+MNImageFormat.swift */,
+				3BAED3CC290A157F00AFFA4B /* URL+MNExtension.swift */,
 			);
 			path = helper;
 			sourceTree = "<group>";
@@ -1161,6 +1164,7 @@
 				3BFEA9E028B548040079FA2D /* FirstViewController.swift in Sources */,
 				3B3E02AC28B7F76B0062AB8A /* CollectionViewCell.swift in Sources */,
 				3BDB702428992DFA0023D5E3 /* MNDeviceMotior.swift in Sources */,
+				3BAED3CD290A157F00AFFA4B /* URL+MNExtension.swift in Sources */,
 				3BDB6F69289928E40023D5E3 /* HTTPSecurityPolicy.swift in Sources */,
 				3BDB701D28992DFA0023D5E3 /* MNFileHandle.swift in Sources */,
 				3BDB705628992DFA0023D5E3 /* MNScanView.swift in Sources */,
