@@ -8,7 +8,14 @@
 import UIKit
 import WebKit
 
-/**WebView加载事件*/
+/// WebView监听Key
+typealias MNWebViewObserveKey = String
+private extension MNWebViewObserveKey {
+    static let webTitle: String = "title"
+    static let webProgress: String = "estimatedProgress"
+}
+
+/// WebView加载事件
 @objc protocol MNWebControllerDelegate: NSObjectProtocol {
     @objc optional func webViewControllerDidStart(_ webViewController: MNWebViewController) -> Void
     @objc optional func webViewControllerWillFinish(_ webViewController: MNWebViewController) -> Void
@@ -16,11 +23,7 @@ import WebKit
     @objc optional func webViewController(_ webViewController: MNWebViewController, didFailLoad error: Error) -> Void
 }
 
-// 标题监听Key
-let MNWebViewObserveTitleKey: String = "title"
-// 进度监听Key
-let MNWebViewObserveProgressKey: String = "estimatedProgress"
-
+/// 网页控制器
 class MNWebViewController: MNExtendViewController {
     /**链接*/
     var url: MNURLConvertible?
@@ -37,7 +40,7 @@ class MNWebViewController: MNExtendViewController {
     /**加载事件代理*/
     @objc weak var delegate: MNWebControllerDelegate?
     /**进度条*/
-    private(set) var progressView: MNWebProgressView!
+    @objc let progressView: MNProgressView = MNProgressView()
     /**是否在显示时刷新网页*/
     @objc var reloadWhenAppear: Bool = false
     /**是否允许刷新标题*/
@@ -70,8 +73,8 @@ class MNWebViewController: MNExtendViewController {
     }
     
     deinit {
-        webView?.removeObserver(self, forKeyPath: MNWebViewObserveTitleKey)
-        webView?.removeObserver(self, forKeyPath: MNWebViewObserveProgressKey)
+        webView?.removeObserver(self, forKeyPath: .webTitle)
+        webView?.removeObserver(self, forKeyPath: .webProgress)
     }
     
     override func initialized() {
@@ -97,11 +100,12 @@ class MNWebViewController: MNExtendViewController {
         if #available(iOS 11.0, *) {
             webView.scrollView.contentInsetAdjustmentBehavior = .never;
         }
-        webView.addObserver(self, forKeyPath: MNWebViewObserveTitleKey, options: .new, context: nil)
-        webView.addObserver(self, forKeyPath: MNWebViewObserveProgressKey, options: .new, context: nil)
+        webView.addObserver(self, forKeyPath: .webTitle, options: .new, context: nil)
+        webView.addObserver(self, forKeyPath: .webProgress, options: .new, context: nil)
         contentView.addSubview(webView)
         
-        progressView = MNWebProgressView(frame: CGRect(x: 0.0, y: 0.0, width: webView.bounds.width, height: 2.50))
+        progressView.width = contentView.width
+        progressView.progressViewStyle = .bar
         contentView.addSubview(progressView)
     }
 
@@ -165,16 +169,14 @@ class MNWebViewController: MNExtendViewController {
     
     // 监听标题/进度信息
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if let kPath = keyPath {
-            if kPath == MNWebViewObserveTitleKey {
-                if isAllowsUpdateTitle {
-                    title = webView.title
-                }
-            } else if kPath == MNWebViewObserveProgressKey {
-                progressView.set(progress: webView.estimatedProgress, animated: true)
-            } else {
-                super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-            }
+        guard let keyPath = keyPath else { return }
+        if keyPath == .webTitle {
+            // 标题
+            guard isAllowsUpdateTitle else { return }
+            title = webView.title
+        } else if keyPath == .webProgress {
+            // 进度
+            progressView.setProgress(Float(webView.estimatedProgress), animated: true)
         } else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }

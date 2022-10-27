@@ -21,6 +21,7 @@
 		3BA6550828B3CF3F00BD54BA /* MNEditingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */; };
 		3BA6550A28B422A000BD54BA /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA6550928B422A000BD54BA /* TableViewCell.swift */; };
 		3BAED3CD290A157F00AFFA4B /* URL+MNExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BAED3CC290A157F00AFFA4B /* URL+MNExtension.swift */; };
+		3BAED3CF290A1F7500AFFA4B /* MNProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BAED3CE290A1F7500AFFA4B /* MNProgressView.swift */; };
 		3BC67631289A1CDA00E57BA1 /* MNComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC67630289A1CDA00E57BA1 /* MNComponents.swift */; };
 		3BC9B8D428D023F6003A6D40 /* MNButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BC9B8D328D023F6003A6D40 /* MNButton.swift */; };
 		3BD0F5B128DD9E1E008C195E /* MNTailorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BD0F5B028DD9E1E008C195E /* MNTailorViewController.swift */; };
@@ -105,7 +106,6 @@
 		3BDB6F95289928E40023D5E3 /* MNTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F4F289928E40023D5E3 /* MNTabBar.swift */; };
 		3BDB6F96289928E50023D5E3 /* MNEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F50289928E40023D5E3 /* MNEmptyView.swift */; };
 		3BDB6F97289928E50023D5E3 /* UIView+MNLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F51289928E40023D5E3 /* UIView+MNLayout.swift */; };
-		3BDB6F9928992D8B0023D5E3 /* MNWebProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F9828992D8B0023D5E3 /* MNWebProgressView.swift */; };
 		3BDB6F9B28992DA60023D5E3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F9A28992DA60023D5E3 /* ViewController.swift */; };
 		3BDB701628992DFA0023D5E3 /* MNSecureLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F9E28992DFA0023D5E3 /* MNSecureLabel.swift */; };
 		3BDB701728992DFA0023D5E3 /* MNSecureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB6F9F28992DFA0023D5E3 /* MNSecureView.swift */; };
@@ -234,6 +234,7 @@
 		3BA6550728B3CF3F00BD54BA /* MNEditingOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNEditingOptions.swift; sourceTree = "<group>"; };
 		3BA6550928B422A000BD54BA /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		3BAED3CC290A157F00AFFA4B /* URL+MNExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+MNExtension.swift"; sourceTree = "<group>"; };
+		3BAED3CE290A1F7500AFFA4B /* MNProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNProgressView.swift; sourceTree = "<group>"; };
 		3BC67630289A1CDA00E57BA1 /* MNComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNComponents.swift; sourceTree = "<group>"; };
 		3BC9B8D328D023F6003A6D40 /* MNButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNButton.swift; sourceTree = "<group>"; };
 		3BD0F5B028DD9E1E008C195E /* MNTailorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MNTailorViewController.swift; sourceTree = "<group>"; };
@@ -320,7 +321,6 @@
 		3BDB6F4F289928E40023D5E3 /* MNTabBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNTabBar.swift; sourceTree = "<group>"; };
 		3BDB6F50289928E40023D5E3 /* MNEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNEmptyView.swift; sourceTree = "<group>"; };
 		3BDB6F51289928E40023D5E3 /* UIView+MNLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+MNLayout.swift"; sourceTree = "<group>"; };
-		3BDB6F9828992D8B0023D5E3 /* MNWebProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNWebProgressView.swift; sourceTree = "<group>"; };
 		3BDB6F9A28992DA60023D5E3 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		3BDB6F9E28992DFA0023D5E3 /* MNSecureLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNSecureLabel.swift; sourceTree = "<group>"; };
 		3BDB6F9F28992DFA0023D5E3 /* MNSecureView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNSecureView.swift; sourceTree = "<group>"; };
@@ -698,7 +698,7 @@
 		3BDB6F4C289928E40023D5E3 /* view */ = {
 			isa = PBXGroup;
 			children = (
-				3BDB6F9828992D8B0023D5E3 /* MNWebProgressView.swift */,
+				3BAED3CE290A1F7500AFFA4B /* MNProgressView.swift */,
 				3BDB6F4D289928E40023D5E3 /* MNTabBarItem.swift */,
 				3BDB6F4E289928E40023D5E3 /* MNNavigationBar.swift */,
 				3BDB6F4F289928E40023D5E3 /* MNTabBar.swift */,
@@ -1077,7 +1077,6 @@
 				3BDB703228992DFA0023D5E3 /* MNSegmentViewOptions.swift in Sources */,
 				3BDB701E28992DFA0023D5E3 /* MNPlayer.swift in Sources */,
 				3BDB703028992DFA0023D5E3 /* MNPageScrollView.swift in Sources */,
-				3BDB6F9928992D8B0023D5E3 /* MNWebProgressView.swift in Sources */,
 				3BDB6F64289928E40023D5E3 /* MNRefreshNormalHeader.swift in Sources */,
 				3BDB6F9B28992DA60023D5E3 /* ViewController.swift in Sources */,
 				3BD0F5B728DD9EAB008C195E /* MNTailorHandler.swift in Sources */,
@@ -1221,6 +1220,7 @@
 				3BDB707328992DFA0023D5E3 /* UIWindow+MNExtension.swift in Sources */,
 				3BDB705028992DFA0023D5E3 /* MNAssetSelectButton.swift in Sources */,
 				3BDB6F63289928E40023D5E3 /* MNRefreshHeader.swift in Sources */,
+				3BAED3CF290A1F7500AFFA4B /* MNProgressView.swift in Sources */,
 				3BDB707928992DFA0023D5E3 /* CAAnimation+MNExtension.swift in Sources */,
 				3BC9B8D428D023F6003A6D40 /* MNButton.swift in Sources */,
 				3BDB6F57289928E40023D5E3 /* MNErrorToast.swift in Sources */,
