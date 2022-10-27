@@ -85,10 +85,7 @@ class MNMenuView: UIView {
     }
     
     convenience init(titles: String..., axis: NSLayoutConstraint.Axis) {
-        var elements: [String] = [String]()
-        for title in titles {
-            elements.append(title)
-        }
+        let elements: [String] = titles.reduce(into: [String]()) { $0.append($1) }
         self.init(titles: elements, axis: axis)
     }
     

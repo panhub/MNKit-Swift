@@ -100,14 +100,15 @@ class MNNumberKeyboard: UIView {
             let key = keys[idx]
             guard key != .none else { return }
             
-            var button: UIButton
+            let button: UIButton = UIButton(type: .custom)
             if #available(iOS 15.0, *) {
                 var attributedTitle = AttributedString(key.title)
                 attributedTitle.font = key == .decimal ? .systemFont(ofSize: 37.0, weight: .bold) : titleFont
                 attributedTitle.foregroundColor = titleColor
                 var configuration = UIButton.Configuration.plain()
+                configuration.titleAlignment = .center
                 configuration.attributedTitle = attributedTitle
-                button = UIButton(configuration: configuration)
+                button.configuration = configuration
                 button.configurationUpdateHandler = { sender in
                     switch sender.state {
                     case .normal:
@@ -121,15 +122,14 @@ class MNNumberKeyboard: UIView {
                 let attributedTitle = NSMutableAttributedString(string: key.title)
                 attributedTitle.addAttribute(.foregroundColor, value: titleColor, range: NSRange(location: 0, length: attributedTitle.length))
                 attributedTitle.addAttribute(.font, value: key == .decimal ? .systemFont(ofSize: 37.0, weight: .bold) : titleFont, range: NSRange(location: 0, length: attributedTitle.length))
-                button = UIButton(type: .custom)
-                button.clipsToBounds = true
-                button.layer.cornerRadius = 5.0
+                button.contentVerticalAlignment = .center
+                button.contentHorizontalAlignment = .center
                 button.setAttributedTitle(attributedTitle, for: .normal)
                 button.setBackgroundImage(backgroundImage, for: .normal)
                 button.setBackgroundImage(highlightedImage, for: .highlighted)
             }
-            button.tag = key.rawValue
             button.frame = rect
+            button.tag = key.rawValue
             button.addTarget(self, action: #selector(keyButtonTouchUpInside(_:)), for: .touchUpInside)
             addSubview(button)
         }

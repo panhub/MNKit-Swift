@@ -11,8 +11,6 @@ class FirstViewController: MNBaseViewController {
     
     let pageControl = MNPageControl()
     
-    let progressView = MNProgressView()
-    
     var keyboard: MNNumberKeyboard {
         let p = MNNumberKeyboard()
         p.delegate = self
@@ -67,12 +65,6 @@ class FirstViewController: MNBaseViewController {
         textField.inputView = keyboard
         textField.reloadInputViews()
         contentView.addSubview(textField)
-        
-        progressView.frame = CGRect(x: 0.0, y: 0.0, width: textField.width, height: 3.0)
-        progressView.midX = textField.midX
-        progressView.minY = textField.maxY + 50.0
-        progressView.progressViewStyle = .default
-        contentView.addSubview(progressView)
     }
     
     @objc func pick(_ sender: UIView) {
@@ -140,11 +132,6 @@ class FirstViewController: MNBaseViewController {
 //        pageControl.numberOfPages = 7
 //        pageControl.reloadData()
         view.endEditing(true)
-//        if progressView.progress >= 1.0 {
-//            progressView.progress = 0.1
-//        } else {
-//            progressView.progress += 0.1
-//        }
         let vc = MNWebViewController(url: "https://www.baidu.com")
         navigationController?.pushViewController(vc, animated: true)
     }

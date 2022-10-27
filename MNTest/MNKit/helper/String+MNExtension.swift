@@ -13,18 +13,16 @@ extension String {
     // String => Bool
     var boolValue: Bool {
         switch self {
-        case "1", "true", "y", "YES", "Y":
-            return true
-        default:
-            return false
+        case "1", "true", "yes", "YES", "y", "Y": return true
+        default: return false
         }
     }
-    // String => Double
-    var doubleValue: Double { NSDecimalNumber(string: self).doubleValue }
     // String => Int
-    var intValue: Int { NSDecimalNumber(string: self).intValue }
-    // String => NSInteger
-    var integerValue: NSInteger { NSInteger(NSDecimalNumber(string: self).intValue) }
+    var intValue: Int { (self as NSString).integerValue }
+    // String => Int64
+    var int64Value: Int64 { (self as NSString).longLongValue }
+    // String => Double
+    var doubleValue: Double { (self as NSString).doubleValue }
 }
 
 // MARK: - 字符串截取
