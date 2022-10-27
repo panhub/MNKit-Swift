@@ -85,10 +85,7 @@ extension String {
 extension String {
     
     /// 倒叙字符串
-    var reversed: String {
-        let components: [String] = compactMap { String($0) }
-        return components.reversed().joined(separator: "")
-    }
+    var reversed: String { String(reversed()) }
     
     /// 可用的路径
     var pathAvailable: String {
