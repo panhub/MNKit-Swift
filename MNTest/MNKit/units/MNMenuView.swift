@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MNMenuView: UIView {
+class MNMenuViewOptions: NSObject {
     
     /// 箭头方向
     enum ArrowDirection {
@@ -18,57 +18,68 @@ class MNMenuView: UIView {
     enum AnimationType {
         case fade, zoom, move
     }
+    
+    /// 标题字体
+    var titleColor: UIColor? = .white
+    /// 标题字体
+    var titleFont: UIFont = .systemFont(ofSize: 16.0, weight: .medium)
     /// 箭头大小
     var arrowSize: CGSize = CGSize(width: 12.0, height: 10.0)
     /// 箭头偏移
     var arrowOffset: UIOffset = .zero
     /// 边角大小
     var cornerRadius: CGFloat = 5.0
+    /// 布局方向
+    var axis: NSLayoutConstraint.Axis = .vertical
     /// 内容边距
     var contentInsets: UIEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
     /// 动画时长
     var animationDuration: TimeInterval = 0.23
+    /// 边框宽度
+    var borderWidth: CGFloat = 2.0
     /// 填充颜色
     var fillColor: UIColor? = UIColor(red: 76.0/255.0, green: 76.0/255.0, blue: 76.0/255.0, alpha: 1.0)
     /// 边框颜色
     var borderColor: UIColor? = UIColor(red: 50.0/255.0, green: 50.0/255.0, blue: 50.0/255.0, alpha: 1.0)
-    /// 边框宽度
-    var borderWidth: CGFloat = 2.0
     /// 箭头方向
-    var arrowDirection: MNMenuView.ArrowDirection = .up
+    var arrowDirection: MNMenuViewOptions.ArrowDirection = .up
     /// 动画类型
-    var animationType: MNMenuView.AnimationType = .zoom
-    /// 点击事件回调
-    private var touchHandler: ((UIControl) -> Void)?
-    /// 布局方向
-    var axis: NSLayoutConstraint.Axis = .vertical
+    var animationType: MNMenuViewOptions.AnimationType = .zoom
+}
+
+class MNMenuView: UIView {
     /// 目标视图
     var targetView: UIView!
     /// 点击背景取消
     var dismissWhenTapped: Bool = true
+    /// 配置
+    private let options: MNMenuViewOptions
     /// 内容视图
     private let contentView: UIView = UIView()
-    /// 动画视图
-    private let animatedView: UIView = UIView()
+    /// 轮廓视图
+    private let shapeView: UIView = UIView()
     /// 子菜单按钮集合
     private let arrangedView: UIView = UIView()
+    /// 事件回调
+    private var touchHandler: ((UIControl) -> Void)?
     
     /// 构造菜单视图
     /// - Parameters:
     ///   - views: 子视图集合
-    ///   - axis: 布局方向
-    init(arrangedViews views: [UIView], axis: NSLayoutConstraint.Axis) {
+    ///   - options: 配置信息
+    init(arrangedViews views: [UIView], options: MNMenuViewOptions = MNMenuViewOptions()) {
+        self.options = options
         super.init(frame: .zero)
-        let maxWidth: CGFloat = views.reduce(0.0) { max($0, $1.frame.width) }
-        let maxHeight: CGFloat = views.reduce(0.0) { max($0, $1.frame.height) }
         let totalWidth: CGFloat = views.reduce(0.0) { $0 + $1.frame.width }
         let totalHeight: CGFloat = views.reduce(0.0) { $0 + $1.frame.height }
-        arrangedView.frame = CGRect(x: 0.0, y: 0.0, width: axis == .vertical ? maxWidth : totalWidth, height: axis == .vertical ? totalHeight : maxHeight)
+        let maxWidth: CGFloat = views.reduce(0.0) { max($0, $1.frame.width) }
+        let maxHeight: CGFloat = views.reduce(0.0) { max($0, $1.frame.height) }
+        arrangedView.frame = CGRect(x: 0.0, y: 0.0, width: options.axis == .vertical ? maxWidth : totalWidth, height: options.axis == .vertical ? totalHeight : maxHeight)
         var x: CGFloat = 0.0
         var y: CGFloat = 0.0
         for view in views {
             var rect = view.frame
-            if axis == .vertical {
+            if options.axis == .vertical {
                 rect.origin.y = y
                 rect.origin.x = arrangedView.frame.width/2.0 - rect.width/2.0
                 y = rect.maxY
@@ -78,7 +89,7 @@ class MNMenuView: UIView {
                 x = rect.maxX
             }
             view.frame = rect
-            if view is UIControl, let control = view as? UIControl, control.allTargets.count <= 0 {
+            if let control = view as? UIControl, control.allTargets.count <= 0 {
                 control.addTarget(self, action: #selector(menuTouchUpInside(_:)), for: .touchUpInside)
             }
             arrangedView.addSubview(view)
@@ -93,38 +104,38 @@ class MNMenuView: UIView {
     /// 构造菜单视图
     /// - Parameters:
     ///   - titles: 标题集合
-    ///   - axis: 布局方向
-    convenience init(titles: String..., axis: NSLayoutConstraint.Axis) {
+    ///   - options: 配置信息
+    convenience init(titles: String..., options: MNMenuViewOptions = MNMenuViewOptions()) {
         let elements: [String] = titles.reduce(into: [String]()) { $0.append($1) }
-        self.init(titles: elements, axis: axis)
+        self.init(titles: elements, options: options)
     }
     
     /// 构造菜单视图
     /// - Parameters:
     ///   - titles: 标题集合
-    ///   - axis: 布局方向
-    convenience init(titles: [String], axis: NSLayoutConstraint.Axis) {
-        let font: UIFont = .systemFont(ofSize: 16.0, weight: .medium)
+    ///   - options: 配置信息
+    convenience init(titles: [String], options: MNMenuViewOptions = MNMenuViewOptions()) {
+        let font: UIFont = options.titleFont
         let width: CGFloat = titles.reduce(0.0) { max($0, ceil(($1 as NSString).size(withAttributes: [.font:font]).width)) }
-        let height: CGFloat = axis == .vertical ? 45.0 : 30.0
+        let height: CGFloat = options.axis == .vertical ? 45.0 : 30.0
         var arrangedViews: [UIView] = [UIView]()
         for (index, title) in titles.enumerated() {
             let button = UIButton(type: .custom)
             button.tag = index
-            button.frame = CGRect(x: 0.0, y: 0.0, width: axis == .vertical ? width : ceil((title as NSString).size(withAttributes: [.font:font]).width), height: height)
+            button.frame = CGRect(x: 0.0, y: 0.0, width: options.axis == .vertical ? width : ceil((title as NSString).size(withAttributes: [.font:font]).width), height: height)
             button.titleLabel?.font = font
             button.setTitle(title, for: .normal)
-            button.setTitleColor(.white.withAlphaComponent(0.9), for: .normal)
+            button.setTitleColor(options.titleColor, for: .normal)
             button.contentVerticalAlignment = .center
             button.contentHorizontalAlignment = .center
             arrangedViews.append(button)
             if index < (titles.count - 1) {
-                let separator = UIView(frame: CGRect(x: 0.0, y: 0.0, width: (axis == .vertical ? button.frame.width : 1.0), height: (axis == .vertical ? 1.0 : (font.pointSize + 5.0))))
-                separator.backgroundColor = UIColor(red: 50.0/255.0, green: 50.0/255.0, blue: 50.0/255.0, alpha: 1.0)
+                let separator = UIView(frame: CGRect(x: 0.0, y: 0.0, width: (options.axis == .vertical ? button.frame.width : 1.0), height: (options.axis == .vertical ? 1.0 : (font.pointSize + 5.0))))
+                separator.backgroundColor = options.borderColor
                 arrangedViews.append(separator)
             }
         }
-        self.init(arrangedViews: arrangedViews, axis: axis)
+        self.init(arrangedViews: arrangedViews, options: options)
     }
     
     required init?(coder: NSCoder) {
@@ -150,25 +161,17 @@ extension MNMenuView {
         superview.addSubview(self)
         self.touchHandler = touchHandler
         
-        let arrowSize = arrowSize
-        let arrowOffset = arrowOffset
-        let borderWidth = borderWidth
-        let cornerRadius = cornerRadius
-        let contentInsets = contentInsets
-        
-        // 寻找分割线
-        if borderWidth > 0.0, let borderColor = borderColor {
-            for subview in arrangedView.subviews {
-                guard min(subview.frame.width, subview.frame.height) == 1.0 else { continue }
-                subview.backgroundColor = borderColor
-            }
-        }
+        let arrowSize = options.arrowSize
+        let arrowOffset = options.arrowOffset
+        let borderWidth = options.borderWidth
+        let cornerRadius = options.cornerRadius
+        let contentInsets = options.contentInsets
         
         var anchorPoint: CGPoint = CGPoint(x: 0.5, y: 0.5)
         
         let bezierPath: UIBezierPath = UIBezierPath()
         
-        switch arrowDirection {
+        switch options.arrowDirection {
         case .up:
             contentView.frame = CGRect(x: 0.0, y: 0.0, width: arrangedView.frame.width + contentInsets.left + contentInsets.right, height: arrangedView.frame.height + contentInsets.top + contentInsets.bottom + arrowSize.height)
             arrangedView.frame = CGRect(x: contentInsets.left, y: arrowSize.height + contentInsets.top, width: arrangedView.frame.width, height: arrangedView.frame.height)
@@ -249,15 +252,19 @@ extension MNMenuView {
         
         let maskLayer = CAShapeLayer()
         maskLayer.path = bezierPath.cgPath
-        maskLayer.fillColor = (fillColor ?? .clear).cgColor
-        maskLayer.strokeColor = (borderColor ?? .clear).cgColor
+        maskLayer.fillColor = (options.fillColor ?? .clear).cgColor
+        maskLayer.strokeColor = (options.borderColor ?? .clear).cgColor
+        maskLayer.lineJoin = .round
+        maskLayer.lineCap = .round
         maskLayer.lineWidth = borderWidth
+        shapeView.frame = contentView.bounds
+        shapeView.layer.addSublayer(maskLayer)
         contentView.clipsToBounds = true
-        contentView.layer.insertSublayer(maskLayer, at: 0)
+        contentView.addSubview(shapeView)
         contentView.addSubview(arrangedView)
         addSubview(contentView)
         
-        switch animationType {
+        switch options.animationType {
         case .zoom:
             let frame = contentView.frame
             let point = contentView.layer.anchorPoint
@@ -269,13 +276,13 @@ extension MNMenuView {
             contentView.layer.anchorPoint = anchorPoint
             contentView.layer.position = position
             contentView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
-            UIView.animate(withDuration: animated ? animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                 guard let self = self else { return }
                 self.contentView.transform = .identity
             }, completion: nil)
         case .fade:
             contentView.alpha = 0.0
-            UIView.animate(withDuration: animated ? animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
                 guard let self = self else { return }
                 self.contentView.alpha = 1.0
             }, completion: nil)
@@ -283,7 +290,7 @@ extension MNMenuView {
             let target = contentView.frame
             var frame = contentView.frame
             var autoresizingMask: UIView.AutoresizingMask = []
-            switch arrowDirection {
+            switch options.arrowDirection {
             case .up:
                 frame.size.height = 0.0
                 autoresizingMask = [.flexibleTopMargin]
@@ -299,13 +306,15 @@ extension MNMenuView {
                 frame.size.width = 0.0
                 autoresizingMask = [.flexibleRightMargin]
             }
+            shapeView.autoresizingMask = autoresizingMask
             arrangedView.autoresizingMask = autoresizingMask
             contentView.frame = frame
-            UIView.animate(withDuration: animated ? animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.frame = target
             } completion: { [weak self] _ in
                 guard let self = self else { return }
+                self.shapeView.autoresizingMask = []
                 self.arrangedView.autoresizingMask = []
             }
         }
@@ -316,9 +325,9 @@ extension MNMenuView {
     ///   - animated: 是否显示动画过程
     ///   - completionHandler: 结束回调
     func dismiss(animated: Bool = true, completion completionHandler: (()->Void)? = nil) {
-        switch animationType {
+        switch options.animationType {
         case .zoom:
-            UIView.animate(withDuration: animated ? animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
             } completion: { [weak self] _ in
@@ -327,7 +336,7 @@ extension MNMenuView {
                 completionHandler?()
             }
         case .fade:
-            UIView.animate(withDuration: animated ? animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.alpha = 0.0
             } completion: { [weak self] _ in
@@ -338,7 +347,7 @@ extension MNMenuView {
         case .move:
             var target = contentView.frame
             var autoresizingMask: UIView.AutoresizingMask = []
-            switch arrowDirection {
+            switch options.arrowDirection {
             case .up:
                 target.size.height = 0.0
                 autoresizingMask = [.flexibleTopMargin]
@@ -354,8 +363,9 @@ extension MNMenuView {
                 target.size.width = 0.0
                 autoresizingMask = [.flexibleRightMargin]
             }
+            shapeView.autoresizingMask = autoresizingMask
             arrangedView.autoresizingMask = autoresizingMask
-            UIView.animate(withDuration: animated ? animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
+            UIView.animate(withDuration: animated ? options.animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.frame = target
             } completion: { [weak self] _ in
