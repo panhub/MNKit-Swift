@@ -71,14 +71,15 @@ class FirstViewController: MNBaseViewController {
     @objc func pick(_ sender: UIView) {
         
         let options = MNMenuViewOptions()
+        options.axis = .horizontal
         options.arrowDirection = .left
-        options.borderColor = .red
-        options.borderWidth = 4.0
-        options.animationType = .move
         //options.borderColor = .red
+        options.borderWidth = 2.0
+        options.animationType = .move
+        options.separatorSize = CGSize(width: 1.0, height: 20.0)
         options.arrowOffset = UIOffset(horizontal: 10.0, vertical: 0.0)
-        options.contentInsets = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
-        let menu = MNMenuView(titles: " 点赞 ", " 评论 ", " 删除 ", options: options)
+        options.contentInsets = UIEdgeInsets(top: 7.0, left: 10.0, bottom: 7.0, right: 10.0)
+        let menu = MNMenuView(titles: " 点赞   ", "   评论   ", "   删除 ", options: options)
         menu.targetView = sender
         menu.show(in: nil, animated: true) { sender in
             print(sender.tag)

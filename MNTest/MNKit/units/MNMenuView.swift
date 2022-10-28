@@ -20,17 +20,21 @@ class MNMenuViewOptions: NSObject {
     }
     
     /// 标题字体
-    var titleColor: UIColor? = .white
+    var titleColor: UIColor? = UIColor(red: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1.0)
     /// 标题字体
     var titleFont: UIFont = .systemFont(ofSize: 16.0, weight: .medium)
     /// 箭头大小
     var arrowSize: CGSize = CGSize(width: 12.0, height: 10.0)
+    /// 分割线尺寸 依据布局方向取值
+    var separatorSize: CGSize = CGSize(width: 1.0, height: 20.0)
+    /// 分割线颜色
+    var separatorColor: UIColor? = UIColor(red: 50.0/255.0, green: 50.0/255.0, blue: 50.0/255.0, alpha: 1.0)
     /// 箭头偏移
     var arrowOffset: UIOffset = .zero
     /// 边角大小
     var cornerRadius: CGFloat = 5.0
     /// 布局方向
-    var axis: NSLayoutConstraint.Axis = .vertical
+    var axis: NSLayoutConstraint.Axis = .horizontal
     /// 内容边距
     var contentInsets: UIEdgeInsets = UIEdgeInsets(top: 5.0, left: 5.0, bottom: 5.0, right: 5.0)
     /// 动画时长
@@ -48,6 +52,7 @@ class MNMenuViewOptions: NSObject {
 }
 
 class MNMenuView: UIView {
+    
     /// 目标视图
     var targetView: UIView!
     /// 点击背景取消
@@ -74,6 +79,7 @@ class MNMenuView: UIView {
         let totalHeight: CGFloat = views.reduce(0.0) { $0 + $1.frame.height }
         let maxWidth: CGFloat = views.reduce(0.0) { max($0, $1.frame.width) }
         let maxHeight: CGFloat = views.reduce(0.0) { max($0, $1.frame.height) }
+        arrangedView.clipsToBounds = true
         arrangedView.frame = CGRect(x: 0.0, y: 0.0, width: options.axis == .vertical ? maxWidth : totalWidth, height: options.axis == .vertical ? totalHeight : maxHeight)
         var x: CGFloat = 0.0
         var y: CGFloat = 0.0
@@ -130,8 +136,8 @@ class MNMenuView: UIView {
             button.contentHorizontalAlignment = .center
             arrangedViews.append(button)
             if index < (titles.count - 1) {
-                let separator = UIView(frame: CGRect(x: 0.0, y: 0.0, width: (options.axis == .vertical ? button.frame.width : 1.0), height: (options.axis == .vertical ? 1.0 : (font.pointSize + 5.0))))
-                separator.backgroundColor = options.borderColor
+                let separator = UIView(frame: CGRect(x: 0.0, y: 0.0, width: options.separatorSize.width, height: options.separatorSize.height))
+                separator.backgroundColor = options.separatorColor
                 arrangedViews.append(separator)
             }
         }
@@ -257,6 +263,7 @@ extension MNMenuView {
         maskLayer.lineJoin = .round
         maskLayer.lineCap = .round
         maskLayer.lineWidth = borderWidth
+        
         shapeView.frame = contentView.bounds
         shapeView.layer.addSublayer(maskLayer)
         contentView.clipsToBounds = true
@@ -380,6 +387,8 @@ extension MNMenuView {
 // MARK: - Event
 private extension MNMenuView {
     
+    /// 按钮点击事件
+    /// - Parameter sender: 按钮
     @objc func menuTouchUpInside(_ sender: UIControl) {
         dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
@@ -387,6 +396,7 @@ private extension MNMenuView {
         }
     }
     
+    /// 背景点击事件
     @objc func backgroundTouchUpInside() {
         guard dismissWhenTapped else { return }
         dismiss()
