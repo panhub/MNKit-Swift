@@ -156,9 +156,10 @@ extension MNMenuView {
         let cornerRadius = cornerRadius
         let contentInsets = contentInsets
         
+        // 寻找分割线
         if borderWidth > 0.0, let borderColor = borderColor {
             for subview in arrangedView.subviews {
-                guard min(subview.frame.width, subview.frame.height) <= 3.0 else { continue }
+                guard min(subview.frame.width, subview.frame.height) == 1.0 else { continue }
                 subview.backgroundColor = borderColor
             }
         }
@@ -251,6 +252,7 @@ extension MNMenuView {
         maskLayer.fillColor = (fillColor ?? .clear).cgColor
         maskLayer.strokeColor = (borderColor ?? .clear).cgColor
         maskLayer.lineWidth = borderWidth
+        contentView.clipsToBounds = true
         contentView.layer.insertSublayer(maskLayer, at: 0)
         contentView.addSubview(arrangedView)
         addSubview(contentView)
@@ -280,26 +282,39 @@ extension MNMenuView {
         case .move:
             let target = contentView.frame
             var frame = contentView.frame
+            var autoresizingMask: UIView.AutoresizingMask = []
             switch arrowDirection {
             case .up:
                 frame.size.height = 0.0
+                autoresizingMask = [.flexibleTopMargin]
             case .left:
                 frame.size.width = 0.0
+                autoresizingMask = [.flexibleLeftMargin]
             case .bottom:
                 frame.origin.y = frame.maxY
                 frame.size.height = 0.0
+                autoresizingMask = [.flexibleBottomMargin]
             case .right:
                 frame.origin.x = frame.maxX
                 frame.size.width = 0.0
+                autoresizingMask = [.flexibleRightMargin]
             }
+            arrangedView.autoresizingMask = autoresizingMask
             contentView.frame = frame
-            UIView.animate(withDuration: animated ? animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut], animations: { [weak self] in
+            UIView.animate(withDuration: animated ? animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.frame = target
-            }, completion: nil)
+            } completion: { [weak self] _ in
+                guard let self = self else { return }
+                self.arrangedView.autoresizingMask = []
+            }
         }
     }
     
+    /// 取消菜单视图
+    /// - Parameters:
+    ///   - animated: 是否显示动画过程
+    ///   - completionHandler: 结束回调
     func dismiss(animated: Bool = true, completion completionHandler: (()->Void)? = nil) {
         switch animationType {
         case .zoom:
@@ -322,18 +337,24 @@ extension MNMenuView {
             }
         case .move:
             var target = contentView.frame
+            var autoresizingMask: UIView.AutoresizingMask = []
             switch arrowDirection {
             case .up:
                 target.size.height = 0.0
+                autoresizingMask = [.flexibleTopMargin]
             case .left:
                 target.size.width = 0.0
+                autoresizingMask = [.flexibleLeftMargin]
             case .bottom:
                 target.origin.y = frame.maxY
                 target.size.height = 0.0
+                autoresizingMask = [.flexibleBottomMargin]
             case .right:
                 target.origin.x = frame.maxX
                 target.size.width = 0.0
+                autoresizingMask = [.flexibleRightMargin]
             }
+            arrangedView.autoresizingMask = autoresizingMask
             UIView.animate(withDuration: animated ? animationDuration : .leastNormalMagnitude, delay: 0.0, options: [.beginFromCurrentState, .curveEaseInOut]) { [weak self] in
                 guard let self = self else { return }
                 self.contentView.frame = target

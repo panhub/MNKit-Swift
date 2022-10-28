@@ -36,6 +36,7 @@ class FirstViewController: MNBaseViewController {
         b.contentInset = UIEdgeInsets(top: 13.0, left: 15.0, bottom: 13.0, right: 15.0)
         b.sizeToFit()
         b.center = contentView.Center
+        b.minX = 100.0
         b.addTarget(self, action: #selector(pick(_:)), for: .touchUpInside)
         contentView.addSubview(b)
         
@@ -69,6 +70,20 @@ class FirstViewController: MNBaseViewController {
     
     @objc func pick(_ sender: UIView) {
         
+        let menu = MNMenuView(titles: " 点赞 ", " 评论 ", " 删除 ", axis: .horizontal)
+        menu.arrowDirection = .left
+        menu.targetView = sender
+        //menu.fillColor = .clear
+        menu.borderWidth = 2.0
+        menu.animationType = .move
+        //menu.borderColor = .red
+        //menu.arrowOffset = UIOffset(horizontal: 15.0, vertical: 5.0)
+        menu.contentInsets = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
+        menu.show(in: nil, animated: true) { sender in
+            print(sender.tag)
+        }
+        return
+        
         let picker = MNAssetPicker()
         picker.options.mode = .dark
         picker.options.isAllowsEditing = false
@@ -85,21 +100,6 @@ class FirstViewController: MNBaseViewController {
         }
         return
         
-        let menu = MNMenuView(titles: "删除   ", "   取消   ", "   下次购买", axis: .horizontal)
-        menu.arrowDirection = .bottom
-        menu.targetView = sender
-        menu.fillColor = .clear
-        menu.borderWidth = 5.0
-        menu.borderColor = .red
-        //menu.arrowOffset = UIOffset(horizontal: 15.0, vertical: 5.0)
-        menu.contentInsets = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
-        menu.show(in: nil, animated: false) { control in
-            if let bu = control as? UIButton {
-                print(bu.title(for: .normal))
-            }
-        }
-        
-        return
         let alert = MNActionSheet(title: "测试弹窗", message: "正在测试弹窗信息?", cancelButtonTitle: "取消", destructiveButtonTitle: "删除", otherButtonTitles: "确定") { idx in
             print(idx)
         }
